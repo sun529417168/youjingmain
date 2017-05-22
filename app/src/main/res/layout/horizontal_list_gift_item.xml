@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/re_item"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+
+    <FrameLayout
+        android:layout_width="55dp"
+        android:layout_height="75dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp">
+            <ImageView
+                android:id="@+id/img_gift"
+                android:layout_width="31dp"
+                android:layout_height="31dp"
+                android:layout_centerInParent="true"
+                android:src="@mipmap/img_gift_pen" />
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/img_gift_info"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:src="@mipmap/img_gift_active" />
+
+            <ImageView
+                android:id="@+id/img_gift_select"
+                android:layout_width="13dp"
+                android:layout_height="13dp"
+                android:visibility="gone"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+               android:src="@mipmap/img_gift_select"/>
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentRight="true"
+                android:background="@color/gray_live_bg" />
+        </RelativeLayout>
+    </FrameLayout>
+
+
+
+    <RelativeLayout
+        android:id="@+id/re_whale_money_num"
+        android:layout_width="55dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true">
+
+            <ImageView
+                android:id="@+id/img_whale_money"
+                android:layout_width="11dp"
+                android:layout_height="11dp"
+                android:layout_centerVertical="true"
+                android:src="@mipmap/whale_money" />
+            <TextView
+                android:id="@+id/txt_whale_money_num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="3dp"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/img_whale_money"
+                android:gravity="center"
+                android:text="免费"
+                android:textColor="@color/yellow_text"
+                android:textSize="11sp" />
+        </RelativeLayout>
+
+    </RelativeLayout>
+    <TextView
+        android:id="@+id/txt_gift_name"
+        android:layout_width="55dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/re_whale_money_num"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:text="钢笔"
+        android:singleLine="true"
+        android:textColor="@color/white"
+        android:textSize="11sp" />
+
+</RelativeLayout>

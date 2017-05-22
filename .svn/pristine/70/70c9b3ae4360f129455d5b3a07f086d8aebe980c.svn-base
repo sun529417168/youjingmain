@@ -1,0 +1,301 @@
+package com.youjing.yjeducation.ui.dispaly.activity;
+
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.text.ClipboardManager;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.Adapter;
+import android.widget.ImageButton;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
+
+import com.loopj.android.http.TextHttpResponseHandler;
+import com.tencent.connect.common.Constants;
+import com.tencent.connect.share.QQShare;
+import com.tencent.mm.sdk.modelmsg.SendMessageToWX;
+import com.tencent.mm.sdk.modelmsg.WXMediaMessage;
+import com.tencent.mm.sdk.modelmsg.WXWebpageObject;
+import com.tencent.mm.sdk.openapi.IWXAPI;
+import com.tencent.mm.sdk.openapi.WXAPIFactory;
+import com.tencent.tauth.IUiListener;
+import com.tencent.tauth.Tencent;
+import com.tencent.tauth.UiError;
+import com.umeng.socialize.UMShareListener;
+import com.youjing.yjeducation.R;
+import com.youjing.yjeducation.common.config.YJConfig;
+import com.youjing.yjeducation.core.YJBaseActivity;
+import com.youjing.yjeducation.core.YJNotifyTag;
+import com.youjing.yjeducation.core.YJReqURLProtocol;
+import com.youjing.yjeducation.core.YJStudentReqManager;
+import com.youjing.yjeducation.core.YJTitleLayoutController;
+import com.youjing.yjeducation.model.YJMyInviteModel;
+import com.youjing.yjeducation.model.YJMyRewardModel;
+import com.youjing.yjeducation.model.YJTaskTypeModel;
+import com.youjing.yjeducation.ui.actualize.activity.YJMyTaskActivity;
+import com.youjing.yjeducation.ui.dispaly.dialog.AYJInviteCodeDialog;
+import com.youjing.yjeducation.util.TimeUtil;
+import com.youjing.yjeducation.wiget.SoftKeyboardStateHelper;
+
+import org.apache.http.Header;
+import org.json.JSONObject;
+import org.vwork.mobile.ui.AVAdapterItem;
+import org.vwork.mobile.ui.adapter.VAdapter;
+import org.vwork.mobile.ui.delegate.IVAdapterDelegate;
+import org.vwork.mobile.ui.delegate.IVClickDelegate;
+import org.vwork.mobile.ui.utils.VLayoutTag;
+import org.vwork.mobile.ui.utils.VViewTag;
+import org.vwork.utils.base.VParamKey;
+
+import java.util.List;
+
+/**
+ * user  秦伟宁
+ * Date 2016/4/12
+ * Time 21:00
+ */
+@VLayoutTag(R.layout.activity_invite_friend)
+public abstract class AYJInviteFriendActivity extends YJBaseActivity implements IVClickDelegate ,IVAdapterDelegate {
+
+    @VViewTag(R.id.btn_wx)
+    private ImageButton btn_wx;
+    @VViewTag(R.id.btn_qq)
+    private ImageButton btn_qq;
+    @VViewTag(R.id.btn_sina)
+    private ImageButton btn_sina;
+    @VViewTag(R.id.txt_my_reward)
+    private TextView txt_my_reward;
+    @VViewTag(R.id.txt_copy)
+    private TextView txt_copy;
+    @VViewTag(R.id.txt_my_code)
+    private TextView txt_my_code;
+    @VViewTag(R.id.re_my_code)
+    private RelativeLayout re_my_code;
+    @VViewTag(R.id.re_input_code)
+    protected RelativeLayout re_input_code;
+    @VViewTag(R.id.re_share_title)
+    private RelativeLayout re_share_title;
+    @VViewTag(R.id.re_share)
+    private RelativeLayout re_share;
+
+
+    @VViewTag(R.id.txt_input)
+    private TextView txt_input;
+    @VViewTag(R.id.txt_my_invite_code)
+    private TextView txt_my_invite_code;
+    @VViewTag(R.id.lv_my_reward)
+    private ListView lv_my_reward;
+
+    private String TAG = "AYJInviteFriendActivity";
+    private IWXAPI mApi;
+    private UMShareListener umShareListener;
+    private String mWinXinId;
+    private Tencent mTencent;
+    protected boolean mIsLogin;
+    protected int mPosition = -1;
+    protected VAdapter adapter = null;
+    private IUiListener qqShareListener;
+    protected YJMyInviteModel yjMyInviteModel;
+    public static final VParamKey<YJMyInviteModel> YJ_MY_INVITE_MODEL = new VParamKey<YJMyInviteModel>(null);
+    @Override
+    protected void onLoadedView() {
+        YJTitleLayoutController.initTitleBuleBg(this, "邀请好友", true);
+        yjMyInviteModel = getTransmitData(YJ_MY_INVITE_MODEL);
+        mIsLogin = PreferenceManager.getDefaultSharedPreferences(getContext()).getBoolean("isLogin", false);
+        mTencent = Tencent.createInstance(YJConfig.QQ_APP_ID, getContext());
+        initWXdata();
+
+        if (yjMyInviteModel != null){
+            if (!TextUtils.isEmpty(yjMyInviteModel.getCustomerInvited())){
+                txt_my_code.setText(yjMyInviteModel.getCustomerInvited());
+            }
+            if (!TextUtils.isEmpty(yjMyInviteModel.getIsWasInvited()) && yjMyInviteModel.getIsWasInvited().equals("Yes")){
+                re_input_code.setVisibility(View.GONE);
+            }else {
+                re_input_code.setVisibility(View.VISIBLE);
+            }
+        }
+        if(adapter == null){
+            adapter = new VAdapter(this, lv_my_reward);
+            lv_my_reward.setAdapter(adapter);
+        }else {
+            adapter.notifyDataSetChanged();
+        }
+        getNotifyListener();
+
+
+        //键盘收起按键监听
+        final SoftKeyboardStateHelper softKeyboardStateHelper = new SoftKeyboardStateHelper(findViewById(R.id.relayout_my_cards));
+        softKeyboardStateHelper.addSoftKeyboardStateListener(new SoftKeyboardStateHelper.SoftKeyboardStateListener() {
+            @Override
+            public void onSoftKeyboardOpened(int keyboardHeightInPx) {
+                re_share_title.setVisibility(View.GONE);
+                re_share.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onSoftKeyboardClosed() {
+                re_share_title.setVisibility(View.VISIBLE);
+                re_share.setVisibility(View.VISIBLE);
+            }
+        });
+
+        qqShareListener = new IUiListener() {
+            @Override
+            public void onCancel() {
+                notifyListener(YJNotifyTag.SHARE_SUCESS_INFO, "fail");
+                showToast("分享取消");
+            }
+
+            @Override
+            public void onComplete(Object response) {
+                notifyListener(YJNotifyTag.SHARE_SUCESS_INFO, "sucess");
+                //showToast(getString(R.string.share_success));
+            }
+
+            @Override
+            public void onError(UiError e) {
+                notifyListener(YJNotifyTag.SHARE_SUCESS_INFO, "fail");
+                showToast(getString(R.string.share_fail));
+            }
+        };
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (view == btn_wx) {
+            mPosition = 1;
+            if (mApi.isWXAppInstalled()) {
+                WXWebpageObject webpage = new WXWebpageObject();
+                webpage.webpageUrl = YJConfig.YJ_SHARE_HTTP_ADDRESS+"?inviteCode="+yjMyInviteModel.getCustomerInvited();
+                Log.d(TAG, " webpageUrl = " + webpage.webpageUrl);
+                WXMediaMessage msg = new WXMediaMessage(webpage);
+                msg.title = getString(R.string.share_coupon_title);
+                msg.description = getString(R.string.share_coupon_info);
+                Bitmap thumb = BitmapFactory.decodeResource(getResources(), R.mipmap.img_app_wx_logo);
+                msg.setThumbImage(thumb);
+                SendMessageToWX.Req req = new SendMessageToWX.Req();
+                req.transaction = buildTransaction("webpage");
+                req.message = msg;
+                req.scene = SendMessageToWX.Req.WXSceneSession;
+                mApi.sendReq(req);
+            } else {
+                showToast(getString(R.string.txt_share_fail));
+                return;
+            }
+        } else if (view == btn_qq) {
+            mPosition = 3;
+            final Bundle params = new Bundle();
+            params.putString(QQShare.SHARE_TO_QQ_TITLE, getString(R.string.share_coupon_title));
+            params.putString(QQShare.SHARE_TO_QQ_TARGET_URL, YJConfig.YJ_SHARE_HTTP_ADDRESS+"?inviteCode="+yjMyInviteModel.getCustomerInvited());
+            params.putString(QQShare.SHARE_TO_QQ_SUMMARY, getString(R.string.share_coupon_info));
+            params.putString(QQShare.SHARE_TO_QQ_IMAGE_URL, "http://youjing.oss-cn-beijing.aliyuncs.com/common/img_app_share.png");
+            params.putString(QQShare.SHARE_TO_QQ_APP_NAME, getString(R.string.app_name));
+            params.putInt(QQShare.SHARE_TO_QQ_KEY_TYPE, QQShare.SHARE_TO_QQ_TYPE_DEFAULT);
+            doShareToQQ(params);
+            //朋友圈
+        } else if (view == btn_sina) {
+            mPosition = 2;
+            if (mApi.isWXAppInstalled()) {
+                WXWebpageObject webpage = new WXWebpageObject();
+                webpage.webpageUrl = YJConfig.YJ_SHARE_HTTP_ADDRESS+"?inviteCode="+yjMyInviteModel.getCustomerInvited();
+                WXMediaMessage msg = new WXMediaMessage(webpage);
+                msg.title = getString(R.string.share_coupon_title);
+                msg.description = getString(R.string.share_coupon_info);
+                Bitmap thumb = BitmapFactory.decodeResource(getResources(), R.mipmap.img_app_wx_logo);
+                msg.setThumbImage(thumb);
+                SendMessageToWX.Req req = new SendMessageToWX.Req();
+                req.transaction = buildTransaction("webpage");
+                req.message = msg;
+                req.scene = SendMessageToWX.Req.WXSceneTimeline;
+                mApi.sendReq(req);
+            } else {
+                showToast(getString(R.string.txt_share_fail));
+                return;
+            }
+        }else if (view == txt_input){
+            AYJInviteCodeDialog ayjInviteCodeDialog = new AYJInviteCodeDialog();
+            showDialog(ayjInviteCodeDialog);
+        }else if (view == txt_copy){
+            ClipboardManager copy = (ClipboardManager)this.getSystemService(Context.CLIPBOARD_SERVICE);
+            copy.setText(txt_my_code.getText());
+            showToast("已复制");
+        }
+    }
+    private void initWXdata() {
+        mWinXinId = YJConfig.APP_ID;
+        mApi = WXAPIFactory.createWXAPI(getContext(), mWinXinId);
+        mApi.registerApp(mWinXinId);
+    }
+
+    private void doShareToQQ(final Bundle params) {
+        if (null == mTencent) {
+            showToast(getString(R.string.share_fail));
+            return;
+        }
+        mTencent.shareToQQ(this, params, null);
+    }
+
+    public static String buildTransaction(final String type) {
+        return (type == null) ? String.valueOf(System.currentTimeMillis()) : type + System.currentTimeMillis();
+    }
+
+    @Override
+    public AVAdapterItem createAdapterItem(View view, int i, int i1) {
+        return new YJCourseDownLoadItem();
+    }
+
+    @Override
+    public int getAdapterItemCount(View view) {
+        if (yjMyInviteModel!= null && yjMyInviteModel.getInvitedRewardList().size()>0){
+            return yjMyInviteModel.getInvitedRewardList().size();
+        }else {
+            return 0;
+        }
+    }
+
+    @VLayoutTag(R.layout.activity_my_reward_item)
+    class YJCourseDownLoadItem extends AVAdapterItem {
+        @VViewTag(R.id.txt_time)
+        private TextView txt_time;
+        @VViewTag(R.id.txt_info)
+        private TextView txt_info;
+        @VViewTag(R.id.txt_whale_num)
+        private TextView txt_whale_num;
+        @Override
+        public void update(int position) {
+            if (yjMyInviteModel != null){
+                YJMyRewardModel yjMyRewardModel = yjMyInviteModel.getInvitedRewardList().get(position);
+
+                if (!TextUtils.isEmpty(yjMyRewardModel.getCreateDate())){
+                    txt_time.setText(TimeUtil.getYearTime(Long.parseLong(yjMyRewardModel.getCreateDate())));
+                }
+                if (!TextUtils.isEmpty(yjMyRewardModel.getReward())){
+                    txt_whale_num.setText(yjMyRewardModel.getReward());
+                }
+                if (!TextUtils.isEmpty(yjMyRewardModel.getRewardType())){
+                    txt_info.setText(yjMyRewardModel.getRewardType());
+                }
+            }
+        }
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == Constants.REQUEST_QQ_SHARE) {
+            if (resultCode == Constants.ACTIVITY_OK) {
+                Tencent.onActivityResultData(requestCode, resultCode, data, qqShareListener);
+            }
+        }
+    }
+
+
+    protected abstract void getNotifyListener();
+}

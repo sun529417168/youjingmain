@@ -1,0 +1,51 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/layout_title"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:background="#0CAAFE">
+
+        <RelativeLayout
+            android:id="@+id/re_down_load"
+            android:layout_width="162dp"
+            android:layout_height="27dp"
+            android:background="@mipmap/btn_down_no"
+            android:layout_centerInParent="true">
+            <TextView
+                android:id="@+id/txt_down_load_ok"
+                android:layout_width="81dp"
+                android:layout_height="27dp"
+                android:text="已下载"
+                android:gravity="center"
+                android:clickable="true"
+                android:layout_alignParentLeft="true"
+                android:textColor="@color/blue_title"
+                android:textSize="15sp" />
+            <TextView
+                android:id="@+id/txt_down_load_no"
+                android:layout_width="81dp"
+                android:layout_height="27dp"
+                android:layout_alignParentRight="true"
+                android:text="未下载"
+                android:gravity="center"
+                android:clickable="true"
+                android:textColor="@color/white"
+                android:textSize="15sp" />
+        </RelativeLayout>
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <org.vwork.mobile.ui.widget.VPageView
+            android:id="@+id/pager_download"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </RelativeLayout>
+</LinearLayout>

@@ -1,0 +1,58 @@
+package com.youjing.yjeducation.core;
+
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.youjing.yjeducation.R;
+
+import org.vwork.mobile.ui.IVActivity;
+
+/**
+ * user  秦伟宁
+ * Date 2016/3/4
+ * Time 10:43
+ */
+public class YJTitleLayoutController {
+    public static void initTitle(final IVActivity act, String title, boolean showBack)
+    {
+        TextView textView = (TextView) act.findViewById(R.id.txt_title);
+        textView.setText(title);
+        if (showBack)
+        {
+            ImageButton back = (ImageButton) act.findViewById(R.id.img_back);
+            back.setImageResource(R.drawable.title_back);
+            back.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    act.finish();
+                }
+            });
+            back.setVisibility(View.VISIBLE);
+        }
+
+    }
+    public static void initTitleBuleBg(final IVActivity act, String title, boolean showBack)
+    {
+        TextView textView = (TextView) act.findViewById(R.id.txt_title);
+        textView.setText(title);
+        if (showBack)
+        {
+            RelativeLayout back = (RelativeLayout) act.findViewById(R.id.rl_back);
+           // back.setImageResource(R.drawable.title_back);
+            back.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    act.finish();
+                }
+            });
+            back.setVisibility(View.VISIBLE);
+        }
+
+    }
+}

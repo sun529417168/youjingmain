@@ -1,0 +1,101 @@
+package com.youjing.yjeducation.ui.actualize.activity;
+
+import android.util.Log;
+
+import com.alibaba.fastjson.JSON;
+import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.TextHttpResponseHandler;
+import com.youjing.yjeducation.R;
+import com.youjing.yjeducation.core.YJGlobal;
+import com.youjing.yjeducation.core.YJReqURLProtocol;
+import com.youjing.yjeducation.core.YJStudentReqManager;
+import com.youjing.yjeducation.model.YJCourseListModel;
+import com.youjing.yjeducation.model.YJCourseModel;
+import com.youjing.yjeducation.ui.dispaly.activity.AYJCourseListActivity;
+import com.youjing.yjeducation.ui.dispaly.activity.AYJMyCourseActivity;
+import com.youjing.yjeducation.util.MakeSign;
+
+import org.apache.http.Header;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * user  秦伟宁
+ * Date 2016/4/16
+ * Time 12:07
+ */
+public class YJMyCourseActivity extends AYJMyCourseActivity {
+    private String TAG = "YJMyCourseActivity";
+
+    @Override
+    public void getCourseCatalog(String courseId) {
+
+        Map<String, Object> objectMap = new HashMap<>();
+        try {
+            objectMap.put("courseId", courseId);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        YJStudentReqManager.getServerData(YJReqURLProtocol.GET_COURSE_CATALOG, objectMap, true, new TextHttpResponseHandler() {
+                  @Override
+                  public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                      Log.d(TAG, "失败=" + s);
+                      showToast(getString(R.string.no_net_work));
+                  }
+
+                  @Override
+                  public void onSuccess(int i, Header[] headers, String s) {
+
+                      try {
+                          // String ss = "{ 'id':12, 'name':'11111111', 'sequence':1,'isTry':'No','code':'Wgi1LikG7Rpw+Z46PAcVrg==','courseVideoShape':'DVR','planDate':1459394340000,'realDate':1460099640000,'courseVideoType':'OpenClass','duration':35,'followCount':6,'studyStatus':null,'isDownload':'No','isFollow':'No'}";
+                          Log.d(TAG, "成功s=" + s);
+                          JSONObject json = null;
+                          json = new JSONObject(s);
+                          switch (json.getInt("code")) {
+                              case 200:
+                                  JSONObject jsonObject = new JSONObject(json.getString("data"));
+                                  YJCourseModel yjCourseModel = JSON.parseObject(jsonObject.getString("course"), YJCourseModel.class);
+                                  Log.d(TAG, "yjCourseModel=" + yjCourseModel.toString());
+
+                                  if (yjCourseModel.getCourseCatalogList().size() == 0) {
+                                      showToast("暂时没有视频课程");
+
+                                  } else {
+                                      if (yjCourseModel.getCourseShape().equals("DVR")) {
+                                          startActivity(createIntent(YJCoursePlayNewActivity.class, createTransmitData(YJCoursePlayNewActivity.YJ_COURSE_MODEL, yjCourseModel)));
+                                      } else {
+                                          startActivity(createIntent(YJCourseLiveListActivity.class, createTransmitData(YJCourseLiveListActivity.YJ_COURSE_MODEL, yjCourseModel)));
+                                      }
+                                  }
+                                  break;
+                              case 300:
+                                  break;
+                              case 400:
+                                  break;
+                              case 401:
+                                  break;
+                              case 402:
+                                  break;
+                              case 500:
+                                  break;
+                              case 600:
+                                  startActivity(createIntent(YJLoginActivity.class, createTransmitData(YJLoginActivity.LOGIN_OUT, 1).set(YJLoginActivity.MY_LOGIN_OUT, true)));
+                                  finishAll();
+                                  break;
+                              default:
+                                  break;
+                          }
+
+                      } catch (JSONException e) {
+                          e.printStackTrace();
+                      }
+                  }
+              });
+    }
+
+}

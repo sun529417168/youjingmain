@@ -1,0 +1,268 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">游鲸课堂</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="exit">你确定要注销么？</string>
+    <string name="dialog_default">提示</string>
+    <string name="cancel">取消</string>
+    <string name="ok">确定</string>
+    <string name="pull_refresh">下拉刷新</string>
+    <string name="load_more_nothing">没有更多数据了</string>
+    <string name="invitation">邀请</string>
+    <string name="more">更多</string>
+    <string name="money">￥</string>
+
+
+    <string name="position_location">定位到的位置</string>
+    <string name="all_province">全部</string>
+    <string name="old_password">原始密码</string>
+    <string name="new_password">新的密码</string>
+    <string name="confirm_new_password">确认密码</string>
+    <string name="reset_password">重置密码</string>
+    <string name="password_limit">5-20位字母或数字</string>
+    <string name="password_again">请再输一次密码</string>
+    <string name="sex_male">男</string>
+    <string name="sex_female">女</string>
+    <string name="sex_secret">保密</string>
+    <!-- 标题文字 -->
+    <string name="btn_ok">确定</string>
+    <string name="btn_cancel">取消</string>
+    <string name="btn_save">保存</string>
+    <!-- 头像更换 -->
+    <string name="btn_take_photo">拍一张照片</string>
+    <string name="btn_select_from_album">从相册中选一张</string>
+    <!--登录-->
+    <string name="login">登录</string>
+    <string name="login_phone">请输入手机号</string>
+    <string name="login_password">请输入密码</string>
+    <string name="login_forget">忘记密码？</string>
+    <string name="next">下一步</string>
+    <string name="register">注册</string>
+    <string name="txt_minute">分钟</string>
+    <string name="money_ic">￥</string>
+    <string name="order_id">订单号：</string>
+    <string name="create_time">创建时间：</string>
+    <string name="login_success">登陆成功</string>
+    <string name="update_password">修改密码</string>
+
+    <string name="txt_teacher_attention_fail">添加关注失败</string>
+    <string name="txt_teacher_cancel_fail">取消关注失败</string>
+    <string name="txt_teacher_attention_success">添加关注成功</string>
+    <string name="txt_teacher_cancel_success">取消关注成功</string>
+    <!--注册-->
+    <string name="register_phone">请输入11位手机号码</string>
+    <string name="register_password">请输入6-16位密码（限数字和字母）</string>
+    <string name="register_code">请输入验证码</string>
+    <string name="register_info1">陪读学堂用户服务及软件使用协议</string>
+    <string name="register_info2">注册陪读学堂帐号即表示你同意</string>
+    <string name="get_code">获取验证码</string>
+    <string name="second">秒</string>
+    <string name="get_code_again">重新获取</string>
+    <string name="txt_phone">请输入正确的手机号</string>
+    <string name="send_code">验证码已发送，请注意查收</string>
+    <string name="send_code_fail">验证码获取失败</string>
+    <string name="verification_empty">验证码为空</string>
+    <string name="have_space">验证码结尾包含多余空格</string>
+    <string name="verification_fail">验证失败</string>
+    <string name="verification_success">验证成功</string>
+    <string name="place_input_nick_name">请输入中文昵称</string>
+    <string name="must_use_chinese">昵称必须为中文</string>
+    <string name="nick_name_less_than_six">昵称必须小于等于6个汉字</string>
+    <string name="place_input_true_name">请输入中文姓名</string>
+    <string name="must_use_chinese1">姓名必须为中文</string>
+    <string name="true_name_less_than_six">姓名必须小于等于6个汉字</string>
+    <string name="place_input_password">请输入登录密码</string>
+    <string name="password_greater_than_six">登录密码必须大于等于6位</string>
+    <string name="password_greater_than_sixteen">登录密码必须小于等于16位</string>
+    <string name="qq">请输入正确的QQ号码</string>
+    <string name="place_input_class">请输入年级</string>
+    <string name="place_input_area">请输入地区</string>
+    <string name="password_have_space_input_again">您输入密码包含多余空格，请重新输入</string>
+    <string name="password_is_chinese">密码不允许为中文</string>
+    <string name="register_fail">注册失败</string>
+    <string name="register_success">注册成功</string>
+    <string name="txt_phone_number">请输入手机号</string>
+    <string name="txt_login_password">请输入密码</string>
+    <string name="txt_card_number">请输入礼卡号</string>
+    <string name="n_password_have_space_input_again">您输入密码包含多余空格，请重新输入</string>
+    <!--找回密码-->
+    <string name="find_password">找回密码</string>
+    <string name="find_new_password">请输入新密码，用6-16位数字或字母</string>
+    <string name="submit_fail">修改失败</string>
+    <string name="submit_success">修改成功</string>
+    <!-- 设置 -->
+    <string name="setting_str">设置</string>
+    <string name="setting_share_app">分享APP</string>
+    <string name="setting_evaluate_app">评价APP</string>
+    <string name="setting_check_version">检查版本</string>
+    <string name="setting_about_us">关于我们</string>
+    <string name="setting_current_version">当前版本</string>
+    <string name="setting_customer_tel">客服电话：</string>
+    <string name="setting_customer_tel_num">400-617-2005</string>
+    <string name="setting_company_web">官方网址：</string>
+    <string name="setting_company_wechat">微信公众号：</string>
+    <string name="share_fail">分享错误</string>
+    <string name="share_success">分享完成</string>
+    <!-- 分享 -->
+    <string name="btn_share_qq">QQ</string>
+    <string name="btn_share_wx">微信</string>
+    <string name="btn_share_friend">朋友圈</string>
+    <string name="btn_share_twitter">微博</string>
+    <string name="share_iam">我是</string>
+    <string name="share_title">游鲸课堂-免费私人家教</string>
+    <string name="share_info"> 一款免费为中小学生提供在线辅导的社区性学习平台。</string>
+
+    <string name="share_coupon_title">游鲸课堂-边看直播边赚鲸币</string>
+    <string name="share_coupon_info">我在游鲸课堂赚了鲸币，并发现了颜值伴有才华的老师，快来围观吧！</string>
+    <string name="share_url">http://www.youjing.cn/app/index.html</string>
+    <string name="txt_share_fail">您未安装微信，不能进行分享哦</string>
+    <string name="txt_share_success">分享成功</string>
+
+
+    <string name="minutes">分钟</string>
+    <string name="minute">分</string>
+    <string name="name">名字</string>
+    <string name="txt_confirm_money">¥</string>
+
+    <string name="exit_dialog">是否退出登录</string>
+    <string name="title_load">更新下载</string>
+    <string name="txt_load">正在下载最新版,请稍后.....</string>
+    <string name="btn_load">取消下载</string>
+    <string name="app_versionName">2.6</string>
+    <integer name="app_versionCode">18</integer>
+    <string name="txt_update_ok">当前已经是最新版本</string>
+    <string name="txt_personal_update">版本更新</string>
+    <string name="txt_update_tip">温馨提示：如不更新，APP将无法使用哦</string>
+    <string name="txt_update_file">创建下载文件夹失败</string>
+    <string name="txt_update_fail">下载失败</string>
+    <integer name="app_type">2</integer>
+    <string name="btn_update">更新</string>
+
+    <string name="txt_web_title">活动</string>
+
+    <string name="refresh_success">刷新完成</string>
+    <string name="refresh_fail">当前网络不给力，请稍候重试</string>
+    <string name="not_enough_time">您的答疑时间已用完,请购买时长</string>
+    <string name="exit_class_room">是否退出教室</string>
+    <string name="txt_activate_gift_card">激活礼品卡</string>
+    <string name="txt_login">登录</string>
+    <string name="txt_challenge">挑战</string>
+    <string name="txt_teacher">老师</string>
+    <string name="txt_course">选课</string>
+    <string name="txt_my">我</string>
+    <string name="txt_activate_success">激活成功</string>
+
+    <string name="xlistview_header_hint_normal">下拉刷新</string>
+    <string name="xlistview_header_hint_ready">释放立即刷新</string>
+    <string name="xlistview_header_hint_loading">正在刷新...</string>
+    <string name="xlistview_header_last_time">上次更新时间：</string>
+    <string name="xlistview_footer_hint_normal">查看更多</string>
+    <string name="xlistview_footer_hint_ready">松开载入更多</string>
+
+
+    <!--   欢拓相关-->
+    <string name="live_wait_title">直播未开始</string>
+    <string name="live_stop_title">直播已结束</string>
+    <string name="live_no_start_title">未开始</string>
+    <string name="live_ing_title">正在直播</string>
+    <string name="live_back_ready_title">回放准备中</string>
+    <string name="live_look_back_title">看回放</string>
+    <string name="init_zhubo">老师</string>
+    <string name="chat">聊天</string>
+    <string name="notice">公告</string>
+    <string name="not_connect">网络不可用，请检查网络是否连接！</string>
+    <string name="goback">返回</string>
+    <string name="refresh">刷新</string>
+    <string name="member_forceout">您的帐号在其他地方登陆,您已下线.</string>
+    <string name="member_kick">你已经被管理员请出该房间了</string>
+    <string name="public_broadcast">公共广播:</string>
+    <string name="ht_notify" formatted="false" tools:ignore="StringFormatInvalid">通知:%s发起了抽奖,恭喜%s中奖!</string>
+    <string name="ht_vote_notify" formatted="false" tools:ignore="StringFormatInvalid">%s在%s结束了一个投票</string>
+
+
+    <string name="tips">提示</string>
+    <string name="confirm">确定</string>
+    <!--    <string name="cancel">取消</string>
+        <string name="exit">是否确认退出？</string>-->
+    <string name="runs_vote">发起了投票</string>
+    <string name="ht_vote">投票</string>
+    <string name="multiple_choice">(多选)</string>
+    <string name="single_choice">(单选)</string>
+    <string name="ht_achieve_limit">选项达到上限</string>
+    <string name="ht_vote_success_tip">秒后自动关闭页面</string>
+    <string name="ht_vote_success">投票成功</string>
+    <string name="question">提问</string>
+    <string name="assistants">助教</string>
+    <string name="teacher">老师</string>
+    <!--TODO:第三方需要加上的-->
+    <string name="ht_change_network">选择网络</string>
+    <string name="ht_change_network_tips">95%情况下自动选择最佳线路的流畅度最好</string>
+
+
+    <string name="pay_result_callback_msg" formatted="false">微信支付结果：%s</string>
+
+    <string name="txt_modify_user_choose_photo">没有选择照片</string>
+    <string name="txt_modify_user_choose_picture">没有选择图片</string>
+    <string name="txt_modify_user_no_picture">没有图片</string>
+
+
+    <string name="code_200">成功</string>
+    <string name="code_300">参数不合法</string>
+    <string name="code_400">礼卡不存在</string>
+    <string name="code_401">礼卡已使用</string>
+    <string name="code_402">礼卡已锁定</string>
+    <string name="code_403">礼卡批次不存在</string>
+    <string name="code_404">礼卡批次状态不合法</string>
+    <string name="code_405">礼卡未在使用范围内</string>
+    <string name="code_500">服务器异常</string>
+
+
+    <string name="demo_forward">转发</string>
+    <string name="demo_delete">删除消息</string>
+    <string name="demo_copy">复制</string>
+    <string name="title_activity_choose_picture">ChoosePictureActivity</string>
+    <string name="title_activity_preview_image">PreviewImageActivity</string>
+
+
+    <!--个人等级模块start-->
+    <string name="person_center_level_how_to_upgrade">如何升级</string>
+    <string name="person_center_level_data_to_task">完成每日任务</string>
+    <string name="person_center_level_gift_giving">赠送礼物</string>
+    <string name="person_center_level_share">分享</string>
+    <string name="person_center_invite_friends">邀请好友</string>
+    <string name="person_center_time_online">累积在线时间</string>
+    <!--个人等级模块end-->
+
+
+    <!--自定义toast start-->
+    <string name="toast_cards_sucess">激活成功，获得</string>
+    <!--系定义toast end-->
+
+    <!--首页课程直播推荐和新课推荐start-->
+    <string name="course_list_live_recommend">直播推荐</string>
+    <string name="course_list_new_course">新课推荐</string>
+    <!--首页课程直播推荐和新课推荐end-->
+
+    <!--升级的弹窗start-->
+    <string name="upgrade_level_jingbi">鲸币</string>
+    <string name="upgrade_level_jingyan">经验</string>
+    <string name="upgrade_level_xunzhang">勋章</string>
+    <string name="upgrade_level_fenxiang">立即分享</string>
+    <!--升级的弹窗end-->
+
+    <string name="change_personInfo_name">昵称必须由2-8个字符组成</string>
+    <string name="no_net_work">网络异常,请检查网络连接</string>
+
+
+    <!--修改密码start-->
+    <string name="update_password_sure">确认修改</string>
+    <string name="update_password_phone">手机号</string>
+    <string name="update_password_inputPhone">请输入手机号</string>
+    <string name="update_password_code">验证码</string>
+    <string name="update_password_inputCode">请输入验证码</string>
+    <string name="update_password_toCode">获取验证码</string>
+    <string name="update_password_newPassword">新密码</string>
+    <string name="update_password_inputNewPassword">请输入您的新密码</string>
+    <!--修改密码end-->
+</resources>

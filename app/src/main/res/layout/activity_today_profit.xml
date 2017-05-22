@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/gray_view_bg">
+
+
+    <include
+        android:id="@+id/title"
+        layout="@layout/title_blue_bg" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/gray_view_bg">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/gray_view_bg"
+            android:orientation="vertical">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="114dp"
+                android:background="@color/white"
+                android:paddingLeft="@dimen/my_common_margin_min"
+                android:paddingRight="@dimen/my_common_margin_min">
+
+                <ImageView
+                    android:id="@+id/img_money"
+                    android:layout_width="68dp"
+                    android:layout_height="76dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_alignParentBottom="true"
+                    android:src="@mipmap/img_today_profit_big"/>
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:id="@+id/lay_answer_time_order"
+                android:layout_width="match_parent"
+                android:layout_height="99dp"
+                android:background="@color/white"
+                android:paddingLeft="@dimen/my_common_margin_min"
+                android:paddingRight="@dimen/my_common_margin_min">
+
+                <TextView
+                    android:id="@+id/txt_whale_money"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:textColor="@color/yellow_text"
+                    android:textSize="29sp"
+                    android:text="2600" />
+                <TextView
+                    android:id="@+id/txt_whale_money_num"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_above="@id/txt_whale_money"
+                    android:textColor="@color/gray_text"
+                    android:textSize="13sp"
+                    android:text="鲸币收益" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/re_consume_history"
+                android:layout_width="match_parent"
+                android:layout_height="47dp"
+                android:layout_marginTop="9dp"
+                android:background="@color/white"
+                android:paddingLeft="@dimen/my_common_margin_min"
+                android:paddingRight="@dimen/my_common_margin_min">
+
+                <ImageView
+                    android:id="@+id/img_answer_time_order"
+                    android:layout_width="14dp"
+                    android:layout_height="17dp"
+                    android:layout_centerVertical="true"
+                    android:src="@mipmap/today_profit_start" />
+
+                <TextView
+                    android:id="@+id/txt_consume_history"
+                    style="@style/middle_black_text_style"
+                    android:layout_marginLeft="8dp"
+                    android:textSize="14sp"
+                    android:layout_toRightOf="@id/img_answer_time_order"
+                    android:text="赠送鲸币排行榜" />
+
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/view_height_width"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/view" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/re_totay_profit"
+                android:layout_width="match_parent"
+                android:layout_height="47dp"
+                android:clickable="true"
+                android:background="@drawable/item_change_bg"
+                android:paddingLeft="@dimen/my_common_margin_min"
+                android:paddingRight="@dimen/my_common_margin_min">
+                <ImageView
+                    android:id="@+id/img_num_one"
+                    android:layout_width="14dp"
+                    android:layout_height="17dp"
+                    android:layout_centerVertical="true"
+                    android:src="@mipmap/today_profit_one" />
+
+                <com.youjing.yjeducation.wiget.CustomImage
+                    android:id="@+id/img_user_photo"
+                    style="@style/image_style"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_toRightOf="@id/img_num_one"
+                    android:layout_marginLeft="15dp"
+                    android:layout_centerVertical="true"
+                    android:clickable="true"
+                    android:scaleType="fitXY"
+                    android:src="@mipmap/img_app_logo" />
+                <TextView
+                    android:id="@+id/txt_totay_profit"
+                    style="@style/middle_black_text_style"
+                    android:layout_marginLeft="8dp"
+                    android:textSize="14sp"
+                    android:layout_toRightOf="@id/img_user_photo"
+                    android:text="游鲸" />
+
+                <TextView
+                    android:id="@+id/txt_totay_profit_num"
+                    style="@style/middle_black_text_style"
+                    android:layout_alignParentRight="true"
+                    android:textColor="@color/yellow_text"
+                    android:text="+300" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/view_height_width"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/view" />
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="47dp"
+                android:clickable="true"
+                android:background="@drawable/item_change_bg"
+                android:paddingLeft="@dimen/my_common_margin_min"
+                android:paddingRight="@dimen/my_common_margin_min">
+                <ImageView
+                    android:id="@+id/img_num_two"
+                    android:layout_width="14dp"
+                    android:layout_height="17dp"
+                    android:layout_centerVertical="true"
+                    android:src="@mipmap/today_profit_two" />
+
+                <com.youjing.yjeducation.wiget.CustomImage
+                    android:id="@+id/img_user_photo_two"
+                    style="@style/image_style"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_toRightOf="@id/img_num_two"
+                    android:layout_marginLeft="15dp"
+                    android:layout_centerVertical="true"
+                    android:clickable="true"
+                    android:scaleType="fitXY"
+                    android:src="@mipmap/user_default_photo" />
+                <TextView
+                    style="@style/middle_black_text_style"
+                    android:layout_marginLeft="8dp"
+                    android:textSize="14sp"
+                    android:layout_toRightOf="@id/img_user_photo_two"
+                    android:text="小鱼悠悠" />
+
+                <TextView
+                    style="@style/middle_black_text_style"
+                    android:layout_alignParentRight="true"
+                    android:textColor="@color/yellow_text"
+                    android:text="+100" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/view_height_width"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/view" />
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="47dp"
+                android:clickable="true"
+                android:background="@drawable/item_change_bg"
+                android:paddingLeft="@dimen/my_common_margin_min"
+                android:paddingRight="@dimen/my_common_margin_min">
+                <ImageView
+                    android:id="@+id/img_num_three"
+                    android:layout_width="14dp"
+                    android:layout_height="17dp"
+                    android:layout_centerVertical="true"
+                    android:src="@mipmap/today_profit_three" />
+
+                <com.youjing.yjeducation.wiget.CustomImage
+                    android:id="@+id/img_user_photo_three"
+                    style="@style/image_style"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_toRightOf="@id/img_num_three"
+                    android:layout_marginLeft="15dp"
+                    android:layout_centerVertical="true"
+                    android:clickable="true"
+                    android:scaleType="fitXY"
+                    android:src="@mipmap/user_default_photo" />
+                <TextView
+                    style="@style/middle_black_text_style"
+                    android:layout_marginLeft="8dp"
+                    android:textSize="14sp"
+                    android:layout_toRightOf="@id/img_user_photo_three"
+                    android:text="快乐宝贝" />
+
+                <TextView
+                    style="@style/middle_black_text_style"
+                    android:layout_alignParentRight="true"
+                    android:textColor="@color/yellow_text"
+                    android:text="+100" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/view_height_width"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/view" />
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="47dp"
+                android:clickable="true"
+                android:background="@drawable/item_change_bg"
+                android:paddingLeft="@dimen/my_common_margin_min"
+                android:paddingRight="@dimen/my_common_margin_min">
+                <ImageView
+                    android:id="@+id/img_num_four"
+                    android:layout_width="10dp"
+                    android:layout_height="14dp"
+                    android:layout_marginLeft="2dp"
+                    android:layout_centerVertical="true"
+                    android:src="@mipmap/today_profit_four" />
+
+                <com.youjing.yjeducation.wiget.CustomImage
+                    android:id="@+id/img_user_photo_four"
+                    style="@style/image_style"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_toRightOf="@id/img_num_four"
+                    android:layout_marginLeft="17dp"
+                    android:layout_centerVertical="true"
+                    android:clickable="true"
+                    android:scaleType="fitXY"
+                    android:src="@mipmap/user_default_photo" />
+                <TextView
+                    style="@style/middle_black_text_style"
+                    android:layout_marginLeft="8dp"
+                    android:textSize="14sp"
+                    android:layout_toRightOf="@id/img_user_photo_four"
+                    android:text="游鲸课堂" />
+
+                <TextView
+                    style="@style/middle_black_text_style"
+                    android:layout_alignParentRight="true"
+                    android:textColor="@color/yellow_text"
+                    android:text="+50" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/view_height_width"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/view" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="47dp"
+                android:clickable="true"
+                android:background="@drawable/item_change_bg"
+                android:paddingLeft="@dimen/my_common_margin_min"
+                android:paddingRight="@dimen/my_common_margin_min">
+                <ImageView
+                    android:id="@+id/img_num_five"
+                    android:layout_width="10dp"
+                    android:layout_height="14dp"
+                    android:layout_marginLeft="2dp"
+                    android:layout_centerVertical="true"
+                    android:src="@mipmap/today_profit_five" />
+
+                <com.youjing.yjeducation.wiget.CustomImage
+                    android:id="@+id/img_user_photo_five"
+                    style="@style/image_style"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_toRightOf="@id/img_num_five"
+                    android:layout_marginLeft="17dp"
+                    android:layout_centerVertical="true"
+                    android:clickable="true"
+                    android:scaleType="fitXY"
+                    android:src="@mipmap/user_default_photo" />
+                <TextView
+                    style="@style/middle_black_text_style"
+                    android:layout_marginLeft="8dp"
+                    android:textSize="14sp"
+                    android:layout_toRightOf="@id/img_user_photo_five"
+                    android:text="机器人" />
+
+                <TextView
+                    style="@style/middle_black_text_style"
+                    android:layout_alignParentRight="true"
+                    android:textColor="@color/yellow_text"
+                    android:text="+50" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/view_height_width"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/view" />
+            </RelativeLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

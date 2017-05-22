@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+        <RelativeLayout
+            android:id="@+id/re_select_coupon"
+            android:layout_width="match_parent"
+            android:layout_height="273dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/white">
+                <RelativeLayout
+                    android:id="@+id/re_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp">
+                    <TextView
+                        android:id="@+id/txt_gift_card"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:text="优惠券"
+                        android:textColor="@color/black"
+                        android:textSize="16sp" />
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/view_height_width"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_alignParentBottom="true"
+                        android:background="@color/view" />
+                </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/re_bottom"
+                android:layout_width="match_parent"
+                android:layout_alignParentBottom="true"
+                android:layout_height="68dp">
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/view_height_width"
+                    android:layout_alignParentTop="true"
+                    android:background="@color/view" />
+                <Button
+                    android:id="@+id/btn_ok"
+                    android:layout_width="88dp"
+                    android:layout_height="41dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_centerInParent="true"
+                    android:layout_marginBottom="13dp"
+                    android:background="@mipmap/login_login_bg"
+                    android:text="确定"
+                    android:textColor="@color/white"
+                    android:textSize="17sp" />
+            </RelativeLayout>
+
+
+            <ListView
+                android:id="@+id/lv_coupon"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/white"
+                android:layout_below="@id/re_title"
+                android:layout_above="@id/re_bottom"
+                android:cacheColorHint="@android:color/transparent"
+                android:divider="#00000000"
+                android:fadingEdge="none"
+                android:overScrollMode="never"
+                android:scrollbars="none"
+                android:scrollingCache="false">
+
+            </ListView>
+
+        </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/rl_dialog_bg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/re_select_coupon"
+        android:background="@color/dialog_gray_bg"
+        android:clickable="true">
+    </RelativeLayout>
+
+</RelativeLayout>

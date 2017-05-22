@@ -1,0 +1,1119 @@
+package com.youjing.yjeducation.ui.dispaly.activity;
+
+import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Handler;
+import android.os.Message;
+import android.preference.PreferenceManager;
+import android.support.v4.view.ViewPager;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.alibaba.fastjson.JSON;
+import com.lidroid.xutils.BitmapUtils;
+import com.loopj.android.http.TextHttpResponseHandler;
+import com.youjing.yjeducation.R;
+import com.youjing.yjeducation.adapter.CourseNewRecommendedAdapter;
+import com.youjing.yjeducation.adapter.CourseTypesAdapter;
+import com.youjing.yjeducation.adapter.HorizontalSpecialbarListViewAdapter;
+import com.youjing.yjeducation.adapter.ViewPagerAdapter;
+import com.youjing.yjeducation.core.YJBaseActivity;
+import com.youjing.yjeducation.core.YJGlobal;
+import com.youjing.yjeducation.core.YJNotifyTag;
+import com.youjing.yjeducation.core.YJReqURLProtocol;
+import com.youjing.yjeducation.core.YJStudentReqManager;
+import com.youjing.yjeducation.model.YJCommendCourseTypeMedel;
+import com.youjing.yjeducation.model.YJCourseListModel;
+import com.youjing.yjeducation.model.YJCourseModel;
+import com.youjing.yjeducation.model.YJCourseTypeModel;
+import com.youjing.yjeducation.model.YJCourseTypesBaseMedel;
+import com.youjing.yjeducation.model.YJIndexUserInfo;
+import com.youjing.yjeducation.model.YJRecommendCourseLiveModel;
+import com.youjing.yjeducation.model.YJRecommendCourseModel;
+import com.youjing.yjeducation.model.YJUser;
+import com.youjing.yjeducation.scan.CaptureActivity;
+import com.youjing.yjeducation.ui.actualize.activity.YJCourseListlActivity;
+import com.youjing.yjeducation.ui.actualize.activity.YJLoginActivity;
+import com.youjing.yjeducation.ui.actualize.dialog.YJLoginDialog;
+import com.youjing.yjeducation.util.ClickUtil;
+import com.youjing.yjeducation.util.StringUtils;
+import com.youjing.yjeducation.util.TimeUtil;
+import com.youjing.yjeducation.wiget.CustomImage;
+import com.youjing.yjeducation.wiget.HorizontalListView;
+import com.youjing.yjeducation.wiget.ImageCycleView;
+import com.youjing.yjeducation.wiget.MorePopWindow;
+
+import org.apache.http.Header;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.vwork.mobile.ui.AVVirtualActivity;
+import org.vwork.mobile.ui.delegate.IVClickDelegate;
+import org.vwork.mobile.ui.utils.VLayoutTag;
+import org.vwork.mobile.ui.utils.VViewTag;
+import org.vwork.utils.notification.IVNotificationListener;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * user  秦伟宁
+ * Date 2016/3/10
+ * Time 17:55
+ */
+
+@VLayoutTag(R.layout.activity_yjmain)
+public abstract class AYJCourseActivity extends AVVirtualActivity implements IVClickDelegate {
+    @VViewTag(R.id.txt_title)
+    private TextView txt_title;
+    @VViewTag(R.id.layout_title)
+    protected RelativeLayout layout_title;
+    @VViewTag(R.id.lv_course)
+    protected ListView mLv_course;
+    @VViewTag(R.id.ll_choice_course)
+    protected LinearLayout mLl_choice_course;
+    @VViewTag(R.id.iv_arrow)
+    protected ImageView mIv_arrow;
+    @VViewTag(R.id.re_no_data_bg)
+    protected LinearLayout re_no_data_bg;
+    @VViewTag(R.id.re_title)
+    protected RelativeLayout re_title;
+    @VViewTag(R.id.course_list_head_leave_img)
+    protected ImageView mCourse_list_head_leave_img;
+    @VViewTag(R.id.re_sacn)
+    private RelativeLayout re_sacn;
+    @VViewTag(R.id.txt_scan)
+    private TextView txt_scan;
+    @VViewTag(R.id.img_scan)
+    private ImageView img_scan;
+
+
+    private final String ACTION_NAME = "发送广播";
+    private String TAG = "AYJCourseActivity";
+    private String mGrade;
+    private String mSubject;
+
+    private MorePopWindow morePopWindow;
+    private LinearLayout mLl_list_header, mLl_user_info;
+    private Handler mHandler;
+    protected ImageCycleView mCycleView;
+    protected TextView mTxt_mycourse, mTxt_lern, mTxt_have_buy_num, mTxt_over_step;
+    protected TextView mCourse_list_head_leave_text;
+    protected RelativeLayout mCourse_list_head_level;
+    protected TextView mCourse_list_head_sign, mCourse_list_head_signData;
+    protected TextView mNickName;
+    private MyAdapter myAdapter;
+    private RotateAnimation animation, reverseAnimation;
+    protected List<YJCourseTypeModel> yjCourseTypeModelList;
+    protected ArrayList<YJRecommendCourseModel> yjRecommendCourseModelList;
+    protected ArrayList<YJRecommendCourseLiveModel> yjRecommendCourseLiveModelList;
+    protected ArrayList<YJCommendCourseTypeMedel> yjCommendCourseTypeMedel;
+    private YJUser mYjUser;
+    private YJIndexUserInfo yjIndexUserInfo;
+    protected CustomImage mImg_user_photo;
+    protected boolean mIsLogin = false;
+    protected boolean isFirst = false;
+    protected GridView gridview;
+    protected ViewPager mViewPager;
+    protected LinearLayout linear;
+    int currentItem = 0;
+    protected int mGradeNum, mSubjectNum;
+    private List<View> listViews;
+    private ViewPagerAdapter adapter;
+    protected Dialog progDialog;
+    private HorizontalListView hListView;
+    private HorizontalSpecialbarListViewAdapter horizontalSpecialbarListViewAdapter;
+
+    protected CourseNewRecommendedAdapter courseNewRecommendAdapter;
+    protected CourseTypesAdapter courseTypesAdapter;
+
+    @Override
+    protected void onLoadedView() {
+        StringUtils.showEvaluationDialog(AYJCourseActivity.this);
+        mYjUser = YJGlobal.getYjUser();
+        yjIndexUserInfo = YJGlobal.getYjIndexUserInfo();
+//        Log.i("yjIndexUserInfo===", yjIndexUserInfo.toString());
+
+        isFirst = PreferenceManager.getDefaultSharedPreferences(getContext()).getBoolean("isFirst", true);
+        mIsLogin = PreferenceManager.getDefaultSharedPreferences(getContext()).getBoolean("isLogin", false);
+        mGrade = PreferenceManager.getDefaultSharedPreferences(getContext()).getString("grade", YJGlobal.getGradeList().get(0).getGradeName());
+        mSubject = PreferenceManager.getDefaultSharedPreferences(getContext()).getString("subject", YJGlobal.getGradeList().get(0).getSubjectVos().get(0).getSubjectName());
+
+        mGradeNum = PreferenceManager.getDefaultSharedPreferences(getContext()).getInt("gradeNum", 0);
+        mSubjectNum = PreferenceManager.getDefaultSharedPreferences(getContext()).getInt("subjectNum", 0);
+        if (isFirst) {
+            if (YJGlobal.getGradeList() != null) {
+                YJGlobal.setMy_grade(YJGlobal.getGradeList().get(0).getGradeName());
+                YJGlobal.setMy_subject(YJGlobal.getGradeList().get(0).getSubjectVos().get(0).getSubjectName());
+                getCourseType(YJGlobal.getGradeList().get(0).getGradeId(), YJGlobal.getGradeList().get(0).getSubjectVos().get(0).getSubjectId());
+            }
+        } else {
+            if (YJGlobal.getGradeList() != null) {
+                if (mGradeNum >= YJGlobal.getGradeList().size()) {
+                    getCourseType(YJGlobal.getGradeList().get(0).getGradeId(), YJGlobal.getGradeList().get(0).getSubjectVos().get(0).getSubjectId());
+                } else if (mSubjectNum >= YJGlobal.getGradeList().get(mGradeNum).getSubjectVos().size()) {
+                    getCourseType(YJGlobal.getGradeList().get(0).getGradeId(), YJGlobal.getGradeList().get(0).getSubjectVos().get(0).getSubjectId());
+                } else {
+                    getCourseType(YJGlobal.getGradeList().get(mGradeNum).getGradeId(), YJGlobal.getGradeList().get(mGradeNum).getSubjectVos().get(mSubjectNum).getSubjectId());
+                    Log.d(TAG, "YJGlobal.getMy_grade_id=" + YJGlobal.getGradeList().get(mGradeNum).getGradeId());
+                    Log.d(TAG, "YJGlobal.getMy_subjectId=" + YJGlobal.getGradeList().get(mGradeNum).getSubjectVos().get(mSubjectNum).getSubjectId());
+                }
+            }
+        }
+
+        getNotifyListener();
+        //webview加载内存卡文件
+        //webView.loadUrl("file:///mnt/sdcard/a.html");
+        //webview加载app中资源文件
+        // webView.loadUrl("file:///android_asset/a.html");
+        //webview加载网络文件
+        //webView.loadUrl("http://wap.baidu.com");
+        registerBoradcastReceiver();
+        txt_title.setText(mGrade + mSubject);
+
+        initListHead();
+        initViewPager();
+        initAnimation();
+
+        if (isFirst) {
+            mHandler = new Handler();
+            mHandler.postDelayed(mRunnable, 300);
+
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean("isFirst", false);
+            editor.commit();
+        }
+
+        if (mIsLogin) {
+            getIndexInfo();
+        }
+
+
+    }
+
+    private void initAnimation() {
+        animation = new RotateAnimation(0, -180, RotateAnimation.RELATIVE_TO_SELF, 0.5f, RotateAnimation.RELATIVE_TO_SELF, 0.5f);
+        animation.setInterpolator(new LinearInterpolator());
+        animation.setDuration(250);
+        animation.setFillAfter(true);
+
+
+        reverseAnimation = new RotateAnimation(-180, 0, RotateAnimation.RELATIVE_TO_SELF, 0.5f, RotateAnimation.RELATIVE_TO_SELF, 0.5f);
+        reverseAnimation.setInterpolator(new LinearInterpolator());
+        reverseAnimation.setDuration(200);
+        reverseAnimation.setFillAfter(true);
+
+    }
+
+    private void initListHead() {
+        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mLl_list_header = (LinearLayout) inflater.inflate(R.layout.course_list_head, null);
+        mCycleView = (ImageCycleView) mLl_list_header.findViewById(R.id.cycleView);
+        hListView = (HorizontalListView) mLl_list_header.findViewById(R.id.course_list_head_Specialbar);
+        mTxt_lern = (TextView) mLl_list_header.findViewById(R.id.txt_lern);
+        mTxt_have_buy_num = (TextView) mLl_list_header.findViewById(R.id.txt_have_buy_num);
+        mTxt_over_step = (TextView) mLl_list_header.findViewById(R.id.txt_over_step);
+        mCourse_list_head_leave_text = (TextView) mLl_list_header.findViewById(R.id.course_list_head_leave_text);
+        mCourse_list_head_level = (RelativeLayout) mLl_list_header.findViewById(R.id.course_list_head_level);
+        mCourse_list_head_sign = (TextView) mLl_list_header.findViewById(R.id.course_list_head_sign);
+        mCourse_list_head_signData = (TextView) mLl_list_header.findViewById(R.id.course_list_head_signData);
+        mViewPager = (ViewPager) mLl_list_header.findViewById(R.id.course_list_head_live_cycleView);//直播推荐的viewpager
+        gridview = (GridView) mLl_list_header.findViewById(R.id.course_list_head_gridview);//新课推荐的GridView
+        linear = (LinearLayout) mLl_list_header.findViewById(R.id.course_list_head_live_linear);
+
+
+        //mAdapter = new VAdapter(this, mLv_course);
+        mTxt_mycourse = (TextView) mLl_list_header.findViewById(R.id.txt_mycourse);
+        mNickName = (TextView) mLl_list_header.findViewById(R.id.txt_user_name);
+        mImg_user_photo = (CustomImage) mLl_list_header.findViewById(R.id.img_user_photo);
+        if (mYjUser != null) {
+            if (!TextUtils.isEmpty(mYjUser.getNickName())) {
+                mNickName.setText(mYjUser.getNickName());
+            }
+            if (!TextUtils.isEmpty(mYjUser.getPic())) {
+                Log.d(TAG, "pic=" + mYjUser.getPic());
+                BitmapUtils.create(getContext()).display(mImg_user_photo, mYjUser.getPic());
+            }
+        }
+        if (yjIndexUserInfo != null) {
+            if (!TextUtils.isEmpty(yjIndexUserInfo.getGoingStudyDays())) {
+                mTxt_lern.setText(yjIndexUserInfo.getGoingStudyDays());
+            } else {
+                mTxt_lern.setText("0");
+            }
+            if (!TextUtils.isEmpty(yjIndexUserInfo.getCustomerCourseCount()) && !TextUtils.isEmpty(yjIndexUserInfo.getCustomerOverCourseCount())) {
+                mTxt_have_buy_num.setText(yjIndexUserInfo.getCustomerOverCourseCount() + "/" + yjIndexUserInfo.getCustomerCourseCount());
+            } else {
+                mTxt_have_buy_num.setText(0 + "/" + 0);
+            }
+            if (!TextUtils.isEmpty(yjIndexUserInfo.getCustomerWeekRanking())) {
+                if (yjIndexUserInfo.getCustomerWeekRanking().equals("0")) {
+                    mTxt_over_step.setText("暂无");
+                    mTxt_over_step.setTextSize(17);
+                } else {
+                    mTxt_over_step.setText(yjIndexUserInfo.getCustomerWeekRanking() + "%");
+                }
+            } else {
+                mTxt_over_step.setText("暂无");
+                mTxt_over_step.setTextSize(17);
+            }
+            if (!TextUtils.isEmpty(yjIndexUserInfo.getLevel())) {
+                mCourse_list_head_leave_text.setText(yjIndexUserInfo.getLevel());
+            } else {
+                mCourse_list_head_leave_text.setText("1");
+            }
+
+            signinSetData(yjIndexUserInfo);
+        }
+
+        mLl_user_info = (LinearLayout) mLl_list_header.findViewById(R.id.ll_user_info);
+        if (mIsLogin) {
+            mLl_user_info.setVisibility(View.VISIBLE);
+        } else {
+            mLl_user_info.setVisibility(View.GONE);
+        }
+        mTxt_mycourse.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (ClickUtil.isFastDoubleClick()) {
+                    return;
+                }
+                getMyCourse();
+            }
+        });
+        mCourse_list_head_level.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (ClickUtil.isFastDoubleClick()) {
+                    return;
+                }
+                if ("Yes".equals(yjIndexUserInfo.getIsSign())) {
+                    showToast("用户已签到");
+                }
+                if ("No".equals(yjIndexUserInfo.getIsSign())) {
+                    getSign();
+                }
+
+            }
+        });
+        //mLl_user_info.setVisibility(View.GONE);
+
+
+        mLv_course.addHeaderView(mLl_list_header);
+//        mLv_course.addHeaderView(View.inflate(getContext(), R.layout.choice_course, null));
+//        if (myAdapter == null) {
+//            myAdapter = new MyAdapter();
+//            mLv_course.setAdapter(myAdapter);
+//        } else {
+//            myAdapter.notifyDataSetChanged();
+//        }
+
+        if (yjCourseTypeModelList == null || yjCourseTypeModelList.size() == 0) {
+            yjCourseTypeModelList = new ArrayList<YJCourseTypeModel>();
+            courseTypesAdapter = new CourseTypesAdapter(getContext(), (ArrayList<YJCourseTypeModel>) yjCourseTypeModelList, (CourseTypesAdapter.GetCourseList) AYJCourseActivity.this);
+            mLv_course.setAdapter(courseTypesAdapter);
+            courseTypesAdapter.notifyDataSetChanged();
+            re_no_data_bg.setVisibility(View.VISIBLE);
+        } else {
+            re_no_data_bg.setVisibility(View.GONE);
+            courseTypesAdapter = new CourseTypesAdapter(getContext(), (ArrayList<YJCourseTypeModel>) yjCourseTypeModelList, (CourseTypesAdapter.GetCourseList) AYJCourseActivity.this);
+            mLv_course.setAdapter(courseTypesAdapter);
+            courseTypesAdapter.notifyDataSetChanged();
+        }
+
+
+        if (yjCommendCourseTypeMedel == null || yjCommendCourseTypeMedel.size() == 0) {
+//            mLl_list_header.findViewById(R.id.layout_course_types).setVisibility(View.GONE);
+            hListView.setVisibility(View.GONE);
+        } else {
+//            mLl_list_header.findViewById(R.id.layout_course_types).setVisibility(View.VISIBLE);
+            hListView.setVisibility(View.VISIBLE);
+            horizontalSpecialbarListViewAdapter = new HorizontalSpecialbarListViewAdapter(getContext(), yjCommendCourseTypeMedel);
+            hListView.setAdapter(courseNewRecommendAdapter);
+            horizontalSpecialbarListViewAdapter.notifyDataSetChanged();
+        }
+
+        hListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                for (int i = 0; i < YJGlobal.getYJCOURSETYPESBASEMEDEL().size(); i++) {
+                    if (yjCommendCourseTypeMedel.get(position).getCourseTypeId().equals(YJGlobal.getYJCOURSETYPESBASEMEDEL().get(i).getCourseTypeId())) {
+                        getCourseList(view, i, yjCommendCourseTypeMedel.get(position).getName(), yjCommendCourseTypeMedel.get(position).getCourseTypeId());
+                    }
+                }
+            }
+        });
+
+
+        if (yjRecommendCourseModelList == null || yjRecommendCourseModelList.size() == 0) {
+            mLl_list_header.findViewById(R.id.layout_course_new).setVisibility(View.GONE);
+        } else {
+            mLl_list_header.findViewById(R.id.layout_course_new).setVisibility(View.VISIBLE);
+            courseNewRecommendAdapter = new CourseNewRecommendedAdapter(getContext(), yjRecommendCourseModelList);
+            gridview.setAdapter(courseNewRecommendAdapter);
+        }
+        mLv_course.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if (ClickUtil.isFastDoubleClick()) {
+                    return;
+                }
+            }
+        });
+        gridview.setSelector(new ColorDrawable(Color.TRANSPARENT));//取消GridView中Item选中时默认的背景色
+        gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (ClickUtil.isFastDoubleClick()) {
+                    return;
+                }
+                if (yjRecommendCourseModelList.get(position).getCourseShape().equals("DVR")) {
+                    // progDialog = DialogUtil.showWaitDialog(getContext());//加载数据的loading
+                    getCourseCatalog((position), 1, true);
+                } else if (yjRecommendCourseModelList.get(position).getCourseShape().equals("All")) {
+                    //  progDialog = DialogUtil.showWaitDialog(getContext());//加载数据的loading
+                    getCourseCatalog((position), 1, true);
+                } else {
+                    //  progDialog = DialogUtil.showWaitDialog(getContext());//加载数据的loading
+                    getCourseCatalog((position), 1, false);
+                }
+            }
+        });
+        if (yjRecommendCourseLiveModelList == null || yjRecommendCourseLiveModelList.size() == 0) {
+            mLl_list_header.findViewById(R.id.layout_course_live).setVisibility(View.GONE);
+            mLl_list_header.findViewById(R.id.ll_gray_view).setVisibility(View.GONE);
+        } else {
+            mLl_list_header.findViewById(R.id.layout_course_live).setVisibility(View.VISIBLE);
+            mLl_list_header.findViewById(R.id.ll_gray_view).setVisibility(View.VISIBLE);
+            adapter = new ViewPagerAdapter(listViews);
+            mViewPager.setAdapter(adapter);
+        }
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(final int position) {
+                currentItem = position;
+                updateDot(currentItem);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
+        /**
+         * 注视掉以后想自己滑动解开注释就行了
+         */
+//        mCourseHandler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                currentItem++;
+//                if (currentItem >= yjRecommendCourseLiveModelList.size()) {
+//                    currentItem = 0;
+//                }
+//                mViewPager.setCurrentItem(currentItem);
+//                updateDot(currentItem);
+//                mCourseHandler.postDelayed(this, 5000);
+//            }
+//        }, 5000);
+    }
+
+    protected void signinSetData(YJIndexUserInfo yjIndexUserInfo) {
+        if (!TextUtils.isEmpty(yjIndexUserInfo.getIsSign())) {
+            if ("Yes".equals(yjIndexUserInfo.getIsSign())) {
+                mCourse_list_head_level.setBackgroundResource(R.mipmap.signin_background_yes);
+                mCourse_list_head_sign.setText("已签到");
+                if (TextUtils.isEmpty(yjIndexUserInfo.getSignDays()) || "0".equals(yjIndexUserInfo.getSignDays())) {
+                    mCourse_list_head_signData.setVisibility(View.INVISIBLE);
+                } else {
+                    mCourse_list_head_signData.setVisibility(View.VISIBLE);
+                    mCourse_list_head_signData.setText("已连续" + yjIndexUserInfo.getSignDays() + "天");
+                }
+
+            }
+            if ("No".equals(yjIndexUserInfo.getIsSign())) {
+                mCourse_list_head_level.setBackgroundResource(R.mipmap.signin_background_no);
+                mCourse_list_head_sign.setText("签到");
+                if (TextUtils.isEmpty(yjIndexUserInfo.getSignDays()) || "0".equals(yjIndexUserInfo.getSignDays())) {
+                    mCourse_list_head_signData.setVisibility(View.INVISIBLE);
+                } else {
+                    mCourse_list_head_signData.setVisibility(View.VISIBLE);
+                    mCourse_list_head_signData.setText("已连续" + yjIndexUserInfo.getSignDays() + "天");
+                }
+            }
+        } else {
+            mCourse_list_head_level.setBackgroundResource(R.mipmap.signin_background_no);
+            mCourse_list_head_sign.setText("签到");
+            mCourse_list_head_signData.setText("已连续" + yjIndexUserInfo.getSignDays() + "天");
+        }
+    }
+
+    private Runnable mRunnable = new Runnable() {
+        public void run() {
+            showPopWindow();
+        }
+    };
+    private boolean arrowFlag = true;
+
+    @Override
+    public void onClick(View view) {
+        if (view == layout_title) {
+            if (ClickUtil.isFastDoubleClick()) {
+                return;
+            }
+            showPopWindow();
+            mIv_arrow.clearAnimation();
+            mIv_arrow.startAnimation(animation);
+
+        } else if (view == txt_title) {
+            if (ClickUtil.isFastDoubleClick()) {
+                return;
+            }
+            showPopWindow();
+            mIv_arrow.clearAnimation();
+            mIv_arrow.startAnimation(animation);
+
+        } else if (view == re_sacn) {
+            startActivity(CaptureActivity.class);
+        } else if (view == txt_scan) {
+            startActivity(CaptureActivity.class);
+        } else if (view == img_scan) {
+            startActivity(CaptureActivity.class);
+        }
+    }
+
+    private void showPopWindow() {
+        morePopWindow = new MorePopWindow(getActivity(), getTopActivity());
+        morePopWindow.showPopupWindow(re_title);
+    }
+
+    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals(ACTION_NAME)) {
+
+                String grade = intent.getStringExtra("grade");
+                String subject = intent.getStringExtra("subject");
+                if (!TextUtils.isEmpty(subject)) {
+                    mSubject = subject;
+                    txt_title.setText(mGrade + subject);
+                }
+                if (!TextUtils.isEmpty(grade)) {
+                    if (!grade.equals("MorePopWindow消失")) {
+                        mGrade = grade;
+                        txt_title.setText(grade + mSubject);
+                    }
+                }
+                if (!TextUtils.isEmpty(grade)) {
+                    if (grade.equals("MorePopWindow消失")) {
+                        if (animFlag) {
+                            mIv_arrow.clearAnimation();
+                            mIv_arrow.startAnimation(reverseAnimation);
+                        }
+
+                        mGradeNum = PreferenceManager.getDefaultSharedPreferences(getContext()).getInt("gradeNum", 0);
+                        mSubjectNum = PreferenceManager.getDefaultSharedPreferences(getContext()).getInt("subjectNum", 0);
+                        if (YJGlobal.getGradeList() != null) {
+                            getCourseType(YJGlobal.getGradeList().get(mGradeNum).getGradeId(), YJGlobal.getGradeList().get(mGradeNum).getSubjectVos().get(mSubjectNum).getSubjectId());
+                            Log.d(TAG, "YJGlobal.getMy_grade_id=" + YJGlobal.getGradeList().get(mGradeNum).getGradeId());
+                            Log.d(TAG, "YJGlobal.getMy_subjectId=" + YJGlobal.getGradeList().get(mGradeNum).getSubjectVos().get(mSubjectNum).getSubjectId());
+                        }
+                    }
+
+                }
+
+            }
+        }
+    };
+
+    public void registerBoradcastReceiver() {
+        IntentFilter myIntentFilter = new IntentFilter();
+        myIntentFilter.addAction(ACTION_NAME);
+        //注册广播
+        getContext().registerReceiver(mBroadcastReceiver, myIntentFilter);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        getContext().unregisterReceiver(mBroadcastReceiver);
+    }
+
+    private boolean animFlag = false;
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        animFlag = false;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        animFlag = true;
+        StringUtils.showEvaluationDialog(AYJCourseActivity.this);
+        if (mIsLogin) {
+            getIndexInfo();
+        }
+    }
+
+    class MyAdapter extends BaseAdapter {
+        @Override
+        public int getCount() {
+            if (yjCourseTypeModelList != null) {
+                re_no_data_bg.setVisibility(View.GONE);
+                return yjCourseTypeModelList.size();
+            } else {
+                re_no_data_bg.setVisibility(View.VISIBLE);
+                return 0;
+            }
+
+        }
+
+        @Override
+        public Object getItem(int i) {
+            return i;
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return i;
+        }
+
+        @Override
+        public View getView(int i, View convertView, ViewGroup viewGroup) {
+
+            ViewHolder viewHolder = null;
+            if (convertView == null) {
+                viewHolder = new ViewHolder();
+                convertView = View.inflate(getContext(), R.layout.course_front_item, null);
+                viewHolder.mTxt_up = (TextView) convertView.findViewById(R.id.txt_up);
+                viewHolder.mTxt_mid = (TextView) convertView.findViewById(R.id.txt_mid);
+                viewHolder.mTxt_down = (TextView) convertView.findViewById(R.id.txt_down);
+                viewHolder.mImg_course_type_bg = (ImageView) convertView.findViewById(R.id.img_course_type_bg);
+
+                convertView.setTag(viewHolder);
+            } else {
+                viewHolder = (ViewHolder) convertView.getTag();
+            }
+
+            if (yjCourseTypeModelList != null) {
+                viewHolder.mTxt_up.setText(YJGlobal.getGradeList().get(mGradeNum).getGradeName() + YJGlobal.getGradeList().get(mGradeNum).getSubjectVos().get(mSubjectNum).getSubjectName());
+                viewHolder.mTxt_mid.setText(yjCourseTypeModelList.get(i).getName());
+                viewHolder.mTxt_down.setText(yjCourseTypeModelList.get(i).getMark());
+                BitmapUtils.create(getContext()).display(viewHolder.mImg_course_type_bg, yjCourseTypeModelList.get(i).getPic());
+            }
+            return convertView;
+        }
+
+        class ViewHolder {
+            private TextView mTxt_up;
+            private TextView mTxt_mid;
+            private TextView mTxt_down;
+            private ImageView mImg_course_type_bg;
+        }
+
+    }
+
+    protected abstract void initViewPager();
+
+    private void getNotifyListener() {
+        addListener(YJNotifyTag.COURSE_TYPE, new IVNotificationListener() {
+            @Override
+            public void onNotify(String s, Object o) {
+                yjCourseTypeModelList = (List<YJCourseTypeModel>) o;
+                if (yjCourseTypeModelList == null || yjCourseTypeModelList.size() == 0) {
+                    yjCourseTypeModelList = new ArrayList<YJCourseTypeModel>();
+                    courseTypesAdapter = new CourseTypesAdapter(getContext(), (ArrayList<YJCourseTypeModel>) yjCourseTypeModelList, (CourseTypesAdapter.GetCourseList) AYJCourseActivity.this);
+                    mLv_course.setAdapter(courseTypesAdapter);
+                    courseTypesAdapter.notifyDataSetChanged();
+                    re_no_data_bg.setVisibility(View.VISIBLE);
+                } else {
+                    re_no_data_bg.setVisibility(View.GONE);
+                    courseTypesAdapter = new CourseTypesAdapter(getContext(), (ArrayList<YJCourseTypeModel>) yjCourseTypeModelList, (CourseTypesAdapter.GetCourseList) AYJCourseActivity.this);
+                    mLv_course.setAdapter(courseTypesAdapter);
+                    courseTypesAdapter.notifyDataSetChanged();
+                }
+            }
+
+        });
+        addListener(YJNotifyTag.NEW_COURSE_RECOMMENDED, new IVNotificationListener() {
+            @Override
+            public void onNotify(String s, Object o) {
+                yjRecommendCourseModelList = (ArrayList<YJRecommendCourseModel>) o;
+                if (yjRecommendCourseModelList == null || yjRecommendCourseModelList.size() == 0) {
+                    mLl_list_header.findViewById(R.id.layout_course_new).setVisibility(View.GONE);
+                } else {
+                    mLl_list_header.findViewById(R.id.layout_course_new).setVisibility(View.VISIBLE);
+                    courseNewRecommendAdapter = new CourseNewRecommendedAdapter(getContext(), yjRecommendCourseModelList);
+                    gridview.setAdapter(courseNewRecommendAdapter);
+                    courseNewRecommendAdapter.notifyDataSetChanged();
+                }
+
+            }
+
+        });
+        addListener(YJNotifyTag.LIVE_COURSE_RECOMMENDED, new IVNotificationListener() {
+            @Override
+            public void onNotify(String s, Object o) {
+                yjRecommendCourseLiveModelList = (ArrayList<YJRecommendCourseLiveModel>) o;
+                if (yjRecommendCourseLiveModelList == null || yjRecommendCourseLiveModelList.size() == 0) {
+                    mLl_list_header.findViewById(R.id.layout_course_live).setVisibility(View.GONE);
+                    mLl_list_header.findViewById(R.id.ll_gray_view).setVisibility(View.GONE);
+                } else {
+                    initData();
+                    initDot();
+                    mLl_list_header.findViewById(R.id.layout_course_live).setVisibility(View.VISIBLE);
+                    mLl_list_header.findViewById(R.id.ll_gray_view).setVisibility(View.VISIBLE);
+                    adapter = new ViewPagerAdapter(listViews);
+                    mViewPager.setAdapter(adapter);
+                    adapter.notifyDataSetChanged();
+                }
+
+
+            }
+
+        });
+        addListener(YJNotifyTag.COURSE_TYPES, new IVNotificationListener() {
+            @Override
+            public void onNotify(String s, Object o) {
+                yjCommendCourseTypeMedel = (ArrayList<YJCommendCourseTypeMedel>) o;
+                if (yjCommendCourseTypeMedel == null || yjCommendCourseTypeMedel.size() == 0) {
+//                    mLl_list_header.findViewById(R.id.layout_course_types).setVisibility(View.GONE);
+                    hListView.setVisibility(View.GONE);
+                } else {
+//                    mLl_list_header.findViewById(R.id.layout_course_types).setVisibility(View.VISIBLE);
+                    hListView.setVisibility(View.VISIBLE);
+                    horizontalSpecialbarListViewAdapter = new HorizontalSpecialbarListViewAdapter(getContext(), yjCommendCourseTypeMedel);
+                    hListView.setAdapter(horizontalSpecialbarListViewAdapter);
+                    horizontalSpecialbarListViewAdapter.notifyDataSetChanged();
+                }
+
+
+            }
+
+        });
+
+        addListener(YJNotifyTag.USER_LOGIN, new IVNotificationListener() {
+            @Override
+            public void onNotify(String s, Object value) {
+                mIsLogin = PreferenceManager.getDefaultSharedPreferences(getContext()).getBoolean("isLogin", false);
+                if (mIsLogin) {
+                    mLl_user_info.setVisibility(View.VISIBLE);
+                } else {
+                    mLl_user_info.setVisibility(View.GONE);
+                }
+                mYjUser = YJGlobal.getYjUser();
+                if (mYjUser != null) {
+                    if (!TextUtils.isEmpty(mYjUser.getNickName())) {
+                        mNickName.setText(mYjUser.getNickName());
+                    }
+                    if (!TextUtils.isEmpty(mYjUser.getPic())) {
+                        Log.d(TAG, "pic=" + mYjUser.getPic());
+                        BitmapUtils.create(getContext()).display(mImg_user_photo, mYjUser.getPic());
+                    }
+                }
+                yjIndexUserInfo = YJGlobal.getYjIndexUserInfo();
+                if (yjIndexUserInfo != null) {
+                    if (!TextUtils.isEmpty(yjIndexUserInfo.getGoingStudyDays())) {
+                        mTxt_lern.setText(yjIndexUserInfo.getGoingStudyDays());
+                    } else {
+                        mTxt_lern.setText("0");
+                    }
+                    if (!TextUtils.isEmpty(yjIndexUserInfo.getCustomerCourseCount()) && !TextUtils.isEmpty(yjIndexUserInfo.getCustomerOverCourseCount())) {
+                        mTxt_have_buy_num.setText(yjIndexUserInfo.getCustomerOverCourseCount() + "/" + yjIndexUserInfo.getCustomerCourseCount());
+                    } else {
+                        mTxt_have_buy_num.setText(0 + "/" + 0);
+                    }
+                    if (!TextUtils.isEmpty(yjIndexUserInfo.getCustomerWeekRanking())) {
+                        if (yjIndexUserInfo.getCustomerWeekRanking().equals("0")) {
+                            mTxt_over_step.setText("暂无");
+                        } else {
+                            mTxt_over_step.setText(yjIndexUserInfo.getCustomerWeekRanking() + "%");
+                        }
+                    } else {
+                        mTxt_over_step.setText("暂无");
+                    }
+
+                    if (!TextUtils.isEmpty(yjIndexUserInfo.getLevel())) {
+                        mCourse_list_head_leave_text.setText(yjIndexUserInfo.getLevel());
+                    } else {
+                        mCourse_list_head_leave_text.setText("1");
+                    }
+
+                    if (!TextUtils.isEmpty(yjIndexUserInfo.getNickName())) {
+                        mNickName.setText(yjIndexUserInfo.getNickName());
+                    } else {
+                        mNickName.setText("未填写");
+                    }
+                    if (!TextUtils.isEmpty(yjIndexUserInfo.getPic())) {
+                        Log.d(TAG, "pic=" + yjIndexUserInfo.getPic());
+                        BitmapUtils.create(getContext()).display(mImg_user_photo, yjIndexUserInfo.getPic());
+                    } else {
+                        mImg_user_photo.setImageResource(R.mipmap.img_app_logo);
+                    }
+                    signinSetData(yjIndexUserInfo);
+                }
+            }
+        });
+        addListener(YJNotifyTag.HEAD_USER, new IVNotificationListener() {
+            @Override
+            public void onNotify(String s, Object value) {
+                String name = (String) value;
+                BitmapUtils.create(getContext()).display(mImg_user_photo, name);
+            }
+        });
+    }
+
+
+    protected void saveGrade(String course, int num, String courseTypeId) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("course", course);
+        editor.putString("courseTypeId", courseTypeId);
+        editor.putInt("courseNum", num);
+        editor.commit();
+    }
+
+    protected List<YJCourseModel> getYjCourseModel(List<YJCourseListModel> yjCourseListModelList) {
+        List<YJCourseModel> yjCourseModelsList = new ArrayList<YJCourseModel>();
+        for (int i = 0; i < yjCourseListModelList.size(); i++) {
+            for (int j = 0; j < yjCourseListModelList.get(i).getCourseList().size(); j++) {
+                yjCourseModelsList.add(yjCourseListModelList.get(i).getCourseList().get(j));
+            }
+        }
+        return yjCourseModelsList;
+    }
+
+
+    private void getCourseType(final String gradeId, final String subjectId) {
+
+        Log.d(TAG, "gradeId=" + gradeId + "subjectId=" + subjectId);
+        Map<String, Object> objectMap = new HashMap<>();
+        try {
+            objectMap.put("subjectId", subjectId);
+            objectMap.put("gradeId", gradeId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        YJStudentReqManager.getServerData(YJReqURLProtocol.GET_COURSETYPE, objectMap, mIsLogin, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                Log.d(TAG, "失败=" + s);
+                showToast(getString(R.string.no_net_work));
+                YJGlobal.setMy_subjectId(subjectId);
+                YJGlobal.setMy_grade_id(gradeId);
+            }
+
+            @Override
+            public void onSuccess(int i, Header[] headers, String s) {
+                try {
+                    Log.d(TAG, "成功s=" + s);
+                    JSONObject json = null;
+                    json = new JSONObject(s);
+                    switch (json.getInt("code")) {
+                        case 200:
+                            JSONObject jsonData = new JSONObject(json.getString("data"));
+                            List<YJCourseTypeModel> yjCourseTypeModelList = JSON.parseArray(jsonData.getString("courseTypes"), YJCourseTypeModel.class);
+                            List<YJRecommendCourseModel> yjRecommendCourseList = JSON.parseArray(jsonData.getString("recommendCourseList"), YJRecommendCourseModel.class);
+                            List<YJRecommendCourseLiveModel> yjRecommendCourseLiveList = JSON.parseArray(jsonData.getString("recommendCourseLiveList"), YJRecommendCourseLiveModel.class);
+                            List<YJCommendCourseTypeMedel> yjCommendCourseTypeMedel = JSON.parseArray(jsonData.getString("commendCourseTypes"), YJCommendCourseTypeMedel.class);
+                            List<YJCourseTypesBaseMedel> yjCourseTypesBaseMedel = JSON.parseArray(jsonData.getString("courseTypesBase"), YJCourseTypesBaseMedel.class);
+                            YJGlobal.setYjCourseTypeModelList(yjCourseTypeModelList);
+                            YJGlobal.setYjRecommendCourseModelListlList(yjRecommendCourseList);
+                            YJGlobal.setYJCOURSETYPESBASEMEDEL(yjCourseTypesBaseMedel);
+                            YJGlobal.setMy_subjectId(subjectId);
+                            YJGlobal.setMy_grade_id(gradeId);
+                            Log.i(TAG, "courseTypes" + yjCourseTypeModelList.toString());
+                            Log.i(TAG, "recommendCourseList" + yjRecommendCourseList.toString());
+                            Log.i(TAG, "recommendCourseLiveList" + yjRecommendCourseLiveList.toString());
+                            Log.i(TAG, "commendCourseTypes" + yjCommendCourseTypeMedel.toString());
+                            Log.i(TAG, "courseTypesBase" + yjCourseTypesBaseMedel.toString());
+                            notifyListener(YJNotifyTag.NEW_COURSE_RECOMMENDED, yjRecommendCourseList);
+                            notifyListener(YJNotifyTag.COURSE_TYPE, yjCourseTypeModelList);
+                            notifyListener(YJNotifyTag.LIVE_COURSE_RECOMMENDED, yjRecommendCourseLiveList);
+                            notifyListener(YJNotifyTag.COURSE_TYPES, yjCommendCourseTypeMedel);
+                            break;
+                        case 300:
+                            break;
+                        case 400:
+                            Log.d(TAG, "400");
+                            YJGlobal.setYjCourseTypeModelList(null);
+//                            YJGlobal.setYjRecommendCourseModelListlList(null);
+                            notifyListener(YJNotifyTag.COURSE_TYPE, null);
+                            notifyListener(YJNotifyTag.NEW_COURSE_RECOMMENDED, null);
+                            notifyListener(YJNotifyTag.LIVE_COURSE_RECOMMENDED, null);
+                            notifyListener(YJNotifyTag.COURSE_TYPES, null);
+                            break;
+                        case 401:
+                            break;
+                        case 402:
+                            break;
+                        case 500:
+                            break;
+                        case 600:
+                            startActivity(createIntent(YJLoginActivity.class, createTransmitData(YJLoginActivity.LOGIN_OUT, 1).set(YJLoginActivity.MY_LOGIN_OUT, true)));
+                            finishAll();
+                            break;
+                        default:
+                            break;
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+
+    public void getCourseList(View view, final int position, String name, String courseTypeId) {
+        Map<String, Object> objectMap = new HashMap<>();
+        if (yjCourseTypeModelList != null) {
+            saveGrade(name, position, courseTypeId);
+            try {
+                objectMap.put("subjectId", YJGlobal.getMy_subjectId());
+                objectMap.put("gradeId", YJGlobal.getMy_grade_id());
+                objectMap.put("courseTypeId", courseTypeId);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        YJStudentReqManager.getServerData(YJReqURLProtocol.GET_COURSE_LIST, objectMap, mIsLogin, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                Log.d(TAG, "失败=" + s);
+                showToast(getString(R.string.no_net_work));
+            }
+
+            @Override
+            public void onSuccess(int i, Header[] headers, String s) {
+                try {
+                    Log.d(TAG, "成功s=" + s);
+                    JSONObject json = null;
+                    json = new JSONObject(s);
+                    switch (json.getInt("code")) {
+                        case 200:
+                            JSONObject jsonData = new JSONObject(json.getString("data"));
+                            List<YJCourseListModel> yjCourseListModelList = JSON.parseArray(jsonData.getString("knowledgeList"), YJCourseListModel.class);
+                            Log.d(TAG, "yjCourseListModelList.toString()=" + yjCourseListModelList.toString());
+                            startActivity(createIntent(YJCourseListlActivity.class, createTransmitData(AYJCourseListActivity.COURSE_MODELLIST, getYjCourseModel(yjCourseListModelList)).set(AYJCourseListActivity.LIST_POSITION, position)));
+                            break;
+                        case 300:
+                            break;
+                        case 400:
+                            break;
+                        case 401:
+                            break;
+                        case 402:
+                            break;
+                        case 500:
+                            break;
+                        case 600:
+                            startActivity(createIntent(YJLoginActivity.class, createTransmitData(YJLoginActivity.LOGIN_OUT, 1).set(YJLoginActivity.MY_LOGIN_OUT, true)));
+                            finishAll();
+                            break;
+                        default:
+                            break;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+
+        });
+    }
+
+    public abstract void getMyCourse();
+
+    public abstract void getIndexInfo();
+
+    public abstract void getCourseCatalog(int groupPosition, int childPosition, final boolean flag);
+
+    public abstract void getTakenLive(int position, boolean isShowDialog, int isLiveType);
+
+
+    public abstract void getTakenBack(int position);
+
+    public abstract void getisBuy(int position);
+
+    public abstract void getSign();
+
+
+    private Handler mCourseHandler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message msg) {
+            currentItem++;
+            if (currentItem == yjRecommendCourseLiveModelList.size()) {
+                currentItem = 0;
+            }
+            mViewPager.setCurrentItem(currentItem);
+            return false;
+        }
+    });
+
+    private void initData() {
+        listViews = new ArrayList<View>();
+        currentItem = 0;
+        for (int i = 0; i < yjRecommendCourseLiveModelList.size(); i++) {
+            View view = LayoutInflater.from(getContext()).inflate(R.layout.item_live_course_recommended, null);
+            ImageView teacherPic = (ImageView) view.findViewById(R.id.img_live_course_photo);//老师头像
+            TextView liveDate = (TextView) view.findViewById(R.id.item_live_course_date);//直播日期
+            TextView content = (TextView) view.findViewById(R.id.item_live_course_info);//内容
+            TextView teacherName = (TextView) view.findViewById(R.id.item_live_course_teacherName);//老师姓名
+            TextView studentCount = (TextView) view.findViewById(R.id.item_live_course_count);//学生人数
+            TextView stateText = (TextView) view.findViewById(R.id.item_live_course_state_text);//状态
+            ImageView stateImage = (ImageView) view.findViewById(R.id.item_live_course_state_image);//状态的图标
+            BitmapUtils.create(getContext()).display(teacherPic, yjRecommendCourseLiveModelList.get(i).getTeacher().getTeacherPic());
+//            String planDate = TextUtils.isEmpty(yjRecommendCourseLiveModelList.get(i).getPlanDate()) ? "" : TimeUtil.getSecondTime(Long.parseLong(yjRecommendCourseLiveModelList.get(i).getPlanDate()));
+            String planDate = TimeUtil.getYearTime(Long.parseLong(yjRecommendCourseLiveModelList.get(i).getPlanDate()));
+            String planEndDate = TextUtils.isEmpty(yjRecommendCourseLiveModelList.get(i).getPlanEndDate()) ? "" : TimeUtil.getSecondMInTime(Long.parseLong(yjRecommendCourseLiveModelList.get(i).getPlanEndDate()));
+//            liveDate.setText(planDate + "-" + planEndDate);
+            liveDate.setText((("3".equals(StringUtils.getDateDetail(planDate)) ? TimeUtil.getMonthTime(Long.parseLong(yjRecommendCourseLiveModelList.get(i).getPlanDate())) : StringUtils.getDateDetail(planDate)) + " " + TimeUtil.getSecondMInTime(Long.parseLong(yjRecommendCourseLiveModelList.get(i).getPlanDate()))) + "-" + planEndDate);
+            content.setText(yjRecommendCourseLiveModelList.get(i).getName());
+            teacherName.setText(yjRecommendCourseLiveModelList.get(i).getTeacher().getTrueName());
+
+            if ("no".equals(yjRecommendCourseLiveModelList.get(i).getLiveStatus())) {
+                stateText.setText(R.string.live_no_start_title);
+                stateImage.setBackgroundResource(R.mipmap.item_live_course_no);
+                studentCount.setVisibility(View.INVISIBLE);
+                view.findViewById(R.id.image_count).setVisibility(View.INVISIBLE);
+            }
+            if ("ing".equals(yjRecommendCourseLiveModelList.get(i).getLiveStatus())) {
+                stateText.setText(R.string.live_ing_title);
+                stateImage.setBackgroundResource(R.mipmap.item_live_course_ing);
+                studentCount.setText(yjRecommendCourseLiveModelList.get(i).getLookStudent());
+            }
+            if ("over".equals(yjRecommendCourseLiveModelList.get(i).getLiveStatus())) {
+                if ("Yes".equals(yjRecommendCourseLiveModelList.get(i).getIsReplay())) {
+                    stateText.setText(R.string.live_look_back_title);
+                    stateText.setTextColor(Color.parseColor("#0caafe"));
+                    stateImage.setVisibility(View.GONE);
+                }
+                if ("No".equals(yjRecommendCourseLiveModelList.get(i).getIsReplay())) {
+                    stateText.setText(R.string.live_back_ready_title);
+                    stateText.setTextColor(Color.parseColor("#969696"));
+                    stateImage.setVisibility(View.GONE);
+                }
+                studentCount.setText(yjRecommendCourseLiveModelList.get(i).getLookStudent());
+            }
+            view.setOnClickListener(onClickListener);
+            listViews.add(view);
+        }
+
+    }
+
+    /**
+     * 点击事件
+     */
+    private View.OnClickListener onClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (mIsLogin) {
+                if ("OpenClass".equals(yjRecommendCourseLiveModelList.get(currentItem).getCourseVideoType())) {//公开课
+                    if (yjRecommendCourseLiveModelList.get(currentItem).getLiveStatus().equals("ing")) {
+                        //   progDialog = DialogUtil.showWaitDialog(getContext());//加载数据的loading
+                        getTakenLive(currentItem, false, 1);
+
+                    }
+                    if (yjRecommendCourseLiveModelList.get(currentItem).getLiveStatus().equals("over")) {
+                        // progDialog = DialogUtil.showWaitDialog(getContext());//加载数据的loading
+                        if ("Yes".equals(yjRecommendCourseLiveModelList.get(currentItem).getIsReplay())) {
+                            getTakenBack(currentItem);
+                        }
+                        if ("No".equals(yjRecommendCourseLiveModelList.get(currentItem).getIsReplay())) {
+//                            showDialog(new YJIsReplayDialog());
+                            getTakenLive(currentItem, true, 2);
+                        }
+                    }
+                    if (yjRecommendCourseLiveModelList.get(currentItem).getLiveStatus().equals("no")) {
+//                        showToast("直播未开始");
+                        getTakenLive(currentItem, true, 1);
+                    }
+                } else {//正常直播课
+                    //  progDialog = DialogUtil.showWaitDialog(getContext());//加载数据的loading
+                    getisBuy(currentItem);
+                }
+            } else {
+                startActivity(YJLoginDialog.class);
+            }
+        }
+    };
+
+    /**
+     * 初始化坐标点
+     */
+    private void initDot() {
+        if (linear.getChildCount() > 0) {
+            linear.removeAllViews();
+        }
+        for (int i = 0; i < yjRecommendCourseLiveModelList.size(); i++) {
+            ImageView view = new ImageView(getContext());
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(20, 20);
+            params.leftMargin = 10;
+            params.rightMargin = 10;
+            view.setLayoutParams(params);
+            if (i == 0) {
+                view.setBackgroundResource(R.mipmap.item_live_yuan_yes);
+            } else {
+                view.setBackgroundResource(R.mipmap.item_live_yuan_no);
+            }
+            linear.addView(view);
+        }
+    }
+
+    /**
+     * 更新坐标点
+     *
+     * @param position
+     */
+    private void updateDot(int position) {
+        linear.removeAllViewsInLayout();
+        for (int i = 0; i < yjRecommendCourseLiveModelList.size(); i++) {
+            ImageView view = new ImageView(getContext());
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(20, 20);
+            params.leftMargin = 10;
+            params.rightMargin = 10;
+            view.setLayoutParams(params);
+            if (i == position) {
+                view.setBackgroundResource(R.mipmap.item_live_yuan_yes);
+            } else {
+                view.setBackgroundResource(R.mipmap.item_live_yuan_no);
+            }
+            linear.addView(view);
+        }
+    }
+
+
+}

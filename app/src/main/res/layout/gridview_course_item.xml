@@ -1,0 +1,28 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:gravity="center"
+    android:orientation="horizontal">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
+        <Button
+            android:id="@+id/ib_item"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:textSize="14sp"
+            android:text="同步课"
+            android:background="@drawable/course_classify_bg"
+            android:textColor="@color/black" />
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:background="@color/view" />
+    </RelativeLayout>
+
+</LinearLayout>

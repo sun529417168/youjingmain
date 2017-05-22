@@ -1,0 +1,406 @@
+package com.youjing.yjeducation.ui.actualize.activity;
+
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+import android.text.TextUtils;
+import android.util.Log;
+import android.widget.Toast;
+
+import com.alibaba.fastjson.JSON;
+import com.alipay.security.mobile.module.commonutils.LOG;
+import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.TextHttpResponseHandler;
+import com.umeng.analytics.AnalyticsConfig;
+import com.youjing.yjeducation.R;
+import com.youjing.yjeducation.core.YJGlobal;
+import com.youjing.yjeducation.core.YJNotifyTag;
+import com.youjing.yjeducation.core.YJReqURLProtocol;
+import com.youjing.yjeducation.core.YJStudentReqManager;
+import com.youjing.yjeducation.core.YJUserStudyData;
+import com.youjing.yjeducation.model.YJBannerModel;
+import com.youjing.yjeducation.model.YJGradeModel;
+import com.youjing.yjeducation.model.YJIndexUserInfo;
+import com.youjing.yjeducation.model.YJUser;
+import com.youjing.yjeducation.ui.dispaly.activity.AYJActivateGiftCard;
+import com.youjing.yjeducation.ui.dispaly.activity.AYJRegisterActivity;
+import com.youjing.yjeducation.util.ChineseStringUtil;
+import com.youjing.yjeducation.util.DES;
+import com.youjing.yjeducation.util.MakeSign;
+import com.youjing.yjeducation.util.NetUtils;
+import com.youjing.yjeducation.wiget.CustomToast;
+
+import org.apache.http.Header;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.vwork.utils.base.VStringUtil;
+
+import java.io.File;
+import java.io.RandomAccessFile;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * user  秦伟宁
+ * Date 2016/3/17
+ * Time 19:54
+ */
+public class YJRegisterActivity extends AYJRegisterActivity {
+    private String TAG = "YJRegisterActivity";
+
+    @Override
+    protected void register(final String phone, final String mpassword, String mScurity) {
+
+        if ((mpassword.getBytes().length != mpassword.length())) {
+            showToast(getString(R.string.password_is_chinese));
+            return;
+        }
+        if (VStringUtil.isNullOrEmpty(mpassword)) {
+            showToast(getString(R.string.place_input_password));
+            return;
+        }
+        if (mpassword.length() < 6) {
+            showToast(getString(R.string.password_greater_than_six));
+            return;
+        }
+        if (mpassword.length() > 16) {
+            showToast(getString(R.string.password_greater_than_sixteen));
+            return;
+        }
+        String mGrade = PreferenceManager.getDefaultSharedPreferences(getContext()).getString("first_grade", YJGlobal.getGradeList().get(0).getGradeName());
+        String mSubject = PreferenceManager.getDefaultSharedPreferences(getContext()).getString("first_subject", YJGlobal.getGradeList().get(0).getSubjectVos().get(0).getSubjectName());
+        Log.d(TAG, "mGrade=" + mGrade + ":::::mSubject=" + mSubject);
+        Map<String, Object> objectMap = new HashMap<>();
+        try {
+            objectMap.put("mobile", phone);
+            objectMap.put("gradeId", mGrade);
+            objectMap.put("subjectId", mSubject);
+            objectMap.put("password", DES.encryptDES(mpassword));
+            objectMap.put("code", mScurity);
+            objectMap.put("regUseAppChannel", AnalyticsConfig.getChannel(getContext()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    /*    RequestParams params = new RequestParams();
+        for (String key : objectMap.keySet()) {
+            params.put(key, objectMap.get(key));
+        }
+        params.put("sign", MakeSign.makeSign(objectMap));*/
+        YJStudentReqManager.getServerData(YJReqURLProtocol.REGISTER, objectMap, false, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                Log.d(TAG, "失败=" + s);
+                CustomToast.makeText(getContext(), getString(R.string.no_net_work), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onSuccess(int i, Header[] headers, String s) {
+                try {
+                    JSONObject json = null;
+                    json = new JSONObject(s);
+                    Log.d(TAG, "成功s=" + s);
+                    switch (json.getInt("code")) {
+                        case 200:
+                            JSONObject jsonData = new JSONObject(json.getString("data"));
+                            String customerToken = jsonData.getString("customerToken");
+                            YJGlobal.setCustomertoken(customerToken);
+                            int customerId = jsonData.getInt("customerId");
+                            YJGlobal.setCustomerId(customerId);
+                            rememberToken(customerToken, customerId + "");
+                            YJUserStudyData.setDevice(getContext());
+                            getBanner();
+                            break;
+                        case 300:
+                            CustomToast.makeText(getContext(), "注册失败", Toast.LENGTH_SHORT).show();
+                            break;
+                        case 301:
+                            CustomToast.makeText(getContext(), "验证码不合法", Toast.LENGTH_SHORT).show();
+                            break;
+                        case 302:
+                            CustomToast.makeText(getContext(), "注册失败", Toast.LENGTH_SHORT).show();
+                            break;
+                        case 403:
+                            CustomToast.makeText(getContext(), "用户已存在", Toast.LENGTH_SHORT).show();
+                            break;
+                        case 500:
+                            CustomToast.makeText(getContext(), "服务器异常", Toast.LENGTH_SHORT).show();
+                            break;
+                        default:
+                            break;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+    }
+
+
+    private void getUserInfo() {
+      /*  Map<String, Object> objectMap = new HashMap<>();
+        RequestParams params = new RequestParams();
+        params.put("sign", MakeSign.makeSignLogined(objectMap));*/
+        YJStudentReqManager.getServerData(YJReqURLProtocol.GET_USER_INFO, null, true, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                Log.d(TAG, "失败=" + s);
+                CustomToast.makeText(getContext(), getString(R.string.no_net_work), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onSuccess(int i, Header[] headers, String s) {
+                try {
+                    Log.d(TAG, "成功s=" + s);
+                    JSONObject json = null;
+                    json = new JSONObject(s);
+                    JSONObject jsonData = new JSONObject(json.getString("data"));
+                    YJUser yjUser = JSON.parseObject(jsonData.getString("customer"), YJUser.class);
+                    Log.d(TAG, "yjUser.toString()=" + yjUser.toString());
+                    YJGlobal.setYjUser(yjUser);
+                    getUserIndexInfo();
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private void getGrade() {
+
+        YJStudentReqManager.getServerData(YJReqURLProtocol.GET_GRADE, null, true, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                Log.d(TAG, "失败=" + s);
+                CustomToast.makeText(getContext(), getString(R.string.no_net_work), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onSuccess(int i, Header[] headers, String s) {
+                try {
+                    Log.d(TAG, "成功s=" + s);
+                    JSONObject json = null;
+                    json = new JSONObject(s);
+                    JSONObject jsonData = new JSONObject(json.getString("data"));
+                    List<YJGradeModel> yjGradeModelList = JSON.parseArray(jsonData.getString("grades"), YJGradeModel.class);
+                    Log.d(TAG, "yjGradeListModel.toString()=" + yjGradeModelList.toString());
+                    YJGlobal.setGradeList(yjGradeModelList);
+                    notifyListener(YJNotifyTag.USER_LOGIN, true);
+                    // CustomToast.makeTexts(getContext(),"注册成功",0).show();
+                    if (loginFlag) {
+                        finish();
+                    } else {
+//                        startActivity(YJMainActivity.class);
+                        startActivity(createIntent(YJActivateGiftCardSuccess.class, createTransmitData(YJActivateGiftCardSuccess.REGIST_INFO, mRegistInfo)));
+                        finishAll();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private void getUserIndexInfo() {
+        /*Map<String, Object> objectMap = new HashMap<>();
+        RequestParams params = new RequestParams();
+        params.put("sign", MakeSign.makeSignLogined(objectMap));*/
+        YJStudentReqManager.getServerData(YJReqURLProtocol.GET_USER_INDEX, null, true, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                Log.d(TAG, "失败=" + s);
+                CustomToast.makeText(getContext(), getString(R.string.no_net_work), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onSuccess(int i, Header[] headers, String s) {
+                try {
+                    Log.d(TAG, "成功s=" + s);
+                    JSONObject json = null;
+                    json = new JSONObject(s);
+                    JSONObject jsonData = new JSONObject(json.getString("data"));
+                    YJIndexUserInfo yjIndexUserInfo = JSON.parseObject(jsonData.getString("customer"), YJIndexUserInfo.class);
+                    Log.d(TAG, "yjIndexUserInfo.toString()=" + yjIndexUserInfo.toString());
+                    YJGlobal.setYjIndexUserInfo(yjIndexUserInfo);
+                    getGrade();
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private void rememberToken(String customerToken, String customerId) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("isLogin", true);
+        editor.putString("customerToken", customerToken);
+        editor.putString("customerId", customerId);
+
+        editor.commit();
+    }
+
+
+    private void getBanner() {
+  /*      Map<String, Object> objectMap = new HashMap<>();
+        RequestParams params = new RequestParams();
+        params.put("sign", MakeSign.makeSignLogined(objectMap));*/
+        YJStudentReqManager.getServerData(YJReqURLProtocol.BANER_PICTURE, null, true, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                Log.d(TAG, "失败=" + s);
+                CustomToast.makeText(getContext(), getString(R.string.no_net_work), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onSuccess(int i, Header[] headers, String s) {
+                try {
+                    JSONObject json = null;
+                    json = new JSONObject(s);
+                    Log.d(TAG, "成功s=" + s);
+                    switch (json.getInt("code")) {
+                        case 200:
+                            JSONObject jsonData = new JSONObject(json.getString("data"));
+                            List<YJBannerModel> yjBannerModelList = JSON.parseArray(jsonData.getString("bannerList"), YJBannerModel.class);
+                            YJGlobal.setYjBannerModelList(yjBannerModelList);
+                            getUserInfo();
+                            break;
+                        case 500:
+                            break;
+                        default:
+                            break;
+                    }
+                    File file = new File("/sdcard/YJEDU/" + "province_data.xml");
+                    if (!file.exists()) {
+                        initData();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+
+    private void initData() {
+        YJStudentReqManager.getServerData(YJReqURLProtocol.GET_AREA, null, true, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                Log.d(TAG, "失败=" + s);
+                CustomToast.makeText(getContext(), getString(R.string.no_net_work), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onSuccess(int i, Header[] headers, String s) {
+                try {
+                    Log.d(TAG, "成功s=" + s);
+                    JSONObject json = null;
+                    json = new JSONObject(s);
+                    JSONObject data = json.getJSONObject("data");
+
+                    JSONArray provinceList = data.getJSONArray("provinceList");
+                    writeFileData("province_data.xml", parseToXml(provinceList));
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+
+    // 文件写入手机
+    public void writeFileData(String fileName, String message) {
+        String filePath = "/sdcard/YJEDU/";
+        writeTxtToFile(message, filePath, fileName);
+    }
+
+
+    // json转XML
+    public String parseToXml(JSONArray provinceList) {
+        String xml = "";
+        int length = provinceList.length();
+        StringBuffer xmlnodes = new StringBuffer();
+        try {
+            if (length > 0) {
+                xmlnodes.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                xmlnodes.append("<root>");
+                for (int i = 0; i < length; i++) {
+                    xmlnodes.append("<province name='" + ((JSONObject) provinceList.get(i)).getString("provinceName") + "' provinceId='" + ((JSONObject) provinceList.get(i)).getString("provinceId") + "'>");
+                    int length2 = ((JSONObject) provinceList.get(i)).getJSONArray("cityVos").length();
+                    for (int j = 0; j < length2; j++) {
+                        xmlnodes.append("<city name='" + ((JSONObject) ((JSONObject) provinceList.get(i)).getJSONArray("cityVos").get(j)).getString("cityName") + "' cityId='" + ((JSONObject) ((JSONObject) provinceList.get(i)).getJSONArray("cityVos").get(j)).getString("cityId") + "'>");
+                        int length3 = ((JSONObject) ((JSONObject) provinceList.get(i)).getJSONArray("cityVos").get(j)).getJSONArray("districtVos").length();
+                        for (int k = 0; k < length3; k++) {
+                            xmlnodes.append("<district name='" + ((JSONObject) ((JSONObject) ((JSONObject) provinceList.get(i)).getJSONArray("cityVos").get(j)).getJSONArray("districtVos").get(k)).getString("districtName") + "' districtId='" + ((JSONObject) ((JSONObject) ((JSONObject) provinceList.get(i)).getJSONArray("cityVos").get(j)).getJSONArray("districtVos").get(k)).getString("districtId") + "'></district>");
+                        }
+                        xmlnodes.append("</city>");
+                    }
+                    xmlnodes.append("</province>");
+                }
+                xmlnodes.append("</root>");
+            }
+            return xmlnodes.toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return xmlnodes.toString();
+    }
+
+
+    // 将字符串写入到文本文件中
+    public void writeTxtToFile(String strcontent, String filePath, String fileName) {
+        //生成文件夹之后，再生成文件，不然会出错
+        makeFilePath(filePath, fileName);
+
+        String strFilePath = filePath + fileName;
+        // 每次写入时，都换行写
+        String strContent = strcontent + "\r\n";
+        Log.i("hujiachen", "path=" + strFilePath);
+        try {
+            File file = new File(strFilePath);
+            if (!file.exists()) {
+                file.getParentFile().mkdirs();
+                file.createNewFile();
+            }
+            RandomAccessFile raf = new RandomAccessFile(file, "rwd");
+            raf.seek(file.length());
+            raf.write(strContent.getBytes());
+            raf.close();
+        } catch (Exception e) {
+        }
+    }
+
+    // 生成文件
+    public File makeFilePath(String filePath, String fileName) {
+        File file = null;
+        makeRootDirectory(filePath);
+        try {
+            file = new File(filePath + fileName);
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return file;
+    }
+
+    // 生成文件夹
+    public static void makeRootDirectory(String filePath) {
+        File file = null;
+        try {
+            file = new File(filePath);
+            if (!file.exists()) {
+                file.mkdir();
+            }
+        } catch (Exception e) {
+            Log.i("error:", e + "");
+        }
+    }
+
+}

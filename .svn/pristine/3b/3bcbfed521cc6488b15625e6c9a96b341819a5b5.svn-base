@@ -1,0 +1,320 @@
+package com.youjing.yjeducation.ui.actualize.activity;
+
+import android.preference.PreferenceManager;
+import android.util.Log;
+import android.widget.Toast;
+
+import com.alibaba.fastjson.JSON;
+import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.TextHttpResponseHandler;
+import com.youjing.yjeducation.R;
+import com.youjing.yjeducation.core.YJGlobal;
+import com.youjing.yjeducation.core.YJNotifyTag;
+import com.youjing.yjeducation.core.YJReqURLProtocol;
+import com.youjing.yjeducation.core.YJStudentReqManager;
+import com.youjing.yjeducation.model.PaginationInfo;
+import com.youjing.yjeducation.model.YJCourseListModel;
+import com.youjing.yjeducation.model.YJCourseModel;
+import com.youjing.yjeducation.model.YJOrderModel;
+import com.youjing.yjeducation.ui.dispaly.activity.AYJCourseListActivity;
+import com.youjing.yjeducation.ui.dispaly.activity.AYJMyOrderActivity;
+import com.youjing.yjeducation.util.MakeSign;
+import com.youjing.yjeducation.wiget.CustomToast;
+
+import org.apache.http.Header;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * user  秦伟宁
+ * Date 2016/4/12
+ * Time 21:02
+ */
+public class YJMyOrderActivity extends AYJMyOrderActivity {
+    private String TAG = "YJMyOrderActivity";
+
+    @Override
+    public void getCourseCatalog(String courseId) {
+
+        Map<String, Object> objectMap = new HashMap<>();
+        try {
+            objectMap.put("courseId", courseId);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        YJStudentReqManager.getServerData(YJReqURLProtocol.GET_COURSE_CATALOG, objectMap, true, new TextHttpResponseHandler() {
+                    @Override
+                    public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                        Log.d(TAG, "失败=" + s);
+                        showToast(getString(R.string.no_net_work));
+                    }
+
+                    @Override
+                    public void onSuccess(int i, Header[] headers, String s) {
+
+                        try {
+                            // String ss = "{ 'id':12, 'name':'11111111', 'sequence':1,'isTry':'No','code':'Wgi1LikG7Rpw+Z46PAcVrg==','courseVideoShape':'DVR','planDate':1459394340000,'realDate':1460099640000,'courseVideoType':'OpenClass','duration':35,'followCount':6,'studyStatus':null,'isDownload':'No','isFollow':'No'}";
+                            Log.d(TAG, "成功s=" + s);
+                            JSONObject json = null;
+                            json = new JSONObject(s);
+                            switch (json.getInt("code")) {
+                                case 200:
+                                    JSONObject jsonObject = new JSONObject(json.getString("data"));
+                                    YJCourseModel yjCourseModel = JSON.parseObject(jsonObject.getString("course"), YJCourseModel.class);
+                                    Log.d(TAG, "yjCourseModel=" + yjCourseModel.toString());
+
+                                    if (yjCourseModel.getCourseCatalogList().size() == 0) {
+                                        showToast("暂时没有视频课程");
+
+                                    } else {
+                                        if (yjCourseModel.getCourseShape().equals("DVR")) {
+                                            startActivity(createIntent(YJCoursePlayActivity.class, createTransmitData(YJCoursePlayActivity.YJ_COURSE_MODEL, yjCourseModel)));
+                                        } else {
+                                            startActivity(createIntent(YJCourseLiveListActivity.class, createTransmitData(YJCourseLiveListActivity.YJ_COURSE_MODEL, yjCourseModel)));
+                                        }
+                                    }
+                                    break;
+                                case 300:
+                                    break;
+                                case 400:
+                                    break;
+                                case 401:
+                                    break;
+                                case 402:
+                                    break;
+                                case 500:
+                                    break;
+                                case 600:
+                                    startActivity(createIntent(YJLoginActivity.class, createTransmitData(YJLoginActivity.LOGIN_OUT, 1).set(YJLoginActivity.MY_LOGIN_OUT, true)));
+                                    finishAll();
+                                    break;
+                                default:
+                                    break;
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+    }
+
+    @Override
+    public void getMyOrder() {
+        Map<String, Object> objectMap = new HashMap<>();
+        try {
+            objectMap.put("currentPage", 1);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        YJStudentReqManager.getServerData(YJReqURLProtocol.GET_MY_ORDER, objectMap, true, new TextHttpResponseHandler() {
+                     @Override
+                     public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                         Log.d(TAG, "失败=" + s);
+                         showToast(getString(R.string.no_net_work));
+                         mMsgListView.stopRefresh();
+                         mMsgListView.setRefreshTime(System.currentTimeMillis());
+                     }
+
+                     @Override
+                     public void onSuccess(int i, Header[] headers, String s) {
+                         try {
+                             Log.d(TAG, "成功s=" + s);
+                             JSONObject json = null;
+                             json = new JSONObject(s);
+                             switch (json.getInt("code")) {
+                                 case 200:
+                                     JSONObject jsonData = new JSONObject(json.getString("data"));
+                                     yjOrderModelList = JSON.parseArray(jsonData.getString("orderList"), YJOrderModel.class);
+                                     if (yjOrderModelList != null) {
+                                         initXListView();
+                                     }
+                                     mMsgListView.stopRefresh();
+                                     mMsgListView.setRefreshTime(System.currentTimeMillis());
+                                     break;
+                                 case 300:
+                                     break;
+                                 case 400:
+                                     break;
+                                 case 401:
+                                     break;
+                                 case 402:
+                                     break;
+                                 case 500:
+                                     break;
+                                 case 600:
+                                     startActivity(createIntent(YJLoginActivity.class, createTransmitData(YJLoginActivity.LOGIN_OUT, 1).set(YJLoginActivity.MY_LOGIN_OUT, true)));
+                                     finishAll();
+                                     break;
+                                 default:
+                                     break;
+                             }
+                         } catch (JSONException e) {
+                             e.printStackTrace();
+                         }
+                     }
+                 });
+    }
+
+    @Override
+    public void getAddLoadMore(int page) {
+        Map<String, Object> objectMap = new HashMap<>();
+        try {
+            objectMap.put("currentPage", page);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        YJStudentReqManager.getServerData(YJReqURLProtocol.GET_MY_ORDER, objectMap, true, new TextHttpResponseHandler() {
+                     @Override
+                     public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                         Log.d(TAG, "失败=" + s);
+                         showToast(getString(R.string.no_net_work));
+                         mMsgListView.stopRefresh();
+                         mMsgListView.setRefreshTime(System.currentTimeMillis());
+                     }
+
+                     @Override
+                     public void onSuccess(int i, Header[] headers, String s) {
+                         try {
+                             Log.d(TAG, "成功s=" + s);
+                             JSONObject json = null;
+                             json = new JSONObject(s);
+                             switch (json.getInt("code")) {
+                                 case 200:
+                                     JSONObject jsonData = new JSONObject(json.getString("data"));
+                                     List<YJOrderModel> yjOrderModelList = JSON.parseArray(jsonData.getString("orderList"), YJOrderModel.class);
+                                     PaginationInfo paginationInfo = JSON.parseObject(jsonData.getString("pagination"), PaginationInfo.class);
+                                     Log.i("分页信息", paginationInfo.toString());
+                                     notifyListener(YJNotifyTag.MY_ORDER_LIST_PAGE_INFO, paginationInfo);
+                                     notifyListener(YJNotifyTag.MY_ORDER_LIST_LOAD_MORE, yjOrderModelList);
+                                     break;
+                                 case 300:
+                                     break;
+                                 case 400:
+                                     break;
+                                 case 401:
+                                     break;
+                                 case 402:
+                                     break;
+                                 case 500:
+                                     break;
+                                 case 600:
+                                     startActivity(createIntent(YJLoginActivity.class, createTransmitData(YJLoginActivity.LOGIN_OUT, 1).set(YJLoginActivity.MY_LOGIN_OUT, true)));
+                                     finishAll();
+                                     break;
+                                 default:
+                                     break;
+                             }
+                         } catch (JSONException e) {
+                             e.printStackTrace();
+                         }
+                     }
+                 });
+    }
+
+    @Override
+    public void getMyOrderInfo(YJOrderModel yjOrderModel) {
+        Map<String, Object> objectMap = new HashMap<>();
+        try {
+            objectMap.put("orderId", yjOrderModel.getOrderId());
+            objectMap.put("orderRecordType", yjOrderModel.getOrderRecordType());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        YJStudentReqManager.getServerData(YJReqURLProtocol.GET_MY_ORDER_INFO, objectMap, true, new TextHttpResponseHandler() {
+             @Override
+             public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                 Log.d(TAG, "getMyOrderInfo失败=" + s);
+                 showToast(getString(R.string.no_net_work));
+             }
+
+             @Override
+             public void onSuccess(int i, Header[] headers, String s) {
+
+                 try {
+                     Log.d(TAG, "成功s=" + s);
+                     JSONObject json = null;
+                     json = new JSONObject(s);
+                     switch (json.getInt("code")) {
+                         case 200:
+                             JSONObject jsonObject = new JSONObject(json.getString("data"));
+                             YJOrderModel yjOrderModel = JSON.parseObject(jsonObject.getString("orderInfo"), YJOrderModel.class);
+                             Log.d(TAG, "yjOrderModel=" + yjOrderModel.toString());
+
+                             if (yjOrderModel.getOrderRecordType().equals("PAY_GOID")) {
+                                 startActivity(createIntent(YJRechargeWhaleMoney.class, createTransmitData(YJRechargeWhaleMoney.ORDER_MODEL, yjOrderModel)));
+
+                             } else if (yjOrderModel.getOrderRecordType().equals("BUY_COURSE")) {
+                                 startActivity(createIntent(YJBuyCourseActivity.class, createTransmitData(YJBuyCourseActivity.ORDER_MODEL, yjOrderModel).set(YJBuyCourseActivity.VISIBLE_FLAG, true)));
+
+                             }
+                             break;
+                         case 300:
+                             showToast("订单错误，请重新下单");
+                             onRefresh();
+                             break;
+                         case 301:
+                             showToast("订单错误，请重新下单");
+                             onRefresh();
+                             break;
+                         case 400:
+                             showToast("订单错误，请重新下单");
+                             onRefresh();
+                             break;
+                         case 401:
+                             showToast("订单错误，请重新下单");
+                             onRefresh();
+                             break;
+                         case 402:
+                             showToast("订单错误，请重新下单");
+                             onRefresh();
+                             break;
+                         case 403:
+                             showToast("该课程已经被下架了，下次记得早点来哦~");
+                             onRefresh();
+                             break;
+                         case 404:
+                             showToast("该课程价格有变，请重新下单支付");
+                             onRefresh();
+                             break;
+                         case 405:
+                             showToast("你已经购买过该课程啦，速去我的课程查看");
+                             onRefresh();
+                             break;
+                         case 406:
+                             showToast("特价商品只可以购买一次");
+                             onRefresh();
+                             break;
+                         case 500:
+                             showToast("订单错误，请重新下单");
+                             onRefresh();
+                             break;
+                         case 600:
+                             startActivity(createIntent(YJLoginActivity.class, createTransmitData(YJLoginActivity.LOGIN_OUT, 1).set(YJLoginActivity.MY_LOGIN_OUT, true)));
+                             finishAll();
+                             break;
+                         default:
+                             break;
+                     }
+                 } catch (JSONException e) {
+                     e.printStackTrace();
+                 }
+             }
+         });
+    }
+
+    private void onRefresh(){
+        page = 1;
+        paginationInfo = null;
+        yjOrderModelList.clear();
+        getMyOrder();
+    }
+}

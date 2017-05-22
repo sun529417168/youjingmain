@@ -1,0 +1,302 @@
+package com.youjing.yjeducation.ui.dispaly.activity;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.lidroid.xutils.BitmapUtils;
+import com.youjing.yjeducation.R;
+import com.youjing.yjeducation.core.YJGlobal;
+import com.youjing.yjeducation.core.YJNotifyTag;
+import com.youjing.yjeducation.model.YJCount;
+import com.youjing.yjeducation.model.YJUser;
+import com.youjing.yjeducation.question.QuestionsActivity;
+import com.youjing.yjeducation.ui.actualize.activity.YJActivateGiftCard;
+import com.youjing.yjeducation.ui.actualize.activity.YJDownLoadActivity;
+import com.youjing.yjeducation.ui.actualize.activity.YJMedalActivity;
+import com.youjing.yjeducation.ui.actualize.activity.YJMyWalletActivity;
+import com.youjing.yjeducation.ui.actualize.activity.YJPersonalCenterLevelActivity;
+import com.youjing.yjeducation.ui.actualize.activity.YJRechargeWhaleMoney;
+import com.youjing.yjeducation.ui.actualize.activity.YJSettingActivity;
+import com.youjing.yjeducation.ui.actualize.activity.YJUserInfoActivity;
+import com.youjing.yjeducation.ui.actualize.dialog.YJShareDialog;
+import com.youjing.yjeducation.util.ClickUtil;
+import com.youjing.yjeducation.wiget.CustomImage;
+
+import org.vwork.mobile.ui.AVVirtualActivity;
+import org.vwork.mobile.ui.delegate.IVClickDelegate;
+import org.vwork.mobile.ui.utils.VLayoutTag;
+import org.vwork.mobile.ui.utils.VViewTag;
+import org.vwork.utils.notification.IVNotificationListener;
+
+/**
+ * user  秦伟宁
+ * Date 2016/3/10
+ * Time 18:01
+ */
+@VLayoutTag(R.layout.activity_my)
+public abstract class AYJPersonalActivity extends AVVirtualActivity implements IVClickDelegate {
+
+    private String TAG = "AYJPersonalActivity";
+    @VViewTag(R.id.re_setting)
+    private RelativeLayout mRe_setting;
+    @VViewTag(R.id.re_my_order)
+    private RelativeLayout mRe_my_order;
+    @VViewTag(R.id.re_my_card)
+    private RelativeLayout mRe_my_card;
+    @VViewTag(R.id.re_down_load)
+    private RelativeLayout mRe_down_load;
+    @VViewTag(R.id.img_user_photo)
+    protected CustomImage mImg_user_photo;
+    @VViewTag(R.id.btn_recharge)
+    private Button mBtn_recharge;
+    @VViewTag(R.id.re_active_card)
+    private RelativeLayout mRe_active_card;
+    @VViewTag(R.id.re_my_task)
+    private RelativeLayout mRe_my_task;
+    @VViewTag(R.id.re_my_course)
+    private RelativeLayout mRe_my_course;
+    @VViewTag(R.id.img_message)
+    private ImageView mImg_message;
+    @VViewTag(R.id.txt_user_name)
+    protected TextView mTxt_user_name;
+    @VViewTag(R.id.txt_whale_num)
+    protected TextView mTxt_whale_num;
+    @VViewTag(R.id.rl_money)
+    protected RelativeLayout mRl_money;
+    @VViewTag(R.id.layout_my_gallery)
+    protected LinearLayout mLayout_my_gallery;
+    @VViewTag(R.id.img_my_medal_arrow_layout)
+    protected RelativeLayout mImg_my_medal_arrow_layout;
+
+    @VViewTag(R.id.txt_unpaid_course)
+    protected TextView mTxt_unpaid_course;
+    @VViewTag(R.id.txt_unpaid_order)
+    protected TextView mTxt_unpaid_order;
+    @VViewTag(R.id.txt_unpaid_wallet)
+    protected TextView mTxt_unpaid_wallet;
+    @VViewTag(R.id.txt_unpaid_task)
+    protected TextView mTxt_unpaid_task;
+    @VViewTag(R.id.txt_level_num)
+    protected TextView mTxt_level_num;
+    @VViewTag(R.id.txt_level)
+    protected TextView txt_level;
+    @VViewTag(R.id.layout_my_medal_and_leaveName)
+    private LinearLayout mLayout_my_medal_and_leaveName;
+    @VViewTag(R.id.invite_friends_layout)
+    private RelativeLayout mInvite_friends_layout;
+    @VViewTag(R.id.img_message_little)
+    protected ImageView mLmg_message_little;
+
+
+    protected Bitmap LOAD_BITMAP;
+    protected Bitmap NO_LOAD_BITMAP;
+    protected String imagePath;
+
+
+    private YJUser mYjUser;
+    private YJCount mYjCount;
+    public static int flag = -1;
+
+    @Override
+    protected void onLoadedView() {
+
+        mYjUser = YJGlobal.getYjUser();
+        // CrashReport.testJavaCrash();
+        showCount();
+        bindNotifyListener();
+//        mLayout_my_gallery.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View view, MotionEvent motionEvent) {
+//                switch (motionEvent.getAction()){
+//                    case MotionEvent.ACTION_DOWN:
+//                        flag = 0;
+//                        Log.i("HorizonScroll", "down");
+//                        startActivity(YJMedalActivity.class);
+//                        break;
+//                    case MotionEvent.ACTION_MOVE:
+//                        Log.i("HorizonScroll", "move");
+//                        break;
+//                    case MotionEvent.ACTION_UP:
+//                        flag = -1;
+//                        Log.i("HorizonScroll", "up");
+//                        break;
+//                }
+//                return false;
+//            }
+//        });
+
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (view == mRe_setting) {
+            if (ClickUtil.isFastDoubleClick()) {
+                return;
+            }
+            startActivity(YJSettingActivity.class);
+//            startActivity(QuestionsActivity.class);
+        } else if (view == mImg_user_photo) {
+            if (ClickUtil.isFastDoubleClick()) {
+                return;
+            }
+            startActivity(YJUserInfoActivity.class);
+        } else if (view == mBtn_recharge) {
+            if (ClickUtil.isFastDoubleClick()) {
+                return;
+            }
+//            startActivity(YJMyWalletActivity.class);
+            startActivity(YJRechargeWhaleMoney.class);
+        } else if (view == mRl_money) {
+            if (ClickUtil.isFastDoubleClick()) {
+                return;
+            }
+            startActivity(YJMyWalletActivity.class);
+        } else if (view == mRe_my_order) {
+            if (ClickUtil.isFastDoubleClick()) {
+                return;
+            }
+            getMyOrder();
+        } else if (view == mRe_my_card) {
+            if (ClickUtil.isFastDoubleClick()) {
+                return;
+            }
+            getMyCard();
+        } else if (view == mRe_my_task) {
+            if (ClickUtil.isFastDoubleClick()) {
+                return;
+            }
+//            startActivity(YJMyTaskActivity.class);
+            getMyTask();
+        } else if (view == mImg_message) {
+            if (ClickUtil.isFastDoubleClick()) {
+                return;
+            }
+            getMessage();
+
+        } else if (view == mRe_down_load) {
+            if (ClickUtil.isFastDoubleClick()) {
+                return;
+            }
+            startActivity(YJDownLoadActivity.class);
+        } else if (view == mRe_my_course) {
+            if (ClickUtil.isFastDoubleClick()) {
+                return;
+            }
+            getMyCourse();
+        } else if (view == mRe_active_card) {
+            if (ClickUtil.isFastDoubleClick()) {
+                return;
+            }
+            startActivity(YJActivateGiftCard.class);
+        } else if (view == mLayout_my_gallery) {
+            if (ClickUtil.isFastDoubleClick()) {
+                return;
+            }
+            startActivity(YJMedalActivity.class);
+        } else if (view == mImg_my_medal_arrow_layout) {
+            if (ClickUtil.isFastDoubleClick()) {
+                return;
+            }
+            startActivity(YJMedalActivity.class);
+        } else if (view == mLayout_my_medal_and_leaveName) {
+            if (ClickUtil.isFastDoubleClick()) {
+                return;
+            }
+            startActivity(YJPersonalCenterLevelActivity.class);
+        } else if (view == mInvite_friends_layout) {
+            if (ClickUtil.isFastDoubleClick()) {
+                return;
+            }
+            YJShareDialog yjShareDialog = new YJShareDialog();
+            showDialog(yjShareDialog);
+        }
+
+    }
+
+
+    private void bindNotifyListener() {
+        getParentActivity().getApp().getTopActivity().addListener(YJNotifyTag.HEAD_USER, new IVNotificationListener() {
+            @Override
+            public void onNotify(String s, Object value) {
+                String head = (String) value;
+                initPhoto(head);
+            }
+        });
+
+        getParentActivity().getApp().getTopActivity().addListener(YJNotifyTag.USER_NICKNAME, new IVNotificationListener() {
+            @Override
+            public void onNotify(String s, Object value) {
+                String name = (String) value;
+                mTxt_user_name.setText(name);
+            }
+        });
+
+        addListener(YJNotifyTag.PAY_SUCESS, new IVNotificationListener() {
+            @Override
+            public void onNotify(String s, Object value) {
+
+                mYjUser = YJGlobal.getYjUser();
+                if (null != mYjUser) {
+
+                    if (!TextUtils.isEmpty(mYjUser.getCoin())) {
+                        mTxt_whale_num.setText(mYjUser.getCoin());
+                    }
+
+                }
+            }
+        });
+        addListener(YJNotifyTag.MY_TASK, new IVNotificationListener() {
+            @Override
+            public void onNotify(String s, Object value) {
+
+                if (ClickUtil.isFastClick()) {
+                    return;
+                }
+                getMyTask();
+                Log.d(TAG, "getMyTask");
+            }
+        });
+    }
+
+    private void initPhoto(String head) {
+        if (LOAD_BITMAP == null) {
+            LOAD_BITMAP = BitmapFactory.decodeResource(getResources(), R.mipmap.img_app_logo);
+        }
+        if (NO_LOAD_BITMAP == null) {
+            NO_LOAD_BITMAP = BitmapFactory.decodeResource(getResources(), R.mipmap.img_app_logo);
+        }
+        Log.d(TAG, "head = " + head);
+        BitmapUtils.create(getContext()).display(mImg_user_photo, head + "@0o_0l_150w_80q.src", LOAD_BITMAP, NO_LOAD_BITMAP);
+    }
+
+    //显示Count
+    private void showCount() {
+        getMyCount();
+    }
+
+    public abstract void getMyOrder();
+
+    public abstract void getMessage();
+
+    public abstract void getMyCourse();
+
+    public abstract void getMyCard();
+
+    public abstract void getMyCount();
+
+    public abstract void getMyTask();
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        showCount();
+    }
+}

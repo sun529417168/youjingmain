@@ -1,0 +1,308 @@
+package com.youjing.yjeducation.util;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.preference.PreferenceManager;
+import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.youjing.yjeducation.core.YJBaseActivity;
+import com.youjing.yjeducation.core.YJGlobal;
+import com.youjing.yjeducation.model.YJCourseModel;
+import com.youjing.yjeducation.model.YJGradeModel;
+import com.youjing.yjeducation.model.YJSubjectModel;
+import com.youjing.yjeducation.ui.actualize.dialog.YJUpdateEvaluationDialog;
+
+import org.apache.http.util.EncodingUtils;
+import org.vwork.mobile.ui.IVActivity;
+
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+/**
+ * if my son want to be programmer , i will break his legs.
+ * Created by tony on 2015/10/19.
+ */
+public class StringUtils {
+
+    public static void tip(Context context, int contentId) {
+        Toast.makeText(context, getString(context, contentId), Toast.LENGTH_SHORT).show();
+    }
+
+    public static void tip(Context context, String content) {
+        Toast.makeText(context, content, Toast.LENGTH_SHORT).show();
+    }
+
+    private static String getString(Context context, int id) {
+        return context.getResources().getString(id);
+    }
+
+    /**
+     * 格式化时间
+     * yyyy-MM-dd HH:mm:ss
+     *
+     * @param date 需要格式化的时间
+     * @return 时间的字符串形式
+     */
+    public static String DataToString(Date date) {
+        SimpleDateFormat sdformat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//24小时制
+        return sdformat.format(date);
+    }
+
+    /**
+     * 当前的时间
+     * yyyy-MM-dd HH:mm:ss
+     *
+     * @return 当前时间的字符串
+     */
+    public static String getCurrentTime() {
+        SimpleDateFormat sdformat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//24小时制
+        return sdformat.format(System.currentTimeMillis());
+    }
+
+    /**
+     * 方法说明：我的课程里边的学习完成后显示的分钟数
+     * stt
+     * 创建时间：2016.05.25
+     *
+     * @param minute
+     * @return
+     */
+    public static String getMinute(String minute) {
+        double minuteTime = Double.parseDouble(minute);
+        Log.i("初一===", minuteTime / Double.parseDouble("60") + "");
+        return Math.round(minuteTime / Double.parseDouble("60")) + "";
+    }
+
+    /**
+     * 除法精确到两位
+     *
+     * @param value1
+     * @param value2
+     * @return
+     */
+    public static String div(double value1, double value2) {
+
+        BigDecimal b1 = new BigDecimal(Double.toString(value1));
+        BigDecimal b2 = new BigDecimal(Double.toString(value2));
+        Log.i("分钟数===", value1 + "");
+        return b1.divide(b2, 0, BigDecimal.ROUND_HALF_UP).doubleValue() + "";
+    }
+
+    /**
+     * 把时间戳转换成时间
+     *
+     * @param time
+     * @return
+     */
+    public static String getDate(String time, int start, int end) {
+        SimpleDateFormat sdr = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        @SuppressWarnings("unused")
+        long lcc = Long.valueOf(time);
+        int i = Integer.parseInt(time);
+        String times = sdr.format(new Date(i * 1000L));
+        return subDate(times, start, end);
+    }
+
+    /**
+     * 截取字符串
+     *
+     * @param date
+     * @param start
+     * @param end
+     * @return
+     */
+    public static String subDate(String date, int start, int end) {
+        return date.substring(start, end);
+    }
+
+    public static void setGradeAndSubject(Context context, YJCourseModel mYjCourseModel) {
+        List mGradeList;
+        int mGrade, mSubject;
+        List<YJSubjectModel> mSubjectModelList = new ArrayList<YJSubjectModel>();
+        List subjectList;
+        mGrade = PreferenceManager.getDefaultSharedPreferences(context).getInt("gradeNum", 0);
+        mSubject = PreferenceManager.getDefaultSharedPreferences(context).getInt("subjectNum", 0);
+        List<YJGradeModel> list = YJGlobal.getGradeList();
+        mGradeList = new ArrayList();
+        if (list != null) {
+            Log.i("年级课程信息===", list.toString());
+            for (int i = 0; i < list.size(); i++) {
+                mGradeList.add(list.get(i).getGradeName());
+                if (mYjCourseModel.getGradeId().equals(list.get(i).getGradeId())) {
+                    notifyCourse(context, list.get(i).getGradeName(), true);
+                    SharedUtil.saveGrade(context, list.get(i).getGradeName(), i);
+
+                    YJGlobal.setMy_grade(list.get(i).getGradeName());
+                    YJGlobal.setMy_grade_id(mYjCourseModel.getGradeId());
+
+                    mSubjectModelList = list.get(i).getSubjectVos();
+                }
+            }
+
+
+        }
+        subjectList = new ArrayList();
+        if (mSubjectModelList != null) {
+            for (int i = 0; i < mSubjectModelList.size(); i++) {
+                subjectList.add(mSubjectModelList.get(i).getSubjectName());
+                if (mYjCourseModel.getSubjectId().equals(mSubjectModelList.get(i).getSubjectId())) {
+                    notifyCourse(context, mSubjectModelList.get(i).getSubjectName(), false);
+                    SharedUtil.saveProject(context, mSubjectModelList.get(i).getSubjectName(), i);
+
+                    YJGlobal.setMy_subjectId(mYjCourseModel.getSubjectId());
+                    YJGlobal.setMy_subject(mSubjectModelList.get(i).getSubjectName());
+                }
+            }
+
+        }
+    }
+
+    //发送一个广播 修改title年级
+    public static void notifyCourse(Context context, String info, boolean mflag) {
+        Intent mIntent = new Intent("发送广播");
+        if (mflag) {
+            mIntent.putExtra("grade", info);
+        } else {
+            mIntent.putExtra("subject", info);
+        }
+
+        //发送广播
+        context.sendBroadcast(mIntent);
+    }
+
+    /**
+     * stt
+     * 2016.7.7
+     * 方法说明：给app评分，当浏览的页面大于30个的时候弹出这个dialog
+     *
+     * @param activity
+     */
+    public static void showEvaluationDialog(IVActivity activity) {
+        Log.i("现在是第几个", SharedUtil.getInteger(activity.getContext(), "baseIndex", 0) + "");
+        if (SharedUtil.getInteger(activity.getContext(), "baseIndex", 0) == -1) {
+            return;
+        }
+        if (SharedUtil.getInteger(activity.getContext(), "baseIndex", 0) > 30) {
+            SharedUtil.setInteger(activity.getContext(), "baseIndex", -1);
+            YJUpdateEvaluationDialog updateEvaluationDialog = new YJUpdateEvaluationDialog();
+            activity.showDialog(updateEvaluationDialog);
+        }
+    }
+
+    /**
+     * stt
+     * 2016.7.7
+     * 方法说明：给app评分去市场
+     */
+    public static void toScore(IVActivity context) {
+        Intent i = MarketUtils.getIntent(context.getContext());
+        boolean b = MarketUtils.judge(context.getContext(), i);
+        if (b == false) {
+            context.startActivity(i);
+        } else {
+            context.showToast("您的手机没有安装应用市场");
+        }
+    }
+
+
+    /**
+     * stt
+     * 2016.7.1
+     * 方法说明：推送的红点是否显示
+     */
+    public static void showTitleRed(boolean isFlag, ImageView imageView) {
+        if (isFlag) {
+            imageView.setVisibility(View.VISIBLE);
+        } else {
+            imageView.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    /**
+     * stt
+     * 2016.7.15
+     * 方法说明：判断Url是否是有用的
+     */
+    public static boolean checkURL(String url) {
+        boolean value = false;
+        try {
+            HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
+            int code = conn.getResponseCode();
+            if (code != 200) {
+                value = false;
+            } else {
+                value = true;
+            }
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return value;
+    }
+
+    /**
+     * stt
+     * 2016.7.15
+     * 方法说明：判断Url是否是http请求的
+     */
+    private static final String acceptableSchemes[] = {"http:", "https:", "file:"};
+
+    public static boolean isUrl(String url) {
+        if (url == null) {
+            return false;
+        }
+
+        for (int i = 0; i < acceptableSchemes.length; i++) {
+            if (url.startsWith(acceptableSchemes[i])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * stt
+     * 2016.7.18
+     * 方法说明：判断时间是今天还是明天
+     */
+    public static String getDateDetail(String str) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date date = sdf.parse(str);
+            Date now = new Date();
+            now = sdf.parse(sdf.format(now));
+            long sl = date.getTime();
+            long el = now.getTime();
+            long ei = sl - el;
+            int value = (int) (ei / (1000 * 60 * 60 * 24));
+            if (value == 0) {
+                return "今天";
+            } else if (value == 1) {
+                return "明天";
+            } else {
+                return "3";
+            }
+
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return "3";
+    }
+}

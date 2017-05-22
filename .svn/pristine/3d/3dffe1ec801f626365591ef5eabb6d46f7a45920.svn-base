@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/relayout_my_cards"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/invite_bg">
+
+    <include
+        android:id="@+id/title"
+        layout="@layout/title_blue_bg" />
+
+    <ImageView
+        android:id="@+id/img_title_pic"
+        android:layout_width="match_parent"
+        android:layout_height="195dp"
+        android:layout_centerVertical="true"
+        android:focusable="false"
+        android:layout_below="@id/title"
+        android:scaleType="fitXY"
+        android:src="@mipmap/img_invite_friend" />
+    <RelativeLayout
+        android:id="@+id/re_invite_code"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_below="@id/img_title_pic">
+        <TextView
+            android:id="@+id/txt_my_invite_code"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:textSize="14sp"
+            android:layout_marginRight="10dp"
+            android:gravity="center"
+            android:text="我的邀请码"
+            android:textColor="@color/black" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/re_my_code"
+        android:layout_width="125dp"
+        android:layout_height="48dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/re_invite_code"
+        android:background="@color/white">
+
+        <TextView
+            android:id="@+id/txt_my_code"
+            android:layout_width="match_parent"
+            android:layout_height="24dp"
+            android:clickable="true"
+            android:layout_alignParentTop="true"
+            android:textSize="17sp"
+            android:layout_marginBottom="3dp"
+            android:layout_centerHorizontal="true"
+            android:gravity="bottom|center_horizontal"
+            android:text=""
+            android:textColor="@color/yellow_text" />
+        <TextView
+            android:id="@+id/txt_copy"
+            android:layout_width="match_parent"
+            android:layout_height="24dp"
+            android:clickable="true"
+            android:layout_alignParentBottom="true"
+            android:textSize="14sp"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:text="点击复制"
+            android:textColor="@color/invite_blue" />
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/re_input_code"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_below="@id/re_my_code">
+        <TextView
+            android:id="@+id/txt_input"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:layout_centerInParent="true"
+            android:layout_marginRight="10dp"
+            android:gravity="center"
+            android:textSize="14sp"
+            android:text="输入好友邀请码，可获得奖励 >>"
+            android:textColor="@color/invite_blue" />
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/re_my_reward"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_marginTop="3dp"
+        android:layout_below="@id/re_input_code">
+
+        <TextView
+            android:id="@+id/txt_my_reward"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:layout_marginLeft="37dp"
+            android:gravity="center"
+            android:textSize="14sp"
+            android:text="我的奖励"
+            android:textColor="@color/black" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/re_reward_info"
+        android:layout_width="match_parent"
+        android:layout_height="27dp"
+        android:layout_marginLeft="37dp"
+        android:layout_marginRight="37dp"
+        android:layout_below="@id/re_my_reward"
+        android:background="#8cd1df">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:textSize="14sp"
+            android:layout_marginLeft="23dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:text="奖励时间"
+            android:textColor="@color/white" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:layout_centerInParent="true"
+            android:text="奖励类型"
+            android:textSize="14sp"
+            android:textColor="@color/white" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:layout_marginRight="23dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:text="奖励"
+            android:textSize="14sp"
+            android:textColor="@color/white" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/re_share"
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:layout_marginBottom="3dp"
+        android:layout_alignParentBottom="true">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+
+                    <ImageButton
+                        android:id="@+id/btn_wx"
+                        style="@style/share"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_centerHorizontal="true"
+                        android:background="@mipmap/img_wechat_share" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/btn_wx"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="7dp"
+                        android:text="微信好友"
+                        android:textColor="@color/black"
+                        android:textSize="12sp" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+
+                    <ImageButton
+                        android:id="@+id/btn_sina"
+                        style="@style/share"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_centerHorizontal="true"
+                        android:background="@mipmap/img_wxf_share" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/btn_sina"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="7dp"
+                        android:text="朋友圈"
+                        android:textColor="@color/black"
+                        android:textSize="12sp" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+
+                    <ImageButton
+                        android:id="@+id/btn_qq"
+                        style="@style/share"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_centerHorizontal="true"
+                        android:background="@mipmap/img_qq_share" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/btn_qq"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="7dp"
+                        android:text="QQ好友"
+                        android:textColor="@color/black"
+                        android:textSize="12sp" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:visibility="gone"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+
+                    <ImageButton
+                        android:id="@+id/btn_chat"
+                        style="@style/share"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_centerHorizontal="true"
+                        android:background="@mipmap/img_chat_share" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/btn_chat"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="7dp"
+                        android:text="聊天室"
+                        android:textColor="@color/black"
+                        android:textSize="12sp" />
+                </RelativeLayout>
+            </LinearLayout>
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/re_share_title"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_above="@id/re_share">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:layout_centerInParent="true"
+            android:layout_marginRight="10dp"
+            android:gravity="center"
+            android:text="分享到"
+            android:textColor="@color/black" />
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/re_share_title"
+        android:layout_marginLeft="37dp"
+        android:layout_marginRight="37dp"
+        android:layout_below="@id/re_reward_info"
+        android:background="@color/invite_bg">
+
+        <ListView
+            android:id="@+id/lv_my_reward"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/invite_bg"
+            android:cacheColorHint="@android:color/transparent"
+            android:divider="#00000000"
+            android:fadingEdge="none"
+            android:overScrollMode="never"
+            android:scrollbars="none"
+            android:scrollingCache="false">
+
+        </ListView>
+    </RelativeLayout>
+</RelativeLayout>

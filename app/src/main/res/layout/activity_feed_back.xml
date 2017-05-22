@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray_view_bg"
+    android:orientation="vertical">
+
+    <include layout="@layout/title_blue_bg" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:layout_marginTop="14dp"
+        android:lineSpacingExtra="3dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:text="提出您宝贵的意见吧，让我们的产品经理反省,"
+        android:textColor="@color/teacher_info_view"
+        android:textSize="14sp" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="241dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:focusableInTouchMode="true"
+                android:orientation="vertical">
+
+                <EditText
+                    android:id="@+id/ed_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="221dp"
+                    android:maxLines="100"
+                    android:background="@color/white"
+                    android:gravity="left|top"
+                    android:hint="请留言"
+                    android:inputType="textMultiLine"
+                    android:padding="10dp"
+                    android:textColor="@color/teacher_info_view"
+                    android:maxLength="1000"
+                    android:textSize="11sp" />
+
+                <TextView
+                    android:layout_marginTop="3dp"
+                    android:layout_marginRight="5dp"
+                    android:id="@+id/txt_font_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:text="0/2000"
+                    android:textSize="14sp"/>
+
+            </LinearLayout>
+    </RelativeLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="33dp"
+        android:lineSpacingExtra="3dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:text="留下您的联系方式吧，方便我们随时答复您"
+        android:textColor="@color/teacher_info_view"
+        android:textSize="14sp" />
+
+    <EditText
+        android:id="@+id/ed_mail"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:hint="请输入您的邮箱"
+        android:padding="5dp"
+        android:textColor="@color/black"
+        android:textSize="11sp" />
+    <Button
+        android:id="@+id/btn_send_back"
+        android:layout_width="match_parent"
+        android:layout_height="47dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="26dp"
+        android:background="@mipmap/login_login_bg"
+        android:text="提交反馈"
+        android:textColor="@color/white"
+        android:textSize="17sp" />
+
+</LinearLayout>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="227dp"
+    android:layout_height="47dp"
+    android:background="#4C4C4C"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="9dp">
+
+
+    <ImageView
+        android:id="@+id/img_login_success"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@mipmap/login_success_head" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="9dp"
+        android:text="@string/toast_cards_sucess"
+        android:textColor="@color/white"
+        android:textSize="14sp" />
+
+    <ImageView
+        android:id="@+id/img_rmb"
+        android:layout_width="12dp"
+        android:layout_height="12dp"
+        android:layout_marginLeft="4dp"
+        android:src="@mipmap/whale_money" />
+
+    <TextView
+        android:id="@+id/toast_cards_coinNum"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="4dp"
+        android:textColor="@color/yellow_text" />
+</LinearLayout>

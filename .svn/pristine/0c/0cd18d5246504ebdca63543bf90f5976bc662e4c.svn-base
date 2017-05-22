@@ -1,0 +1,53 @@
+package com.youjing.yjeducation.common.config;
+
+/**
+ * user  秦伟宁
+ * Date 2016/3/3
+ * Time 15:19
+ */
+public  class YJConfig {
+    public static boolean Client_Debug = false
+            ;
+    public static String ENCRYPTKEY ;
+    public static String PLATFORM;
+    public static String MD5SIGN;
+    public static int mScreenWidth;
+    public static int mScreenHeight;
+    public static String IM_APP_KEY; //im appkey
+
+    public static  String APP_ID;//微信appId
+    public static  String SINA_APP_KEY;//新浪_appkey
+    public static  String SINA_APP_SECRET;//新浪_appsecret
+
+    public static String BUGLY_APP_ID;
+
+    public static  String QQ_APP_ID;//qq appId
+    public enum YJServerConnection {
+        MainServer, TestServer
+    }
+    public static YJServerConnection CURRENT_SERVER = YJServerConnection.MainServer;
+
+    static {
+        if (CURRENT_SERVER == YJServerConnection.MainServer) {
+            ENCRYPTKEY = "12345678";
+            PLATFORM = "Android";
+            MD5SIGN = "qiqifei!@#";
+            APP_ID = "wxaecdf663744b428e";
+            IM_APP_KEY = "23362570";
+            SINA_APP_KEY = "2757620975";
+            SINA_APP_SECRET = "bd044eb4fa06944d68989c69df9a81cc";
+            QQ_APP_ID = "1105377459";
+            BUGLY_APP_ID = "900031735";
+        } else if (CURRENT_SERVER == YJServerConnection.TestServer) {
+            ENCRYPTKEY = "12345678";
+            PLATFORM = "Android";
+            MD5SIGN = "qiqifei!@#";
+            APP_ID = "wxaecdf663744b428e";
+            IM_APP_KEY = "23356353";
+            SINA_APP_KEY = "2757620975";
+            SINA_APP_KEY = "bd044eb4fa06944d68989c69df9a81cc";
+            QQ_APP_ID = "1105377459";
+            BUGLY_APP_ID = "900031735";
+        }
+    }
+}

@@ -1,0 +1,65 @@
+package com.youjing.yjeducation.ui.dispaly.activity;
+
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+
+import com.youjing.yjeducation.R;
+import com.youjing.yjeducation.core.YJBaseActivity;
+import com.youjing.yjeducation.core.YJTitleLayoutController;
+
+/**
+ * user  秦伟宁
+ * Date 2016/7/9
+ * Time 10:33
+ */
+
+public class AYJWebviewInteraction extends YJBaseActivity {
+
+    private WebView mWebView;
+    private String msg;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_banner_webview);
+        YJTitleLayoutController.initTitleBuleBg(this, "活动", true);
+        mWebView = (WebView)findViewById(R.id.web_view);
+        msg = getIntent().getStringExtra("msg");
+
+        loadWebView(msg);
+    }
+
+    private void loadWebView(String url) {
+        mWebView.getSettings().setJavaScriptEnabled(true);
+        mWebView.getSettings().setSupportZoom(true);
+        mWebView.getSettings().setBuiltInZoomControls(true);
+        mWebView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
+        mWebView.requestFocus();
+
+
+        String uri = "file:///android_asset/js_test2.html";
+        mWebView.loadUrl(uri);
+        mWebView.setWebChromeClient(new WebChromeClient());
+        mWebView.addJavascriptInterface(new MyJava(this), "javaObject");
+    }
+
+    private class MyJava {
+        private Context mContext;
+        public MyJava(Context context) {
+            this.mContext = context;
+        }
+        @JavascriptInterface
+        public void javaFun(String name) {
+            showToast("js传来的参数"+name);
+        }
+    }
+
+
+
+}

@@ -1,0 +1,28 @@
+package com.youjing.yjeducation.ui.dispaly.activity;
+
+import com.youjing.yjeducation.util.StringUtils;
+
+import com.youjing.yjeducation.core.YJBaseActivity;
+import com.talkfun.sdk.frame.MtFragment;
+
+/**
+ * user  秦伟宁
+ * Date 2016/3/31
+ * Time 11:01
+ */
+
+public class LiveTestActivity  extends YJBaseActivity {
+    private MtFragment mMtFragment;
+
+    @Override
+    protected void onLoadedView() {
+        super.onLoadedView();
+
+            String token = "AOmZGZ0EmY1gTMmRGZ4MWNiNzYmFGM3UmN5cTNwQTZwwHf81XXbpjIyRHdhJCL3MDO4gDMwYDNxojIl1Wa0dWZyJCLiATN4MTOzIiOiQWa4JCLwQjMxEjOiQWawJCLiIiOiIXY0FmdhJCLwojIyVGZuV2ZiwyNzAjMzEDM2QTM6ISZylGc4VmIsIDN3ATN1ojIklWbv9mciwiIxETMxIiOiUWbh52ajlmbiwiIyV2c1JiOiUGbvJnIsIiMwADM5MjMiojIklWdiwCM0ITMxojIkl2XyVmb0JXYwJye";
+            StringUtils.Log("1111","token=="+token);
+            boolean isPlayback = getIntent().getBooleanExtra("isPlayback", false);
+            mMtFragment = MtFragment.build(token,isPlayback);
+            getSupportFragmentManager().beginTransaction().add(android.R.id.content, mMtFragment).commit();
+        }
+
+}

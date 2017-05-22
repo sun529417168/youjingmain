@@ -1,0 +1,250 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray_view_bg">
+
+    <LinearLayout
+        android:id="@+id/ll_play"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <com.letv.skin.v4.V4PlaySkin
+                    android:id="@+id/videobody"
+                    android:layout_width="match_parent"
+                    android:layout_height="203dp"
+                    android:clickable="true">
+
+                </com.letv.skin.v4.V4PlaySkin>
+
+                <ImageView
+                    android:id="@+id/img_play_bg"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@id/videobody"
+                    android:layout_alignTop="@id/videobody"
+                    android:scaleType="fitXY" />
+
+                <RelativeLayout
+                    android:id="@+id/re_play_start_de"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@id/videobody"
+                    android:layout_alignTop="@id/videobody"
+                    android:background="@color/transparent"
+                    android:clickable="true">
+
+                    <ImageView
+                        android:id="@+id/img_play_start_de"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_centerInParent="true"
+                        android:clickable="true"
+                        android:src="@mipmap/play_start_de"
+                        android:visibility="visible" />
+                </RelativeLayout>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:layout_alignBottom="@id/videobody"
+                android:layout_alignTop="@id/videobody">
+
+                <ImageView
+                    android:id="@+id/img_play_return"
+                    android:layout_width="29dp"
+                    android:layout_height="29dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="9dp"
+                    android:clickable="true"
+                    android:src="@mipmap/play_return" />
+            </RelativeLayout>
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="@color/white"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/txt_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:ellipsize="end"
+                    android:maxEms="14"
+                    android:singleLine="true"
+                    android:text=""
+                    android:textColor="@color/black"
+                    android:textSize="15sp" />
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="28dp"
+                android:paddingLeft="5dp">
+
+                <ImageView
+                    android:id="@+id/img_rmb"
+                    android:layout_width="13dp"
+                    android:layout_height="13dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginLeft="3dp"
+                    android:layout_marginTop="2.5dp"
+                    android:src="@mipmap/whale_money"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/txt_money"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginLeft="3dp"
+                    android:layout_toRightOf="@id/img_rmb"
+                    android:text="120"
+                    android:textColor="@color/yellow_text"
+                    android:textSize="14sp"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/course_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginLeft="3dp"
+                    android:layout_marginTop="3dp"
+                    android:layout_toRightOf="@id/txt_money"
+                    android:text="本课程购买后方可观看"
+                    android:textColor="@color/yellow_text"
+                    android:textSize="11sp" />
+
+                <TextView
+                    android:id="@+id/txt_num_praise"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="8dp"
+                    android:gravity="center"
+                    android:text="8596"
+                    android:textColor="@color/gray_text"
+                    android:textSize="10sp"
+                    android:visibility="gone" />
+
+                <ImageButton
+                    android:id="@+id/img_praise"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@id/txt_num_praise"
+                    android:background="@mipmap/play_praise_de"
+                    android:visibility="gone" />
+
+                <ImageButton
+                    android:id="@+id/img_share"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginRight="8dp"
+                    android:layout_toLeftOf="@+id/activity_play_share_Text"
+                    android:background="@mipmap/play_share"
+                    android:clickable="true" />
+
+                <TextView
+                    android:id="@+id/activity_play_share_Text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginRight="8dp"
+                    android:clickable="true"
+                    android:text="@string/invitation" />
+
+                <ImageButton
+                    android:id="@+id/img_download"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_centerInParent="true"
+                    android:layout_marginRight="26dp"
+                    android:layout_toLeftOf="@id/img_share"
+                    android:background="@mipmap/play_download"
+                    android:visibility="gone" />
+
+            </RelativeLayout>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_marginTop="9dp"
+            android:background="@color/course_item_bg_de"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/txt_course_num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:text="课程目录"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+
+        <!-- <Button
+             android:id="@+id/btn1"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="暂停" />
+
+         <Button
+             android:id="@+id/btn2"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="下一个" />-->
+        <ListView
+            android:id="@+id/lv_course_detail"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white"
+            android:cacheColorHint="@android:color/transparent"
+            android:divider="#00000000"
+            android:fadingEdge="none"
+            android:overScrollMode="never"
+            android:scrollbars="none"
+            android:scrollingCache="false">
+
+        </ListView>
+
+    </LinearLayout>
+
+
+    <Button
+        android:id="@+id/btn_apply"
+        android:layout_width="match_parent"
+        android:layout_height="58dp"
+        android:layout_alignParentBottom="true"
+        android:background="#FF9E19"
+        android:gravity="center"
+        android:text="立即报名"
+        android:textColor="@color/white"
+        android:textSize="17sp" />
+</RelativeLayout>

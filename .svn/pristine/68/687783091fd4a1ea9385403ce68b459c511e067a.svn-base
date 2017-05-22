@@ -1,0 +1,22 @@
+package com.youjing.yjeducation.common.config;
+
+/**
+ * user  秦伟宁
+ * Date 2016/3/3
+ * Time 15:19
+ */
+public class YJNetworkConfigs {
+    //public static final String HTTP_ADDRESS;
+    public static final String YJ_HTTP_ADDRESS;
+
+    static {
+        if (YJConfig.Client_Debug) {
+            // HTTP_ADDRESS = "http://192.168.1.116:8181/tutor";
+//            YJ_HTTP_ADDRESS = "http://10.10.10.226:8080/";
+            YJ_HTTP_ADDRESS = "http://10.10.10.219:8080/";
+        } else {
+            // HTTP_ADDRESS = "http://server.peidu.com/tutor";
+            YJ_HTTP_ADDRESS = "http://android.youjing.cn/";
+        }
+    }
+}

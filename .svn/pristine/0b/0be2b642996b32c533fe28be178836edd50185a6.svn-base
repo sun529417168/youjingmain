@@ -1,0 +1,186 @@
+package com.youjing.yjeducation.ui.dispaly.activity;
+
+import android.preference.PreferenceManager;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.lidroid.xutils.BitmapUtils;
+import com.youjing.yjeducation.R;
+import com.youjing.yjeducation.core.YJBaseActivity;
+import com.youjing.yjeducation.core.YJGlobal;
+import com.youjing.yjeducation.core.YJNotifyTag;
+import com.youjing.yjeducation.core.YJTitleLayoutController;
+import com.youjing.yjeducation.model.YJCourseModel;
+import com.youjing.yjeducation.model.YJOrderModel;
+import com.youjing.yjeducation.util.ClickUtil;
+import com.youjing.yjeducation.wxapi.WXPayEntryActivity;
+
+import org.vwork.mobile.ui.delegate.IVClickDelegate;
+import org.vwork.mobile.ui.utils.VLayoutTag;
+import org.vwork.mobile.ui.utils.VViewTag;
+import org.vwork.utils.base.VParamKey;
+import org.vwork.utils.notification.IVNotificationListener;
+
+/**
+ * user  秦伟宁
+ * Date 2016/4/12
+ * Time 16:39
+ */
+@VLayoutTag(R.layout.activity_buy_course_rmb_no_wx)
+public abstract class AYJBuyCourseActivity extends YJBaseActivity implements IVClickDelegate {
+    @VViewTag(R.id.re_ali_pay)
+    private RelativeLayout mRe_ali_pay;
+    @VViewTag(R.id.re_wx_pay)
+    private RelativeLayout mRe_wx_pay;
+    @VViewTag(R.id.rb_wx_pay)
+    private RadioButton mRb_wx_pay;
+    @VViewTag(R.id.rb_ali_pay)
+    private RadioButton mRb_ali_pay;
+    @VViewTag(R.id.btn_pay_group)
+    private RadioGroup mBtn_pay_group;
+    @VViewTag(R.id.btn_pay_now)
+    private Button mBtn_pay_now;
+    @VViewTag(R.id.re_pay_type)
+    private RelativeLayout mRe_pay_type;
+    @VViewTag(R.id.re_whale_num)
+    private RelativeLayout mRe_whale_num;
+
+    @VViewTag(R.id.txt_name)
+    private TextView mTxt_name;
+    @VViewTag(R.id.txt_teacher_name)
+    private TextView mTxt_teacher_name;
+    @VViewTag(R.id.txt_money_num_rmb)
+    private TextView mTxt_money_num_rmb;
+    @VViewTag(R.id.txt_rmb_num)
+    private TextView mTxt_rmb_num;
+    @VViewTag(R.id.fl_rmb)
+    private FrameLayout fl_rmb;
+    @VViewTag(R.id.img_rmb)
+    private ImageView img_rmb;
+    @VViewTag(R.id.img_course_teacher)
+    private ImageView img_course_teacher;
+    @VViewTag(R.id.txt_whale_money_num)
+    protected TextView txt_whale_money_num;
+    @VViewTag(R.id.txt_rmb_money)
+    protected TextView mTxt_rmb_money;
+    @VViewTag(R.id.img_new_course)
+    private ImageView img_new_course;
+
+
+    protected YJCourseModel mYjCourseModel;
+    protected YJOrderModel mYjOrderModel;
+    private String TAG = "AYJBuyCourseActivity";
+
+    public static final VParamKey<YJCourseModel> COURSE_MODEL = new VParamKey<YJCourseModel>(null);
+    public static final VParamKey<YJOrderModel> ORDER_MODEL = new VParamKey<YJOrderModel>(null);
+    public static final VParamKey<Boolean> VISIBLE_FLAG = new VParamKey<Boolean>(false);
+    private boolean visileFlag;
+
+    @Override
+    protected void onLoadedView() {
+        YJTitleLayoutController.initTitleBuleBg(this, "购买课程", true);
+        mYjCourseModel = getTransmitData(COURSE_MODEL);
+        mYjOrderModel = getTransmitData(ORDER_MODEL);
+        visileFlag = getTransmitData(VISIBLE_FLAG);
+        if (mYjCourseModel != null) {
+            Log.d(TAG, "mYjCourseModel=" + mYjCourseModel.toString());
+            mTxt_teacher_name.setText(mYjCourseModel.getTeacher().getTrueName());
+            mTxt_name.setText(mYjCourseModel.getName());
+            if (!TextUtils.isEmpty(mYjCourseModel.getIsNew()) && mYjCourseModel.getIsNew().equals("Yes")) {
+                img_new_course.setVisibility(View.VISIBLE);
+            } else {
+                img_new_course.setVisibility(View.GONE);
+            }
+
+            BitmapUtils.create(getContext()).display(img_course_teacher, mYjCourseModel.getCoursePic());
+            if (mYjCourseModel.getCoursePayWay().equals("XNB")) {
+                mRe_pay_type.setVisibility(View.GONE);
+                fl_rmb.setVisibility(View.GONE);
+                txt_whale_money_num.setText(YJGlobal.getYjUser().getCoin());
+                img_rmb.setImageResource(R.mipmap.whale_money);
+                mTxt_rmb_num.setText(mYjCourseModel.getPayCoin() + "");
+                mTxt_rmb_money.setText(mYjCourseModel.getPayCoin() + "鲸币");
+            }
+            if (mYjCourseModel.getCoursePayWay().equals("RMB")) {
+                mRe_whale_num.setVisibility(View.GONE);
+                mRe_pay_type.setVisibility(View.VISIBLE);
+                img_rmb.setImageResource(R.mipmap.img_rmb);
+                mTxt_rmb_money.setText(mYjCourseModel.getPayMoney() + "元");
+                mTxt_money_num_rmb.setText(mYjCourseModel.getOriginalMoney() + "");
+                mTxt_rmb_num.setText(mYjCourseModel.getPayMoney() + "");
+
+            }
+        }
+        if (mYjOrderModel != null) {
+            mRe_whale_num.setVisibility(View.GONE);
+            mRe_pay_type.setVisibility(View.VISIBLE);
+            img_rmb.setImageResource(R.mipmap.img_rmb);
+            if (TextUtils.isEmpty(mYjOrderModel.getIsNew())) {
+                if (mYjOrderModel.getIsNew().equals("Yes")) {
+                    img_new_course.setVisibility(View.VISIBLE);
+                } else {
+                    img_new_course.setVisibility(View.GONE);
+                }
+            }
+
+
+            mTxt_name.setText(mYjOrderModel.getGoodsName());
+            mTxt_teacher_name.setText(mYjOrderModel.getTrueName());
+            mTxt_rmb_money.setText(mYjOrderModel.getPayMoney() + "元");
+            mTxt_money_num_rmb.setText(mYjOrderModel.getOrderMoney() + "");
+            mTxt_rmb_num.setText(mYjOrderModel.getPayMoney() + "");
+            BitmapUtils.create(getContext()).display(img_course_teacher, mYjOrderModel.getCoursePic());
+        }
+        bindNotifyListener();
+    }
+
+    protected abstract void bindNotifyListener();
+
+
+    public static int temp = -1;
+
+    @Override
+    public void onClick(View view) {
+        if (view == mRe_wx_pay) {
+            mRb_ali_pay.setChecked(false);
+            mRb_wx_pay.setChecked(true);
+        } else if (view == mRe_ali_pay) {
+            mRb_wx_pay.setChecked(false);
+            mRb_ali_pay.setChecked(true);
+        } else if (view == mRb_wx_pay) {
+            mRb_ali_pay.setChecked(false);
+            mRb_wx_pay.setChecked(true);
+        } else if (view == mRb_ali_pay) {
+            mRb_wx_pay.setChecked(false);
+            mRb_ali_pay.setChecked(true);
+        } else if (view == mBtn_pay_now) {
+            int index = -1;
+
+            if (mRb_ali_pay.isChecked()) {
+                index = 1;
+            } else if (mRb_wx_pay.isChecked()) {
+                index = 2;
+            }
+            if (mYjCourseModel != null) {
+                if (mYjCourseModel.getCoursePayWay().equals("XNB")) {
+                    index = 3;
+                }
+            }
+            if (ClickUtil.isFastDoubleClick()) {
+                return;
+            }
+            onBtnConfirmPayClick(index);
+        }
+
+    }
+
+    protected abstract void onBtnConfirmPayClick(int index);
+}

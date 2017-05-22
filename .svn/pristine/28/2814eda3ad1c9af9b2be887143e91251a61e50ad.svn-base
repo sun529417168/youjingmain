@@ -1,0 +1,475 @@
+package com.youjing.yjeducation.ui.dispaly.activity;
+
+import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.nfc.Tag;
+import android.os.Handler;
+import android.os.Message;
+import android.preference.PreferenceManager;
+import android.text.TextUtils;
+import android.text.format.DateFormat;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
+import android.widget.AdapterView;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.letv.universal.iplay.ISplayer;
+import com.lidroid.xutils.BitmapUtils;
+import com.youjing.yjeducation.R;
+import com.youjing.yjeducation.core.YJGlobal;
+import com.youjing.yjeducation.core.YJNotifyTag;
+import com.youjing.yjeducation.model.PaginationInfo;
+import com.youjing.yjeducation.model.YJOpenClassModel;
+import com.youjing.yjeducation.ui.actualize.dialog.YJIsReplayDialog;
+import com.youjing.yjeducation.ui.actualize.dialog.YJLoginDialog;
+import com.youjing.yjeducation.ui.dispaly.dialog.AYJCourseExpiredDialog;
+import com.youjing.yjeducation.util.ClickUtil;
+import com.youjing.yjeducation.util.DialogUtil;
+import com.youjing.yjeducation.util.SharedUtil;
+import com.youjing.yjeducation.util.StringUtils;
+import com.youjing.yjeducation.util.TimeUtil;
+import com.youjing.yjeducation.wiget.CustomImage;
+import com.youjing.yjeducation.wiget.MorePopWindow;
+import com.youjing.yjeducation.wiget.MsgListView;
+
+import org.vwork.mobile.ui.AVAdapterItem;
+import org.vwork.mobile.ui.AVVirtualActivity;
+import org.vwork.mobile.ui.adapter.VAdapter;
+import org.vwork.mobile.ui.delegate.IVAdapterDelegate;
+import org.vwork.mobile.ui.delegate.IVClickDelegate;
+import org.vwork.mobile.ui.utils.VLayoutTag;
+import org.vwork.mobile.ui.utils.VViewTag;
+import org.vwork.utils.base.VParams;
+import org.vwork.utils.notification.IVNotificationListener;
+
+import java.util.Collection;
+import java.util.List;
+
+/**
+ * user  秦伟宁
+ * Date 2016/3/10
+ * Time 17:59
+ */
+@VLayoutTag(R.layout.activity_main_live_list)
+public abstract class AYJLiveListActivity extends AVVirtualActivity implements IVClickDelegate, IVAdapterDelegate {
+    @VViewTag(R.id.txt_title)
+    private TextView txt_title;
+    @VViewTag(R.id.iv_arrow)
+    private ImageView mIv_arrow;
+    @VViewTag(R.id.layout_title)
+    private RelativeLayout layout_title;
+    @VViewTag(R.id.mian_live_list_title)
+    private RelativeLayout mian_live_list_title;
+
+    @VViewTag(R.id.msgListView)
+    protected MsgListView mMsgListView;
+
+    private final String ACTION_NAME = "发送广播";
+    private String TAG = "AYJLiveListActivity";
+    private String mGrade;
+    private String mSubject;
+    private int mGradeNum, mSubjectNum;
+    protected boolean mIsLogin = false;
+    private RotateAnimation animation, reverseAnimation;
+    private MorePopWindow morePopWindow;
+    protected int page = 1;
+    protected Dialog progDialog;
+    protected int timeOut = 0;
+
+    protected List<YJOpenClassModel> yjCourseTypeModelList;
+    protected PaginationInfo paginationInfo;
+
+
+    @Override
+    protected void onLoadedView() {
+        StringUtils.showEvaluationDialog(AYJLiveListActivity.this);
+        mIsLogin = PreferenceManager.getDefaultSharedPreferences(getContext()).getBoolean("isLogin", false);
+        mGrade = PreferenceManager.getDefaultSharedPreferences(getContext()).getString("grade", YJGlobal.getGradeList().get(0).getGradeName());
+        mSubject = PreferenceManager.getDefaultSharedPreferences(getContext()).getString("subject", YJGlobal.getGradeList().get(0).getSubjectVos().get(0).getSubjectName());
+
+        mGradeNum = PreferenceManager.getDefaultSharedPreferences(getContext()).getInt("gradeNum", 0);
+        mSubjectNum = PreferenceManager.getDefaultSharedPreferences(getContext()).getInt("subjectNum", 0);
+
+        txt_title.setText(mGrade + mSubject);
+        if (YJGlobal.getGradeList() != null) {
+            getLiveList(YJGlobal.getGradeList().get(mGradeNum).getGradeId(), YJGlobal.getGradeList().get(mGradeNum).getSubjectVos().get(mSubjectNum).getSubjectId());
+            Log.d(TAG, "YJGlobal.getMy_grade_id=" + YJGlobal.getGradeList().get(mGradeNum).getGradeId());
+            Log.d(TAG, "YJGlobal.getMy_subjectId=" + YJGlobal.getGradeList().get(mGradeNum).getSubjectVos().get(mSubjectNum).getSubjectId());
+        }
+
+        initAnimation();
+        registerBoradcastReceiver();
+        getNotifyListener();
+        initXListView();
+
+    }
+
+    protected void initXListView() {
+        mMsgListView.setPullRefreshEnable(true);
+        mMsgListView.setPullLoadEnable(true);
+        mMsgListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if (ClickUtil.isFastDoubleClick()) {
+                    return;
+                }
+                if (mIsLogin) {
+                    if (yjCourseTypeModelList != null) {
+                        if (i == 0) {
+                            return;
+                        }
+                        if (yjCourseTypeModelList.get(i - 1).getLiveStatus().equals("ing")) {
+                            progDialog = DialogUtil.showWaitDialog(getContext());//加载数据的loading 先注释掉 用的时候换样式
+//                            timeOut =6;
+//                            new TimeThread().start(); //启动新的线程
+                            getTakenLive(i - 1, false, 1);
+                        }
+                        if (yjCourseTypeModelList.get(i - 1).getLiveStatus().equals("over")) {
+                            if ("Yes".equals(yjCourseTypeModelList.get(i - 1).getIsReplay())) {
+                                progDialog = DialogUtil.showWaitDialog(getContext());//加载数据的loading 先注释掉 用的时候换样式
+                                getTakenBack(i - 1);
+                            }
+                            if ("No".equals(yjCourseTypeModelList.get(i - 1).getIsReplay())) {
+//                                showDialog(new YJIsReplayDialog());
+                                getTakenLive(i - 1, true, 2);//true 代表是否弹出预约页面， 1代表弹直播未开始，2代表弹出直播已结束
+                            }
+                        }
+                        if (yjCourseTypeModelList.get(i - 1).getLiveStatus().equals("no")) {
+                            // showToast("直播未开始");
+                            getTakenLive(i - 1, true, 1);
+                        }
+                    }
+                } else {
+                 /*   YJLoginDialog dialog = new YJLoginDialog();
+                    showDialog(dialog);*/
+                    startActivity(YJLoginDialog.class);
+                }
+            }
+        });
+
+        mMsgListView.setXListViewListener(new MsgListView.IXListViewListener() {
+            @Override
+            public void onRefresh() {
+                if (YJGlobal.getGradeList() != null) {
+                    page = 1;
+                    paginationInfo = null;
+                    if (yjCourseTypeModelList != null) {
+                        yjCourseTypeModelList.clear();
+                    }
+                    getLiveList(YJGlobal.getGradeList().get(mGradeNum).getGradeId(), YJGlobal.getGradeList().get(mGradeNum).getSubjectVos().get(mSubjectNum).getSubjectId());
+                    Log.d(TAG, "YJGlobal.getMy_grade_id=" + YJGlobal.getGradeList().get(mGradeNum).getGradeId());
+                    Log.d(TAG, "YJGlobal.getMy_subjectId=" + YJGlobal.getGradeList().get(mGradeNum).getSubjectVos().get(mSubjectNum).getSubjectId());
+                }
+            }
+
+            @Override
+            public void onLoadMore() {
+                if (paginationInfo != null) {
+                    if (paginationInfo.getCurrentPage() <= paginationInfo.getTotalPages()) {
+                        getAddLoadMore(YJGlobal.getGradeList().get(mGradeNum).getGradeId(), YJGlobal.getGradeList().get(mGradeNum).getSubjectVos().get(mSubjectNum).getSubjectId(), ++page);
+                    } else if (paginationInfo.getCurrentPage() > paginationInfo.getTotalPages()) {
+                        showToast(getResources().getString(R.string.load_more_nothing));
+                    }
+                } else {
+                    getAddLoadMore(YJGlobal.getGradeList().get(mGradeNum).getGradeId(), YJGlobal.getGradeList().get(mGradeNum).getSubjectVos().get(mSubjectNum).getSubjectId(), ++page);
+                }
+
+            }
+        });
+
+    }
+
+
+    @Override
+    public void onClick(View view) {
+        if (view == txt_title) {
+            if (ClickUtil.isFastDoubleClick()) {
+                return;
+            }
+            showPopWindow();
+            mIv_arrow.clearAnimation();
+            mIv_arrow.startAnimation(animation);
+
+        } else if (view == layout_title) {
+            if (ClickUtil.isFastDoubleClick()) {
+                return;
+            }
+            showPopWindow();
+            mIv_arrow.clearAnimation();
+            mIv_arrow.startAnimation(animation);
+
+        }
+    }
+
+    private void initAnimation() {
+        animation = new RotateAnimation(0, -180, RotateAnimation.RELATIVE_TO_SELF, 0.5f, RotateAnimation.RELATIVE_TO_SELF, 0.5f);
+        animation.setInterpolator(new LinearInterpolator());
+        animation.setDuration(250);
+        animation.setFillAfter(true);
+
+
+        reverseAnimation = new RotateAnimation(-180, 0, RotateAnimation.RELATIVE_TO_SELF, 0.5f, RotateAnimation.RELATIVE_TO_SELF, 0.5f);
+        reverseAnimation.setInterpolator(new LinearInterpolator());
+        reverseAnimation.setDuration(200);
+        reverseAnimation.setFillAfter(true);
+
+    }
+
+    private boolean animFlag = false;
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        animFlag = false;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        animFlag = true;
+        StringUtils.showEvaluationDialog(AYJLiveListActivity.this);
+    }
+
+    public void registerBoradcastReceiver() {
+        IntentFilter myIntentFilter = new IntentFilter();
+        myIntentFilter.addAction(ACTION_NAME);
+        //注册广播
+        getContext().registerReceiver(mBroadcastReceiver, myIntentFilter);
+    }
+
+    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals(ACTION_NAME)) {
+
+                String grade = intent.getStringExtra("grade");
+                String subject = intent.getStringExtra("subject");
+                if (!TextUtils.isEmpty(subject)) {
+                    mSubject = subject;
+                    txt_title.setText(mGrade + subject);
+                }
+                if (!TextUtils.isEmpty(grade)) {
+                    if (!grade.equals("MorePopWindow消失")) {
+                        mGrade = grade;
+                        txt_title.setText(grade + mSubject);
+                    }
+                }
+                if (!TextUtils.isEmpty(grade)) {
+                    if (grade.equals("MorePopWindow消失")) {
+                        if (animFlag) {
+                            mIv_arrow.clearAnimation();
+                            mIv_arrow.startAnimation(reverseAnimation);
+                        }
+                        mGradeNum = PreferenceManager.getDefaultSharedPreferences(getContext()).getInt("gradeNum", 0);
+                        mSubjectNum = PreferenceManager.getDefaultSharedPreferences(getContext()).getInt("subjectNum", 0);
+                        if (YJGlobal.getGradeList() != null) {
+                            page = 1;
+                            paginationInfo = null;
+                            if (yjCourseTypeModelList != null) {
+                                yjCourseTypeModelList.clear();
+                            }
+                            getLiveList(YJGlobal.getGradeList().get(mGradeNum).getGradeId(), YJGlobal.getGradeList().get(mGradeNum).getSubjectVos().get(mSubjectNum).getSubjectId());
+                            Log.d(TAG, "YJGlobal.getMy_grade_id=" + YJGlobal.getGradeList().get(mGradeNum).getGradeId());
+                            Log.d(TAG, "YJGlobal.getMy_subjectId=" + YJGlobal.getGradeList().get(mGradeNum).getSubjectVos().get(mSubjectNum).getSubjectId());
+                        }
+
+                    }
+
+                }
+
+            }
+        }
+    };
+
+    protected VAdapter adapter;
+
+    private void getNotifyListener() {
+        addListener(YJNotifyTag.OPEN_CLASS_LIST, new IVNotificationListener() {
+            @Override
+            public void onNotify(String s, Object o) {
+                yjCourseTypeModelList = (List<YJOpenClassModel>) o;
+                if (yjCourseTypeModelList != null && yjCourseTypeModelList.size() == 0) {
+                    findViewById(R.id.main_live_list_nothing).setVisibility(View.VISIBLE);
+                    mMsgListView.setVisibility(View.GONE);
+                } else {
+                    findViewById(R.id.main_live_list_nothing).setVisibility(View.GONE);
+                    mMsgListView.setVisibility(View.VISIBLE);
+                }
+                Log.d(TAG, "yjCourseTypeModelList=" + yjCourseTypeModelList);
+                if (yjCourseTypeModelList == null) {
+                    adapter.notifyDataSetChanged();
+                } else {
+                    if (adapter == null) {
+                        adapter = new VAdapter(AYJLiveListActivity.this, mMsgListView);
+                        mMsgListView.setAdapter(adapter);
+                    } else {
+                        if (getActivity() != null) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                public void run() {
+                                    Log.d(TAG, "notifyDataSetChanged=");
+                                    adapter.notifyDataSetChanged();
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+
+        });
+        addListener(YJNotifyTag.LIVE_LIST_LOAD_MORE, new IVNotificationListener() {
+            @Override
+            public void onNotify(String s, Object o) {
+                yjCourseTypeModelList.addAll((List<YJOpenClassModel>) o);
+                if (page > paginationInfo.getTotalPages()) {
+                    showToast(getResources().getString(R.string.load_more_nothing));
+                }
+
+            }
+
+        });
+        addListener(YJNotifyTag.USER_LOGIN, new IVNotificationListener() {
+            @Override
+            public void onNotify(String s, Object value) {
+                mIsLogin = PreferenceManager.getDefaultSharedPreferences(getContext()).getBoolean("isLogin", false);
+                if (YJGlobal.getGradeList() != null) {
+                    getLiveList(YJGlobal.getGradeList().get(mGradeNum).getGradeId(), YJGlobal.getGradeList().get(mGradeNum).getSubjectVos().get(mSubjectNum).getSubjectId());
+                    Log.d(TAG, "YJGlobal.getMy_grade_id=" + YJGlobal.getGradeList().get(mGradeNum).getGradeId());
+                    Log.d(TAG, "YJGlobal.getMy_subjectId=" + YJGlobal.getGradeList().get(mGradeNum).getSubjectVos().get(mSubjectNum).getSubjectId());
+                }
+            }
+        });
+        addListener(YJNotifyTag.LIVE_LIST_PAGE_INFO, new IVNotificationListener() {
+            @Override
+            public void onNotify(String s, Object value) {
+                paginationInfo = (PaginationInfo) value;
+            }
+        });
+
+    }
+
+    private void showPopWindow() {
+        morePopWindow = new MorePopWindow(getActivity(), getTopActivity());
+        morePopWindow.showPopupWindow(mian_live_list_title);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        getContext().unregisterReceiver(mBroadcastReceiver);
+    }
+
+    @Override
+    public AVAdapterItem createAdapterItem(View view, int i, int i1) {
+        return new YJMainLiveListItem();
+    }
+
+    @Override
+    public int getAdapterItemCount(View view) {
+        if (yjCourseTypeModelList != null) {
+            return yjCourseTypeModelList.size();
+        } else {
+            return 0;
+        }
+    }
+
+    @VLayoutTag(R.layout.activity_main_live_item)
+    class YJMainLiveListItem extends AVAdapterItem {
+        @VViewTag(R.id.img_teacher_photo)
+        private CustomImage img_teacher_photo;
+        @VViewTag(R.id.txt_title_name)
+        private TextView txt_title_name;
+        @VViewTag(R.id.txt_date)
+        private TextView txt_date;
+        @VViewTag(R.id.txt_time)
+        private TextView txt_time;
+        @VViewTag(R.id.txt_status)
+        private TextView txt_status;
+        @VViewTag(R.id.txt_teacher_name)
+        private TextView txt_teacher_name;
+        @VViewTag(R.id.img_people)
+        private ImageView img_people;
+        @VViewTag(R.id.txt_user_num)
+        private TextView txt_user_num;
+        @VViewTag(R.id.view_line)
+        private View view_line;
+
+        @Override
+        public void update(int position) {
+            Log.d(TAG, "yjCourseTypeModelList  update");
+            if (yjCourseTypeModelList != null) {
+                txt_title_name.setText(yjCourseTypeModelList.get(position).getName());
+
+                String planDate = TimeUtil.getYearTime(Long.parseLong(yjCourseTypeModelList.get(position).getStartTime()));
+                String planEndDate = TimeUtil.getSecondMInTime(Long.parseLong(yjCourseTypeModelList.get(position).getEndTime()));
+                txt_date.setText((("3".equals(StringUtils.getDateDetail(planDate)) ? TimeUtil.getMonthTime(Long.parseLong(yjCourseTypeModelList.get(position).getStartTime())) : StringUtils.getDateDetail(planDate)) + " " + TimeUtil.getSecondMInTime(Long.parseLong(yjCourseTypeModelList.get(position).getStartTime()))) + "-" + planEndDate);
+                txt_teacher_name.setText(yjCourseTypeModelList.get(position).getTeacher().getTrueName());
+                if (!TextUtils.isEmpty(yjCourseTypeModelList.get(position).getTeacher().getTeacherPic())) {
+                    BitmapUtils.create(getContext()).display(img_teacher_photo, yjCourseTypeModelList.get(position).getTeacher().getTeacherPic());
+                }
+
+                //观看人数
+                if (!TextUtils.isEmpty(yjCourseTypeModelList.get(position).getLookStudent())) {
+                    txt_user_num.setText(yjCourseTypeModelList.get(position).getLookStudent());
+                } else {
+                    txt_user_num.setText("0");
+                }
+
+
+                if (yjCourseTypeModelList.get(position).getLiveStatus().equals("ing")) {
+                    txt_date.setTextColor(getResources().getColor(R.color.yellow_text));
+                    txt_title_name.setTextColor(getResources().getColor(R.color.black));
+                    txt_status.setTextColor(getResources().getColor(R.color.yellow_text));
+                    img_people.setVisibility(View.VISIBLE);
+                    txt_user_num.setVisibility(View.VISIBLE);
+                    txt_status.setText(R.string.live_ing_title);
+                } else if (yjCourseTypeModelList.get(position).getLiveStatus().equals("over")) {
+                    txt_date.setTextColor(getResources().getColor(R.color.gray_text));
+                    txt_title_name.setTextColor(getResources().getColor(R.color.gray_text));
+                    txt_status.setTextColor(getResources().getColor(R.color.gray_text));
+                    img_people.setVisibility(View.VISIBLE);
+                    txt_user_num.setVisibility(View.VISIBLE);
+                    if ("Yes".equals(yjCourseTypeModelList.get(position).getIsReplay())) {
+                        txt_status.setText("看回放");
+                        txt_status.setTextColor(getResources().getColor(R.color.blue_title));
+                    }
+                    if ("No".equals(yjCourseTypeModelList.get(position).getIsReplay())) {
+                        txt_status.setText("回放剪辑中");
+                        txt_status.setTextColor(getResources().getColor(R.color.gray_text));
+                    }
+
+
+                    if (yjCourseTypeModelList.get(position).getIsReplay().equals("Yes")) {
+                        txt_status.setText("看回放");
+                        txt_status.setTextColor(getResources().getColor(R.color.blue_title));
+                    }
+                } else if (yjCourseTypeModelList.get(position).getLiveStatus().equals("no")) {
+                    txt_date.setTextColor(getResources().getColor(R.color.yellow_text));
+                    txt_title_name.setTextColor(getResources().getColor(R.color.black));
+                    txt_status.setTextColor(getResources().getColor(R.color.gray_text));
+                    img_people.setVisibility(View.GONE);
+                    txt_user_num.setVisibility(View.GONE);
+                    txt_status.setText("未开始");
+                }
+            }
+        }
+    }
+
+    public abstract void getLiveList(String gradeId, String subjectId);
+
+    public abstract void getAddLoadMore(String gradeId, String subjectId, int page);
+
+    public abstract void getTakenLive(int position, boolean isShowDialog, int isLiveType);
+
+    public abstract void getTakenBack(int position);
+
+}

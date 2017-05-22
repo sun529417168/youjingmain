@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="frameworklibs.SocialSDK_Sina">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/frameworklibs/SocialSDK_Sina.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

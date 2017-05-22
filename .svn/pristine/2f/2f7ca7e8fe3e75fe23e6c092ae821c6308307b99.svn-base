@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+    <!--第一部分start-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="18dp">
+
+        <TextView
+            android:id="@+id/view_course_details_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="苏杰高中数学面积问题解题演示"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/view_course_details_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/view_course_details_title"
+            android:layout_marginTop="6dp"
+            android:text="￥150"
+            android:textColor="@color/yellow_text" />
+
+        <TextView
+            android:id="@+id/view_course_details_prompt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/view_course_details_title"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="6dp"
+            android:layout_toRightOf="@+id/view_course_details_price"
+            android:text="本课程购买后有效期180天"
+            android:textColor="@color/yellow_text" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/img_learn_share"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="3dp"
+                android:layout_toLeftOf="@+id/my_course_item_share_text"
+                android:background="@mipmap/play_share"
+                android:clickable="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="邀请好友" />
+        </LinearLayout>
+    </RelativeLayout>
+    <!--第一部分start-->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:background="#F4F4F4" />
+    <!--第二部分课程简介start-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="18dp">
+
+        <ImageView
+            android:id="@+id/course_introduction_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/img_my_course" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@+id/course_introduction_image"
+            android:text="课程简介" />
+
+
+        <com.example.winxinmoretext.CollapsibleTextView
+            android:id="@+id/view_course_details_course_introduction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/course_introduction_image"
+            android:layout_marginTop="12dp" />
+    </RelativeLayout>
+    <!--第二部分课程简介end-->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:background="#F4F4F4" />
+    <!--第三部分老师简介start-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="18dp">
+
+        <ImageView
+            android:id="@+id/teacher_introduction_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/img_my_course" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@+id/teacher_introduction_image"
+            android:text="老师简介" />
+
+        <com.example.winxinmoretext.CollapsibleTextView
+            android:id="@+id/view_course_details_teacher_introduction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/teacher_introduction_image"
+            android:layout_marginTop="12dp" />
+    </RelativeLayout>
+    <!--第三部分老师简介end-->
+</LinearLayout>

@@ -1,0 +1,496 @@
+package com.youjing.yjeducation.scan;
+
+import android.app.AlertDialog;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.preference.PreferenceManager;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.RelativeLayout;
+
+import com.alibaba.fastjson.JSON;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.DecodeHintType;
+import com.google.zxing.Result;
+import com.loopj.android.http.TextHttpResponseHandler;
+import com.youjing.yjeducation.R;
+import com.youjing.yjeducation.core.YJBaseActivity;
+import com.youjing.yjeducation.core.YJGlobal;
+import com.youjing.yjeducation.core.YJNotifyTag;
+import com.youjing.yjeducation.core.YJReqURLProtocol;
+import com.youjing.yjeducation.core.YJStudentReqManager;
+import com.youjing.yjeducation.model.YJCourseListModel;
+import com.youjing.yjeducation.model.YJCourseModel;
+import com.youjing.yjeducation.model.YJCourseTypeModel;
+import com.youjing.yjeducation.ui.actualize.activity.YJCourseListlActivity;
+import com.youjing.yjeducation.ui.actualize.activity.YJCourseLiveListActivity;
+import com.youjing.yjeducation.ui.actualize.activity.YJCoursePlayActivity;
+import com.youjing.yjeducation.ui.actualize.activity.YJCoursePlayNewActivity;
+import com.youjing.yjeducation.ui.actualize.activity.YJLoginActivity;
+import com.youjing.yjeducation.ui.dispaly.activity.AYJCourseListActivity;
+import com.youjing.yjeducation.ui.dispaly.activity.AYJScanWebviewActivity;
+import com.youjing.yjeducation.ui.dispaly.activity.AYJWebviewInteraction;
+import com.youjing.yjeducation.util.ParseURL;
+import com.youjing.yjeducation.util.ScanBannerUtils;
+import com.youjing.yjeducation.util.StringUtils;
+import com.zf.myzxing.camera.CameraManager;
+import com.zf.myzxing.control.AmbientLightManager;
+import com.zf.myzxing.control.BeepManager;
+import com.zf.myzxing.decode.FinishListener;
+import com.zf.myzxing.decode.InactivityTimer;
+import com.zf.myzxing.view.ViewfinderView;
+
+import org.apache.http.Header;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
+
+public final class CaptureActivity extends YJBaseActivity implements
+        SurfaceHolder.Callback {
+    private RelativeLayout btn_back;
+    private Button btn_torch;
+    private boolean isTorchOn = false;
+    private CameraManager cameraManager;
+    private CaptureActivityHandler handler;
+    private Result savedResultToShow;
+    private ViewfinderView viewfinderView;
+    private boolean hasSurface;
+    private Collection<BarcodeFormat> decodeFormats;
+    private Map<DecodeHintType, ?> decodeHints;
+    private String characterSet;
+    private InactivityTimer inactivityTimer;
+    private BeepManager beepManager;
+    private AmbientLightManager ambientLightManager;
+    private Set<String> set = new HashSet<String>();
+    private StringBuffer sb = new StringBuffer();
+    private String TAG = "CaptureActivity";
+    protected boolean mIsLogin = false;
+
+    public ViewfinderView getViewfinderView() {
+        return viewfinderView;
+    }
+
+    public Handler getHandler() {
+        return handler;
+    }
+
+    public CameraManager getCameraManager() {
+        return cameraManager;
+    }
+
+    private boolean isInApp = false;
+
+    private Handler mHandler = new Handler() {
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case 0: {
+                    notifyListener(YJNotifyTag.MY_TASK, "");
+                    break;
+                }
+                case 1: {
+                    notifyListener(YJNotifyTag.MY_CARD, "");
+                    break;
+                }
+                default:
+                    break;
+            }
+        }
+    };
+
+    @Override
+    public void onCreate(Bundle icicle) {
+        super.onCreate(icicle);
+
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        setContentView(R.layout.capture);
+        mIsLogin = PreferenceManager.getDefaultSharedPreferences(getContext()).getBoolean("isLogin", false);
+        btn_back = (RelativeLayout) findViewById(R.id.rl_back);
+        btn_back.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CaptureActivity.this.finish();
+            }
+        });
+        btn_torch = (Button) findViewById(R.id.btn_torch);
+
+	/*	btn_torch.setOnClickListener(new OnClickListener() {
+            @Override
+			public void onClick(View v) {
+				String str   = JsonFileUtils.readFileData(CaptureActivity.this, "scan").replace("[", "");
+				String str1   = str.replace("]", "");
+				Toast.makeText(CaptureActivity.this, str1, Toast.LENGTH_LONG).show();
+			}
+		});*/
+
+        hasSurface = false;
+        inactivityTimer = new InactivityTimer(this);
+        beepManager = new BeepManager(this);
+        ambientLightManager = new AmbientLightManager(this);
+    }
+
+    /**
+     * 结果处理
+     */
+    public void handleDecode(Result rawResult, Bitmap barcode, float scaleFactor) {
+        inactivityTimer.onActivity();
+        beepManager.playBeepSoundAndVibrate();
+
+        String msg = rawResult.getText();
+        if (msg == null || "".equals(msg)) {
+            showToast("无法识别");
+            return;
+        }
+        if (StringUtils.isUrl(msg) == false) {
+            showToast("无法识别的二维码");
+            this.finish();
+            return;
+        }
+        if (msg.contains("http://weixin.qq.com")){
+            showToast("无法识别的二维码");
+            this.finish();
+            return;
+        }
+
+        Log.d(TAG, "msg=" + msg);
+        ScanBannerUtils.intentPage(CaptureActivity.this,msg,TAG,mIsLogin,1);
+        finish();
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        cameraManager = new CameraManager(getApplication());
+
+        viewfinderView = (ViewfinderView) findViewById(R.id.viewfinder_view);
+        viewfinderView.setCameraManager(cameraManager);
+
+        handler = null;
+        resetStatusView();
+
+        SurfaceView surfaceView = (SurfaceView) findViewById(R.id.preview_view);
+        SurfaceHolder surfaceHolder = surfaceView.getHolder();
+        if (hasSurface) {
+            initCamera(surfaceHolder);
+        } else {
+            surfaceHolder.addCallback(this);
+            surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+        }
+
+        beepManager.updatePrefs();
+        ambientLightManager.start(cameraManager);
+
+        inactivityTimer.onResume();
+        decodeFormats = null;
+        characterSet = null;
+    }
+
+    @Override
+    protected void onPause() {
+        if (handler != null) {
+            handler.quitSynchronously();
+            handler = null;
+        }
+        inactivityTimer.onPause();
+        ambientLightManager.stop();
+        cameraManager.closeDriver();
+        if (!hasSurface) {
+            SurfaceView surfaceView = (SurfaceView) findViewById(R.id.preview_view);
+            SurfaceHolder surfaceHolder = surfaceView.getHolder();
+            surfaceHolder.removeCallback(this);
+        }
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        inactivityTimer.shutdown();
+        viewfinderView.recycleLineDrawable();
+        super.onDestroy();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_CAMERA:// 拦截相机键
+                return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    private void decodeOrStoreSavedBitmap(Bitmap bitmap, Result result) {
+        if (handler == null) {
+            savedResultToShow = result;
+        } else {
+            if (result != null) {
+                savedResultToShow = result;
+            }
+            if (savedResultToShow != null) {
+                Message message = Message.obtain(handler,
+                        com.zf.myzxing.R.id.decode_succeeded, savedResultToShow);
+                handler.sendMessage(message);
+            }
+            savedResultToShow = null;
+        }
+    }
+
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+        if (!hasSurface) {
+            hasSurface = true;
+            initCamera(holder);
+        }
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
+        hasSurface = false;
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width,
+                               int height) {
+
+    }
+
+    private void initCamera(SurfaceHolder surfaceHolder) {
+        if (surfaceHolder == null) {
+            return;
+        }
+        if (cameraManager.isOpen()) {
+            return;
+        }
+        try {
+            cameraManager.openDriver(surfaceHolder);
+            if (handler == null) {
+                handler = new CaptureActivityHandler(this, decodeFormats, decodeHints, characterSet, cameraManager);
+            }
+            decodeOrStoreSavedBitmap(null, null);
+        } catch (IOException ioe) {
+            displayFrameworkBugMessageAndExit();
+        } catch (RuntimeException e) {
+            displayFrameworkBugMessageAndExit();
+        }
+    }
+
+    private void displayFrameworkBugMessageAndExit() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("警告");
+        builder.setMessage("抱歉，相机出现问题，您可能需要重启设备");
+        builder.setPositiveButton("确定", new FinishListener(this));
+        builder.setOnCancelListener(new FinishListener(this));
+        builder.show();
+    }
+
+    public void restartPreviewAfterDelay(long delayMS) {
+        if (handler != null) {
+            handler.sendEmptyMessageDelayed(com.zf.myzxing.R.id.restart_preview, delayMS);
+        }
+        resetStatusView();
+    }
+
+    private void resetStatusView() {
+        viewfinderView.setVisibility(View.VISIBLE);
+    }
+
+    public void drawViewfinder() {
+        viewfinderView.drawViewfinder();
+    }
+
+
+    //扫码进入直播详情页面
+    private void getCourseCatalog(String courseId, final boolean isScan) {
+        Map<String, Object> objectMap = new HashMap<>();
+        try {
+            objectMap.put("courseId", courseId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        YJStudentReqManager.getServerData(YJReqURLProtocol.GET_COURSE_CATALOG, objectMap, mIsLogin, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                Log.d(TAG, "失败getCourseCatalog=" + s);
+                showToast(getString(R.string.no_net_work));
+            }
+
+            @Override
+            public void onSuccess(int i, Header[] headers, String s) {
+
+                try {
+                    // String ss = "{ 'id':12, 'name':'11111111', 'sequence':1,'isTry':'No','code':'Wgi1LikG7Rpw+Z46PAcVrg==','courseVideoShape':'DVR','planDate':1459394340000,'realDate':1460099640000,'courseVideoType':'OpenClass','duration':35,'followCount':6,'studyStatus':null,'isDownload':'No','isFollow':'No'}";
+                    Log.d(TAG, "成功getCourseCatalog=" + s);
+                    JSONObject json = null;
+                    json = new JSONObject(s);
+                    switch (json.getInt("code")) {
+                        case 200:
+                            JSONObject jsonObject = new JSONObject(json.getString("data"));
+                            YJCourseModel yjCourseModel = JSON.parseObject(jsonObject.getString("course"), YJCourseModel.class);
+                            Log.d(TAG, "yjCourseModel=" + yjCourseModel.toString());
+
+                            if (yjCourseModel != null) {
+                                String courseShape = yjCourseModel.getCourseShape();
+                                if (yjCourseModel.getCourseCatalogList().size() == 0) {
+                                    showToast("暂时没有视频课程");
+                                } else {
+                                    if (isScan) {
+                                        yjCourseModel.setIsScan("Yes");
+                                    }
+                                    if (!TextUtils.isEmpty(courseShape) && courseShape.equals("DVR")) {
+                                        startActivity(createIntent(YJCoursePlayNewActivity.class, createTransmitData(YJCoursePlayNewActivity.YJ_COURSE_MODEL, yjCourseModel)));
+                                    } else if (!TextUtils.isEmpty(courseShape) && courseShape.equals("LIVE")) {
+                                        startActivity(createIntent(YJCourseLiveListActivity.class, createTransmitData(YJCourseLiveListActivity.YJ_COURSE_MODEL, yjCourseModel)));
+                                    } else {
+                                        showToast("暂时没有视频课程");
+                                    }
+                                }
+                            }
+
+                            break;
+                        case 300:
+                            break;
+                        case 400:
+                            break;
+                        case 401:
+                            break;
+                        case 402:
+                            break;
+                        case 500:
+                            break;
+                        case 600:
+                            startActivity(createIntent(YJLoginActivity.class, createTransmitData(YJLoginActivity.LOGIN_OUT, 1).set(YJLoginActivity.MY_LOGIN_OUT, true)));
+                            finishAll();
+                            break;
+                        default:
+                            break;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+
+    private boolean isHasCourseTypeId = true;
+    protected List<YJCourseTypeModel> yjCourseTypeModelList;
+
+    private void scanCourseList(String courseTypeId) {
+        yjCourseTypeModelList = YJGlobal.getYjCourseTypeModelList();
+        if (yjCourseTypeModelList != null) {
+            for (int i = 0; i < yjCourseTypeModelList.size(); i++) {
+                if (yjCourseTypeModelList.get(i).getCourseTypeId().equals(courseTypeId)) {
+                    isHasCourseTypeId = false;
+                    getCourseList(i);
+                }
+            }
+            if (isHasCourseTypeId) {
+                getCourseList(0);
+            }
+        } else {
+            return;
+        }
+
+    }
+
+    //扫码课程列表页
+    private void getCourseList(final int position) {
+        Map<String, Object> objectMap = new HashMap<>();
+        if (yjCourseTypeModelList != null) {
+            Log.d(TAG, "subjectId=" + YJGlobal.getMy_subjectId() + "courseTypeId=" + yjCourseTypeModelList.get(position).getCourseTypeId());
+            Log.d(TAG, "gradeId=" + YJGlobal.getMy_grade_id());
+            saveGrade(yjCourseTypeModelList.get(position).getName(), position);
+            try {
+                objectMap.put("subjectId", YJGlobal.getMy_subjectId());
+                objectMap.put("gradeId", YJGlobal.getMy_grade_id());
+                objectMap.put("courseTypeId", yjCourseTypeModelList.get(position).getCourseTypeId());
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        YJStudentReqManager.getServerData(YJReqURLProtocol.GET_COURSE_LIST, objectMap, mIsLogin, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                Log.d(TAG, "失败=" + s);
+                showToast(getString(R.string.no_net_work));
+            }
+
+            @Override
+            public void onSuccess(int i, Header[] headers, String s) {
+                try {
+                    Log.d(TAG, "成功s=" + s);
+                    JSONObject json = null;
+                    json = new JSONObject(s);
+                    switch (json.getInt("code")) {
+                        case 200:
+                            JSONObject jsonData = new JSONObject(json.getString("data"));
+                            List<YJCourseListModel> yjCourseListModelList = JSON.parseArray(jsonData.getString("knowledgeList"), YJCourseListModel.class);
+                            Log.d(TAG, "yjCourseListModelList.toString()=" + yjCourseListModelList.toString());
+                            startActivity(createIntent(YJCourseListlActivity.class, createTransmitData(AYJCourseListActivity.COURSE_MODELLIST, getYjCourseModel(yjCourseListModelList)).set(AYJCourseListActivity.LIST_POSITION, position)));
+                            break;
+                        case 300:
+                            break;
+                        case 400:
+                            break;
+                        case 401:
+                            break;
+                        case 402:
+                            break;
+                        case 500:
+                            break;
+                        case 600:
+                            startActivity(createIntent(YJLoginActivity.class, createTransmitData(YJLoginActivity.LOGIN_OUT, 1).set(YJLoginActivity.MY_LOGIN_OUT, true)));
+                            finishAll();
+                            break;
+                        default:
+                            break;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private void saveGrade(String course, int num) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("course", course);
+        editor.putInt("courseNum", num);
+        editor.commit();
+    }
+
+    private List<YJCourseModel> getYjCourseModel(List<YJCourseListModel> yjCourseListModelList) {
+        List<YJCourseModel> yjCourseModelsList = new ArrayList<YJCourseModel>();
+        for (int i = 0; i < yjCourseListModelList.size(); i++) {
+            for (int j = 0; j < yjCourseListModelList.get(i).getCourseList().size(); j++) {
+                yjCourseModelsList.add(yjCourseListModelList.get(i).getCourseList().get(j));
+            }
+        }
+        return yjCourseModelsList;
+    }
+}

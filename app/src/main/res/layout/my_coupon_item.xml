@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:background="@color/gray_view_bg"
+    android:layout_height="134dp">
+
+    <RelativeLayout
+        android:id="@+id/my_cards_item_lay_item"
+        android:layout_marginTop="9dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="9dp"
+        android:layout_marginRight="9dp"
+        android:background="@mipmap/img_coupon_bg">
+
+        <TextView
+            android:id="@+id/txt_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:maxEms="10"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="30dp"
+            android:layout_alignParentRight="true"
+            android:textColor="@color/black"
+            android:text="现金优惠券，仅限购课"/>
+
+        <TextView
+            android:id="@+id/txt_coupon_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:maxEms="10"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:layout_marginTop="3dp"
+            android:layout_alignLeft="@id/txt_name"
+            android:layout_below="@id/txt_name"
+            android:textColor="@color/black"
+            android:text=""/>
+
+        <TextView
+            android:id="@+id/txt_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:layout_marginLeft="22dp"
+            android:paddingBottom="11dp"
+            android:textColor="@color/gray_text"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:text=""/>
+
+        <RelativeLayout
+            android:id="@+id/re_left"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_toLeftOf="@id/txt_name"
+            android:layout_alignParentLeft="true"
+            android:layout_marginBottom="22dp">
+
+            <TextView
+                android:id="@+id/txt_rmb_num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/yellow_text"
+                android:textSize="36sp"
+                android:layout_centerInParent="true"
+                android:text="" />
+
+            <TextView
+                android:id="@+id/txt_rmb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/yellow_text"
+                android:textSize="20sp"
+                android:layout_marginTop="38dp"
+                android:layout_toLeftOf="@id/txt_rmb_num"
+                android:text="￥" />
+        </RelativeLayout>
+        <ImageView
+            android:id="@+id/img_coupon_status"
+            android:layout_width="75dp"
+            android:layout_height="70dp"
+            android:focusable="false"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:scaleType="fitXY"
+            android:src="@mipmap/img_coupon_no_use" />
+
+    </RelativeLayout>
+</RelativeLayout>

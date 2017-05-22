@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="27dp"
+    android:minHeight="27dp"
+    android:background="@color/invite_bg">
+
+
+        <TextView
+            android:id="@+id/txt_time"
+            android:layout_width="wrap_content"
+            android:gravity="center"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="25dp"
+            android:layout_centerVertical="true"
+            android:text="2017-06-06"
+            android:textColor="@color/black"
+            android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/txt_info"
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_centerInParent="true"
+            android:layout_height="match_parent"
+            android:text="优惠券"
+            android:textColor="@color/black"
+            android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/txt_whale_num"
+            android:layout_width="wrap_content"
+            android:gravity="center"
+            android:layout_height="match_parent"
+            android:layout_marginRight="25dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:text="200"
+            android:textColor="@color/black"
+            android:textSize="11sp" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/view_height_width"
+        android:layout_alignParentBottom="true"
+        android:background="#86dcef"
+        android:visibility="visible" />
+</RelativeLayout>

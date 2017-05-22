@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/tab_bg"
+    android:orientation="horizontal"
+    android:paddingTop="2dp">
+
+    <RelativeLayout
+        android:id="@+id/chat_tab_layout"
+        android:layout_width="64dp"
+        android:layout_height="40dp"
+        android:background="@drawable/tab_select_bg">
+
+        <TextView
+            android:id="@+id/chat_tab"
+            style="@style/tab_style"
+            android:text="@string/chat"
+            android:textColor="@color/blue" />
+
+        <ImageView
+            android:id="@+id/chat_red_dot"
+            style="@style/tab_dot"
+            android:layout_alignTop="@id/chat_tab"
+            android:layout_toEndOf="@id/chat_tab"
+            android:layout_toRightOf="@id/chat_tab" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/question_tab_layout"
+        android:layout_width="64dp"
+        android:layout_height="40dp">
+
+        <TextView
+            android:id="@+id/question_tab"
+            style="@style/tab_style"
+            android:text="@string/question" />
+
+        <ImageView
+            android:id="@+id/question_red_dot"
+            style="@style/tab_dot"
+            android:layout_alignTop="@id/question_tab"
+            android:layout_toEndOf="@id/question_tab"
+            android:layout_toRightOf="@id/question_tab" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/notice_tab_layout"
+        android:layout_width="64dp"
+        android:layout_height="40dp">
+
+        <TextView
+            android:id="@+id/notice_tab"
+            style="@style/tab_style"
+            android:text="@string/notice" />
+
+        <ImageView
+            android:id="@+id/notice_red_dot"
+            style="@style/tab_dot"
+            android:layout_alignTop="@id/notice_tab"
+            android:layout_toEndOf="@id/notice_tab"
+            android:layout_toRightOf="@id/notice_tab" />
+
+    </RelativeLayout>
+
+    <!--<RelativeLayout-->
+        <!--android:id="@+id/private_chat_tab_layout"-->
+        <!--android:layout_width="64dp"-->
+        <!--android:layout_height="40dp">-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/private_chat_tab"-->
+            <!--style="@style/tab_style"-->
+            <!--android:text="@string/private_chat" />-->
+
+        <!--<ImageView-->
+            <!--android:id="@+id/private_chat_red_dot"-->
+            <!--style="@style/tab_dot"-->
+            <!--android:layout_alignTop="@id/private_chat_tab"-->
+            <!--android:layout_toEndOf="@id/private_chat_tab"-->
+            <!--android:layout_toRightOf="@id/private_chat_tab" />-->
+
+    <!--</RelativeLayout>-->
+</LinearLayout>
+

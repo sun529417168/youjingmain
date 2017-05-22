@@ -1,0 +1,89 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 22
+    buildToolsVersion '23.0.2'
+
+    defaultConfig {
+        applicationId "com.youjing.yjeducation"
+        minSdkVersion 9
+        targetSdkVersion 22
+        versionCode 5
+        versionName "1.1.0"
+        // Enabling multidex support.
+        multiDexEnabled true
+        ndk {
+            moduleName "OneSDK"
+            abiFilters "armeabi", "armeabi-v7a", "x86"
+        }
+    }
+
+
+    dexOptions {
+        javaMaxHeapSize "2G"
+    }
+    buildTypes {
+        release {
+            buildConfigField "boolean", "LOG_DEBUG", "true"
+
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    android {
+        lintOptions {
+            abortOnError false
+        }
+    }
+    task nativeLibsToJar(type: Zip, description: "create a jar archive of the native libs") {
+        destinationDir file("$projectDir/libs")
+        baseName "Native_Libs2"
+        extension "jar"
+        from fileTree(dir: "libs", include: "**/*.so")
+        into "lib"
+    }
+    packagingOptions {
+        exclude 'META-INF/services/javax.annotation.processing.Processor'
+    }
+    tasks.withType(JavaCompile) {
+        compileTask -> compileTask.dependsOn(nativeLibsToJar)
+    }
+    packagingOptions {
+        exclude 'lib/armeabi/lib_ht_f.so'
+        exclude 'lib/armeabi/lib_ht_p.so'
+        exclude 'lib/armeabi/lib_ht_s.so'
+        exclude 'lib/armeabi/lib_ht_u.so'
+        exclude 'lib/x86/lib_ht_f.so'
+        exclude 'lib/x86/lib_ht_p.so'
+        exclude 'lib/x86/lib_ht_s.so'
+        exclude 'lib/x86/lib_ht_u.so'
+        exclude 'lib/armeabi/libstlport_shared.so'
+        exclude 'lib/armeabi-v7a/lib_ht_f.so'
+        exclude 'lib/armeabi-v7a/lib_ht_p.so'
+        exclude 'lib/armeabi-v7a/lib_ht_s.so'
+        exclude 'lib/armeabi-v7a/lib_ht_u.so'
+    }
+    allprojects {
+        repositories {
+            mavenCentral()
+        }
+    }
+
+}
+
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile project(':frameworklibs')
+    compile project(':playerskin')
+    compile 'com.android.support:support-v4:22.2.0'
+    compile project(':OneSDK')
+    compile files('libs/NativeSdk.jar')
+    compile 'com.android.support:multidex:'
+    compile 'com.umeng.analytics:analytics:latest.integration'
+    compile 'com.tencent.bugly:crashreport:latest.release'
+    compile 'com.tencent.bugly:nativecrashreport:latest.release'
+    compile project(':playerLibRelease')
+    compile files('libs/ormlite-android-4.48.jar')
+    compile files('libs/ormlite-core-4.48.jar')
+}

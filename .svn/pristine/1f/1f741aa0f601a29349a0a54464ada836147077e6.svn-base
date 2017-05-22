@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray_view_bg"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/title"
+        layout="@layout/title_blue_bg" />
+
+    <!--蓝色整体布局start-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="150dip"
+        android:background="@mipmap/level">
+
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:layout_marginRight="-2dp"
+            android:layout_marginTop="47dp"
+            android:layout_toLeftOf="@+id/personal_center_level_center_frame">
+
+            <ProgressBar
+                android:id="@+id/personal_center_level_progressbar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:background="@color/personal_center_level_logo_text_color"
+                android:max="100"
+                android:progress="100"
+                android:progressDrawable="@drawable/barcolor"
+                android:indeterminate="false" />
+
+        </FrameLayout>
+
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:layout_marginLeft="-2dp"
+            android:layout_marginRight="-2dp"
+            android:layout_marginTop="47dp"
+            android:layout_toLeftOf="@+id/personal_center_level_logo_right"
+            android:layout_toRightOf="@+id/personal_center_level_center_frame">
+
+            <ProgressBar
+                android:id="@+id/personal_center_level_progressbar_current"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:background="@color/personal_center_level_logo_text_color"
+                android:max="100"
+                android:progressDrawable="@drawable/barcolor" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:layout_marginTop="47dp"
+            android:layout_toRightOf="@+id/personal_center_level_logo_right_layout">
+
+            <ProgressBar
+                android:id="@+id/personal_center_level_progressbar_next"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:background="@color/personal_center_level_logo_text_color"
+                android:progressDrawable="@drawable/barcolor" />
+
+        </FrameLayout>
+
+
+        <ImageView
+            android:id="@+id/personal_center_level_logo_left"
+            android:layout_width="wrap_content"
+            android:layout_height="34dp"
+            android:layout_marginLeft="35dip"
+            android:layout_marginTop="35dip"
+            android:background="@mipmap/level_logo" />
+
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/personal_center_level_logo_left"
+            android:layout_alignStart="@+id/personal_center_level_logo_left"
+            android:layout_alignTop="@+id/personal_center_level_logo_left"
+            android:layout_marginLeft="3dp"
+            android:layout_marginTop="3dp"
+            android:background="@drawable/before_nextlevel">
+
+            <ImageView
+                android:id="@+id/personal_center_level_before_img"
+                android:layout_width="7dp"
+                android:layout_height="7dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="3dp"
+                android:src="@mipmap/img_level_left" />
+
+            <TextView
+                android:id="@+id/personal_center_level_logo_left_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/personal_center_level_before_img"
+                android:textColor="@color/white"
+                android:textSize="10sp"
+                android:textStyle="bold|italic" />
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/personal_center_level_center_beforeExp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/personal_center_level_logo_left"
+            android:layout_alignLeft="@+id/personal_center_level_logo_left"
+            android:layout_alignRight="@+id/personal_center_level_logo_left"
+            android:layout_alignStart="@+id/personal_center_level_logo_left"
+            android:layout_below="@+id/personal_center_level_logo_left"
+            android:layout_marginTop="4dp"
+            android:gravity="center"
+            android:textColor="@color/personal_center_level_logo_text_color"
+            android:textSize="10sp" />
+
+        <FrameLayout
+            android:id="@+id/personal_center_level_center_frame"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="15dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:layout_width="65dp"
+                    android:layout_height="65dp"
+                    android:layout_centerInParent="true"
+                    android:background="@drawable/personal_center_level" />
+
+                <com.youjing.yjeducation.wiget.CustomImage
+                    android:id="@+id/personal_center_level_center_photo"
+                    style="@style/image_style"
+                    android:layout_width="61dp"
+                    android:layout_height="61dp"
+                    android:layout_centerInParent="true"
+                    android:clickable="true"
+                    android:scaleType="fitXY"
+                    android:src="@mipmap/img_app_logo" />
+            </RelativeLayout>
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/personal_center_level_center_below_frame"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_below="@+id/personal_center_level_center_frame"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="-12dip"
+            android:background="@drawable/current_level">
+
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center">
+
+                <ImageView
+                    android:id="@+id/personal_center_level_now_img"
+                    android:layout_width="7dp"
+                    android:layout_height="7dp"
+                    android:layout_centerVertical="true"
+                    android:src="@mipmap/img_level_left" />
+
+                <TextView
+                    android:id="@+id/personal_center_level_currentLevel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/personal_center_level_now_img"
+                    android:textColor="@color/white"
+                    android:textSize="10sp"
+                    android:textStyle="bold|italic" />
+
+            </RelativeLayout>
+
+        </FrameLayout>
+
+        <ImageView
+            android:id="@+id/personal_center_level_logo_right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="35dip"
+            android:layout_marginTop="35dip"
+            android:background="@mipmap/level_logo" />
+
+        <RelativeLayout
+            android:id="@+id/personal_center_level_logo_right_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/personal_center_level_logo_right"
+            android:layout_alignStart="@+id/personal_center_level_logo_right"
+            android:layout_alignTop="@+id/personal_center_level_logo_right"
+            android:layout_gravity="center"
+            android:layout_marginLeft="3dp"
+            android:layout_marginTop="3dp"
+            android:background="@drawable/before_nextlevel">
+
+            <ImageView
+                android:id="@+id/personal_center_level_next_img"
+                android:layout_width="7dp"
+                android:layout_height="7dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="3dp"
+                android:src="@mipmap/img_level_left" />
+
+            <TextView
+                android:id="@+id/personal_center_level_logo_right_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/personal_center_level_next_img"
+                android:textColor="@color/white"
+                android:textSize="10sp"
+                android:textStyle="bold|italic" />
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/personal_center_level_center_nextExp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/personal_center_level_logo_right"
+            android:layout_alignLeft="@+id/personal_center_level_logo_right"
+            android:layout_alignRight="@+id/personal_center_level_logo_right"
+            android:layout_alignStart="@+id/personal_center_level_logo_right"
+            android:layout_below="@+id/personal_center_level_logo_right"
+            android:layout_marginTop="4dp"
+            android:gravity="center"
+            android:textColor="@color/personal_center_level_logo_text_color"
+            android:textSize="10sp" />
+
+        <TextView
+            android:id="@+id/personal_center_level_current_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/personal_center_level_center_below_frame"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="9dp"
+            android:textColor="@color/white"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/personal_center_level_bottom_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/personal_center_level_current_name"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="11dp"
+            android:textColor="@color/white"
+            android:textSize="14sp" />
+    </RelativeLayout>
+    <!--蓝色整体布局end-->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="9dp"
+        android:background="@color/gray_view_bg" />
+    <!--如何升级start-->
+    <RelativeLayout
+        android:id="@+id/personal_center_level_howtoupgrade"
+        android:layout_width="match_parent"
+        android:layout_height="47dp"
+        android:background="@drawable/item_change_bg"
+        android:paddingLeft="@dimen/my_common_margin_min"
+        android:paddingRight="@dimen/my_common_margin_min">
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/person_center_level_how_to_upgrade"
+            android:textColor="@color/black"
+            android:textSize="17sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/view_height_width"
+            android:layout_alignParentBottom="true"
+            android:background="@color/view" />
+    </RelativeLayout>
+    <!--如何升级end-->
+    <!--第一行start-->
+    <RelativeLayout
+        android:id="@+id/personal_center_level_becauseone"
+        android:layout_width="match_parent"
+        android:layout_height="47dp"
+        android:background="@drawable/item_change_bg"
+        android:paddingLeft="@dimen/my_common_margin_min"
+        android:paddingRight="@dimen/my_common_margin_min">
+
+
+        <TextView
+            style="@style/person_level_text_style"
+            android:text="@string/person_center_level_data_to_task" />
+
+        <View
+            android:id="@+id/first"
+            android:layout_width="1dip"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true" />
+
+        <TextView
+            style="@style/person_level_text_style"
+            android:layout_toRightOf="@+id/first"
+            android:text="@string/person_center_level_gift_giving" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/view_height_width"
+            android:layout_alignParentBottom="true"
+            android:background="@color/view" />
+    </RelativeLayout>
+    <!--第一行end-->
+    <!--第二行start-->
+    <RelativeLayout
+        android:id="@+id/personal_center_level_becausetwo"
+        android:layout_width="match_parent"
+        android:layout_height="47dp"
+        android:background="@drawable/item_change_bg"
+        android:paddingLeft="@dimen/my_common_margin_min"
+        android:paddingRight="@dimen/my_common_margin_min">
+
+
+        <TextView
+            style="@style/person_level_text_style"
+            android:text="@string/person_center_level_share" />
+
+        <View
+            android:id="@+id/two"
+            android:layout_width="1dip"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true" />
+
+        <TextView
+            style="@style/person_level_text_style"
+            android:layout_toRightOf="@+id/two"
+            android:text="@string/person_center_invite_friends" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/view_height_width"
+            android:layout_alignParentBottom="true"
+            android:background="@color/view" />
+    </RelativeLayout>
+    <!--第二行end-->
+    <!--第三行start-->
+    <RelativeLayout
+        android:id="@+id/personal_center_level_becausethree"
+        android:layout_width="match_parent"
+        android:layout_height="47dp"
+        android:background="@drawable/item_change_bg"
+        android:paddingLeft="@dimen/my_common_margin_min"
+        android:paddingRight="@dimen/my_common_margin_min">
+
+
+        <TextView
+            style="@style/person_level_text_style"
+            android:text="累积在线时间" />
+
+        <View
+            android:id="@+id/three"
+            android:layout_width="1dip"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true" />
+
+        <TextView
+            style="@style/person_level_text_style"
+            android:layout_toRightOf="@+id/three"
+            android:text="@string/person_center_time_online"
+            android:visibility="gone" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/view_height_width"
+            android:layout_alignParentBottom="true"
+            android:background="@color/view" />
+    </RelativeLayout>
+    <!--第三行end-->
+
+    <!--最后空白start-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="15dp"
+        android:background="@drawable/item_change_bg">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/view_height_width"
+            android:layout_alignParentBottom="true"
+            android:background="@color/view" />
+    </RelativeLayout>
+    <!--最后空白end-->
+</LinearLayout>

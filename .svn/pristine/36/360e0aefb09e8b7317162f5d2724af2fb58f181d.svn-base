@@ -1,0 +1,329 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/scroll_style"
+    android:background="@color/gray_view_bg">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:orientation="vertical">
+
+        <include
+            android:id="@+id/title"
+            layout="@layout/title_blue_bg" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:id="@+id/lay_answer_time_order"
+                android:layout_width="match_parent"
+                android:layout_height="84dp"
+                android:background="@drawable/item_change_bg"
+                android:clickable="true"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp">
+
+                <TextView
+                    android:id="@+id/txt_answer_time_order"
+                    style="@style/middle_black_text_style"
+                    android:text="头像" />
+
+                <ImageView
+                    android:id="@+id/btn_answer_time_order"
+                    style="@style/right_arrow_style" />
+
+                <com.youjing.yjeducation.wiget.CustomImage
+                    android:id="@+id/img_user_photo"
+                    android:layout_width="61dp"
+                    android:layout_height="61dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="6dp"
+                    android:layout_toLeftOf="@id/btn_answer_time_order"
+                    android:clickable="true"
+                    android:scaleType="fitXY"
+                    android:src="@mipmap/img_app_logo" />
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="9dp"
+                android:background="@color/gray_view_bg" />
+
+            <RelativeLayout
+                android:id="@+id/re_nick_name"
+                android:layout_width="match_parent"
+                android:layout_height="47dp"
+                android:background="@drawable/item_change_bg"
+                android:clickable="true"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp">
+
+                <TextView
+                    android:id="@+id/txt_nick_name"
+                    style="@style/middle_black_text_style"
+                    android:text="昵称" />
+
+                <ImageView
+                    android:id="@+id/btn_name_record"
+                    style="@style/right_arrow_style" />
+
+                <TextView
+                    android:id="@+id/txt_user_nick_name_show"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@id/btn_name_record"
+                    android:background="@color/transparent"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="8dp"
+                    android:textColor="@color/gray_text" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/view_height_width"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/view" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/re_sex"
+                android:layout_width="match_parent"
+                android:layout_height="47dp"
+                android:background="@drawable/item_change_bg"
+                android:clickable="true"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp">
+
+                <TextView
+                    android:id="@+id/txt_sex"
+                    style="@style/middle_black_text_style"
+                    android:text="性别" />
+
+                <ImageView
+                    android:id="@+id/btn_sex_record"
+                    style="@style/right_arrow_style" />
+
+                <TextView
+                    android:id="@+id/txt_user_sex"
+                    style="@style/middle_black_text_style"
+                    android:layout_marginRight="6dp"
+                    android:layout_toLeftOf="@id/btn_sex_record"
+                    android:textColor="@color/gray_text" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/view_height_width"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/view" />
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:id="@+id/re_area"
+                android:layout_width="match_parent"
+                android:layout_height="47dp"
+                android:background="@drawable/item_change_bg"
+                android:clickable="true"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp">
+
+                <TextView
+                    android:id="@+id/txt_area"
+                    style="@style/middle_black_text_style"
+                    android:text="地区" />
+
+                <ImageView
+                    android:id="@+id/img_area_arrow"
+                    style="@style/right_arrow_style" />
+
+                <TextView
+                    android:id="@+id/txt_user_area"
+                    style="@style/middle_black_text_style"
+                    android:layout_marginRight="6dp"
+                    android:layout_toLeftOf="@id/img_area_arrow"
+                    android:textColor="@color/gray_text" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/view_height_width"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/view" />
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:id="@+id/re_birthday"
+                android:layout_width="match_parent"
+                android:layout_height="47dp"
+                android:background="@drawable/item_change_bg"
+                android:clickable="true"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp">
+
+                <TextView
+                    android:id="@+id/txt_birthday"
+                    style="@style/middle_black_text_style"
+                    android:layout_toRightOf="@id/img_my_card"
+                    android:text="生日" />
+
+                <ImageView
+                    android:id="@+id/img_birthday_arrow"
+                    style="@style/right_arrow_style" />
+
+                <TextView
+                    android:id="@+id/txt_user_birthday"
+                    style="@style/middle_black_text_style"
+                    android:layout_marginRight="6dp"
+                    android:layout_toLeftOf="@id/img_birthday_arrow"
+                    android:textColor="@color/gray_text" />
+
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/view_height_width"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/view" />
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:id="@+id/re_phone_num"
+                android:layout_width="match_parent"
+                android:layout_height="47dp"
+                android:background="@color/white"
+                android:clickable="true"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp">
+
+                <TextView
+                    android:id="@+id/txt_phone_num"
+                    style="@style/middle_black_text_style"
+                    android:text="手机号" />
+
+                <TextView
+                    android:id="@+id/txt_phone_num_show"
+                    style="@style/middle_black_text_style"
+                    android:layout_alignParentRight="true"
+                    android:background="@color/transparent"
+                    android:textColor="@color/gray_text" />
+            </RelativeLayout>
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="9dp"
+                android:background="@color/gray_view_bg" />
+
+            <RelativeLayout
+                android:id="@+id/re_lock_grade"
+                android:layout_width="match_parent"
+                android:layout_height="47dp"
+                android:background="@drawable/item_change_bg"
+                android:clickable="true"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp">
+
+
+                <TextView
+                    android:id="@+id/txt_lock_grade"
+                    style="@style/middle_black_text_style"
+                    android:text="年级" />
+
+                <!--<CheckBox-->
+                <!--android:id="@+id/cb_grade_lock"-->
+                <!--android:layout_width="34dp"-->
+                <!--android:layout_height="21dp"-->
+                <!--android:layout_centerVertical="true"-->
+                <!--android:layout_alignParentRight="true"-->
+                <!--android:button="@null"-->
+                <!--android:background="@drawable/checkbox_selecter"/>-->
+
+                <ImageView
+                    android:id="@+id/img_grade_arrow"
+                    style="@style/right_arrow_style" />
+
+                <TextView
+                    android:id="@+id/txt_grade"
+                    style="@style/middle_black_text_style"
+                    android:layout_marginRight="6dp"
+                    android:layout_toLeftOf="@id/img_grade_arrow"
+                    android:textColor="@color/gray_text" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/view_height_width"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/view" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/re_subject"
+                android:layout_width="match_parent"
+                android:layout_height="47dp"
+                android:background="@drawable/item_change_bg"
+                android:clickable="true"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp">
+
+                <TextView
+                    android:id="@+id/txt_subject"
+                    style="@style/middle_black_text_style"
+                    android:layout_toRightOf="@id/img_setting"
+                    android:text="科目" />
+
+                <ImageView
+                    android:id="@+id/img_subject_arrow"
+                    style="@style/right_arrow_style" />
+
+                <TextView
+                    android:id="@+id/txt_subject_show"
+                    style="@style/middle_black_text_style"
+                    android:layout_marginRight="6dp"
+                    android:layout_toLeftOf="@id/img_subject_arrow"
+                    android:textColor="@color/gray_text" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/view_height_width"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/view" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/re_parent_num"
+                android:layout_width="match_parent"
+                android:layout_height="47dp"
+                android:background="@drawable/item_change_bg"
+                android:clickable="true"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp">
+
+                <TextView
+                    android:id="@+id/txt_parent_num"
+                    style="@style/middle_black_text_style"
+                    android:layout_toRightOf="@id/img_setting"
+                    android:text="家长手机号" />
+
+                <ImageView
+                    android:id="@+id/img_parent_arrow"
+                    style="@style/right_arrow_style" />
+
+                <TextView
+                    android:id="@+id/txt_parent_num_show"
+                    style="@style/middle_black_text_style"
+                    android:background="@color/transparent"
+                    android:layout_marginRight="6dp"
+                    android:layout_toLeftOf="@id/img_parent_arrow"
+                    android:maxLength="11"
+                    android:phoneNumber="true"
+                    android:textColor="@color/gray_text" />
+            </RelativeLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:background="@color/gray_view_bg">
+    </LinearLayout>
+    <RelativeLayout
+        android:id="@+id/re_teacher_info"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:background="@drawable/item_change_bg">
+        <com.youjing.yjeducation.wiget.CustomImage
+            android:id="@+id/img_teacher_photo"
+            style="@style/image_style"
+            android:layout_width="47dp"
+            android:layout_height="47dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="8dp"
+            android:scaleType="fitXY"
+            android:src="@mipmap/img_app_logo" />
+
+        <TextView
+            android:id="@+id/txt_teacher_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="14dp"
+            android:layout_toRightOf="@id/img_teacher_photo"
+            android:text=""
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/txt_online_status"
+            android:layout_width="24dp"
+            android:layout_height="16dp"
+            android:layout_marginLeft="5dp"
+            android:background="@mipmap/img_yellow_bg"
+            android:layout_toRightOf="@id/txt_teacher_name"
+            android:layout_alignTop="@id/txt_teacher_name"
+            android:layout_alignBottom="@id/txt_teacher_name"
+            android:gravity="center"
+            android:text="在线"
+            android:textColor="@color/white"
+            android:textSize="9sp" />
+
+
+        <TextView
+            android:id="@+id/txt_play_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/txt_teacher_name"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="3dp"
+            android:layout_toRightOf="@id/img_teacher_photo"
+            android:text=""
+            android:textColor="@color/gray_text"
+            android:textSize="11sp" />
+
+        <Button
+            android:id="@+id/bt_enter_group"
+            android:layout_width="84dp"
+            android:layout_height="26dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="8dp"
+            android:background="@mipmap/course_button_pressed"
+            android:text="立即提问"
+            android:textColor="@color/white"
+            android:textSize="14sp" />
+    </RelativeLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="140dp"
+        android:background="@color/gray_view_bg">
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="period">
+        <item>小学</item>
+        <item>初中</item>
+        <item>高中</item>
+    </string-array>
+    <string-array name="primary_school_grade">
+        <item>一年级</item>
+        <item>二年级</item>
+        <item>三年级</item>
+        <item>四年级</item>
+        <item>五年级</item>
+        <item>六年级</item>
+    </string-array>
+    <string-array name="middle_school_grade">
+        <item>初一</item>
+        <item>初二</item>
+        <item>初三</item>
+    </string-array>
+    <string-array name="high_school_grade">
+        <item>高一</item>
+        <item>高二</item>
+        <item>高三</item>
+    </string-array>
+    <string-array name="learn">
+        <item>全部学段</item>
+        <item>小学</item>
+        <item>初中</item>
+        <item>高中</item>
+    </string-array>
+
+    <string-array name="sex">
+        <item>男</item>
+        <item>女</item>
+        <item>保密</item>
+    </string-array>
+    <string-array name="subject">
+        <item>全部学科</item>
+        <item>语文</item>
+        <item>数学</item>
+        <item>英语</item>
+        <item>物理</item>
+        <item>化学</item>
+        <item>生物</item>
+    </string-array>
+</resources>

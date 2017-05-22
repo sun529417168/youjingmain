@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:descendantFocusability="blocksDescendants">
+
+    <RelativeLayout
+        android:id="@+id/lay_item"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="@color/white">
+        <TextView
+            android:id="@+id/txt_question_result_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:singleLine="true"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:text="1、"
+            android:textColor="@color/blue_text"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/txt_question_iscorrect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dp"
+            android:singleLine="true"
+            android:layout_toRightOf="@id/txt_question_result_num"
+            android:layout_centerVertical="true"
+            android:text="答对了!"
+            android:textColor="@color/blue_text"
+            android:textSize="13sp" />
+
+
+        <TextView
+            android:id="@+id/txt_question_correct"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:singleLine="true"
+            android:layout_toRightOf="@id/txt_question_iscorrect"
+            android:layout_centerVertical="true"
+            android:text="正确答案"
+            android:textColor="@color/gray_text"
+            android:textSize="11sp" />
+
+
+        <TextView
+            android:id="@+id/txt_question_correct_option"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginLeft="4dp"
+            android:singleLine="true"
+            android:gravity="center"
+            android:layout_toRightOf="@id/txt_question_correct"
+            android:layout_centerVertical="true"
+            android:background="@drawable/circle_blue_button_bg"
+            android:text="D"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+
+
+        <TextView
+            android:id="@+id/txt_question_result_your"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:singleLine="true"
+            android:layout_toRightOf="@id/txt_question_correct_option"
+            android:layout_centerVertical="true"
+            android:text="你的答案"
+            android:textColor="@color/gray_text"
+            android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/txt_question_error_option"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginLeft="4dp"
+            android:singleLine="true"
+            android:gravity="center"
+            android:layout_toRightOf="@id/txt_question_result_your"
+            android:layout_centerVertical="true"
+            android:background="@drawable/circle_red_button_bg"
+            android:text="C"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/txt_question_result_no"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:singleLine="true"
+            android:visibility="gone"
+            android:layout_toRightOf="@id/txt_question_result_your"
+            android:layout_centerVertical="true"
+            android:text="无"
+            android:textColor="@color/gray_text"
+            android:textSize="11sp" />
+    </RelativeLayout>
+
+</RelativeLayout>

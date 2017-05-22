@@ -1,0 +1,98 @@
+package com.youjing.yjeducation.ui.actualize.dialog;
+
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+
+import com.youjing.yjeducation.R;
+import com.youjing.yjeducation.core.YJGlobal;
+import com.youjing.yjeducation.core.YJUpdate;
+
+import org.vwork.mobile.ui.AVDialog;
+import org.vwork.mobile.ui.utils.VLayoutTag;
+import org.vwork.mobile.ui.utils.VViewTag;
+import org.vwork.utils.base.VParamKey;
+
+/**
+ * user  秦伟宁
+ * Date 2016/5/21
+ * Time 11:30
+ */
+@VLayoutTag(R.layout.dialog_update_tip)
+public class YJUpdateTipDialog extends AVDialog {
+    @VViewTag(R.id.txt_title)
+    private TextView mTxtTitle;
+    @VViewTag(R.id.txt_content)
+    protected TextView mTxtInfo;
+    @VViewTag(R.id.txt_tip)
+    private TextView mTxtTip;
+    @VViewTag(R.id.btn_one)
+    private Button mBtnOne;
+    @VViewTag(R.id.btn_two)
+    private Button mBtnTwo;
+    private String mInfo;
+    private int mStatus;
+    private boolean mIsFlag;
+    private IOnCloseListener mListener;
+
+    public static final VParamKey<String> KEY_INFO = new VParamKey<>(null);
+    public static final VParamKey<Integer> KEY_FLAG = new VParamKey<>(-1);
+    public static final VParamKey<IOnCloseListener> KEY_LISTENER = new VParamKey<>(null);
+    public static final VParamKey<Boolean> KEY_LOGIN = new VParamKey<>(false);
+
+    @Override
+    protected void onLoadingView() {
+        super.onLoadingView();
+        mInfo = getTransmitData(KEY_INFO);
+        mStatus = getTransmitData(KEY_FLAG);
+        mListener = getTransmitData(KEY_LISTENER);
+        mIsFlag = getTransmitData(KEY_LOGIN);
+    }
+
+    @Override
+    protected void onLoadedView() {
+        super.onLoadedView();
+        mTxtTitle.setText(R.string.txt_personal_update);
+        mTxtInfo.setText(mInfo);
+        mTxtTip.setText(R.string.txt_update_tip);
+        if (mIsFlag) {
+            mTxtTip.setVisibility(View.GONE);
+        }
+        // if (mStatus != 1) mTxtTip.setVisibility(View.GONE);
+        onClick();
+    }
+
+    private void onClick() {
+        //取消按钮
+        if (mIsFlag) {
+            mBtnOne.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View aView) {
+                    YJUpdate update = new YJUpdate(YJUpdateTipDialog.this, true, true);
+                    update.autoLogin();
+                    close();
+                }
+            });
+        } else {
+            mBtnOne.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View aView) {
+                    close();
+                    finishAll();
+                }
+            });
+        }
+
+        mBtnTwo.setOnClickListener(new View.OnClickListener() {
+                                       @Override
+                                       public void onClick(View aView) {
+                                           if (mListener != null) mListener.onClose();
+                                       }
+                                   }
+        );
+    }
+
+    public interface IOnCloseListener {
+        void onClose();
+    }
+}

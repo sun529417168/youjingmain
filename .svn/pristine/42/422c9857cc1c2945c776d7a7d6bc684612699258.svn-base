@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scrollview"
+    style="@style/scroll_style">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:orientation="vertical">
+        <!--第一部分start-->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="80dp">
+
+            <TextView
+                android:id="@+id/view_course_details_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:text="课程名称"
+                android:textColor="@color/black"
+                android:textSize="16sp" />
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/view_course_details_title"
+                android:layout_marginTop="11dp"
+                android:paddingLeft="5dp">
+
+                <ImageView
+                    android:id="@+id/img_rmb"
+                    android:layout_width="13dp"
+                    android:layout_height="13dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="5dp"
+                    android:src="@mipmap/whale_money"
+                    android:visibility="visible" />
+
+                <TextView
+                    android:id="@+id/txt_money"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="5dp"
+                    android:layout_toRightOf="@id/img_rmb"
+                    android:text="120"
+                    android:textColor="@color/yellow_text"
+                    android:textSize="14sp"
+                    android:visibility="visible" />
+            </RelativeLayout>
+            <!--邀请好友start-->
+            <LinearLayout
+                android:id="@+id/view_course_details_shareLayout"
+                android:layout_width="50dp"
+                android:layout_height="45dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="10dp"
+                android:clickable="true"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/img_learn_share"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="3dp"
+                    android:layout_toLeftOf="@+id/my_course_item_share_text"
+                    android:background="@mipmap/view_course_share"
+                    android:clickable="true" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="邀请好友"
+                    android:textColor="@color/blue_course_play"
+                    android:textSize="12sp" />
+            </LinearLayout>
+            <!--邀请好友end-->
+            <!--电话咨询start-->
+            <LinearLayout
+                android:id="@+id/view_course_details_iphoneLayout"
+                android:layout_width="50dp"
+                android:layout_height="45dp"
+                android:layout_alignParentBottom="true"
+                android:layout_marginRight="5dp"
+                android:layout_toLeftOf="@+id/view_course_details_shareLayout"
+                android:clickable="true"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/img_learn_iphone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="3dp"
+                    android:layout_toLeftOf="@+id/my_course_item_share_text"
+                    android:background="@mipmap/view_course_iphone"
+                    android:clickable="true" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_marginTop="6dp"
+                    android:text="电话咨询"
+                    android:textColor="@color/blue_course_play"
+                    android:textSize="12sp" />
+            </LinearLayout>
+            <!--电话咨询end-->
+            <!--在线客服start-->
+            <LinearLayout
+                android:id="@+id/view_course_details_customerLayout"
+                android:layout_width="50dp"
+                android:layout_height="45dp"
+                android:layout_alignParentBottom="true"
+                android:layout_marginRight="5dp"
+                android:layout_toLeftOf="@+id/view_course_details_iphoneLayout"
+                android:clickable="true"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/img_learn_customer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="3dp"
+                    android:layout_toLeftOf="@+id/my_course_item_share_text"
+                    android:background="@mipmap/view_course_customer"
+                    android:clickable="true" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="在线客服"
+                    android:textColor="@color/blue_course_play"
+                    android:textSize="12sp" />
+            </LinearLayout>
+            <!--在线客服end-->
+        </RelativeLayout>
+        <!--第一部分start-->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="12dp"
+            android:background="#F4F4F4" />
+        <!--第二部分课程简介start-->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:paddingTop="16dp">
+
+            <ImageView
+                android:id="@+id/course_introduction_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:src="@mipmap/view_course_course" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@+id/course_introduction_image"
+                android:text="课程简介" />
+
+            <WebView
+                android:id="@+id/view_course_details_course_introduction"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/course_introduction_image"
+                android:layout_marginLeft="30dp"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:layout_marginRight="30dp"
+                android:layout_marginTop="10dp">
+
+            </WebView>
+
+        </RelativeLayout>
+        <!--第二部分课程简介end-->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="12dp"
+            android:layout_marginTop="8dp"
+            android:background="#F4F4F4" />
+        <!--第三部分老师简介start-->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:paddingTop="16dp">
+
+            <ImageView
+                android:id="@+id/teacher_introduction_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:src="@mipmap/view_course_teacher" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@+id/teacher_introduction_image"
+                android:text="老师简介" />
+
+            <WebView
+                android:id="@+id/view_course_details_teacher_introduction"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:layout_below="@+id/teacher_introduction_image"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_marginTop="10dp"/>
+
+
+        </RelativeLayout>
+        <!--第三部分老师简介end-->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="12dp"
+            android:layout_marginTop="8dp"
+            android:background="#F4F4F4" />
+        <!--第四部分课程有效期start-->
+        <RelativeLayout
+            android:id="@+id/re_course_date"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:paddingTop="16dp">
+
+            <ImageView
+                android:id="@+id/course_date_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:src="@mipmap/view_course_date" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@+id/course_date_image"
+                android:text="课程有效期"
+                android:textColor="@color/gray_text" />
+
+            <TextView
+                android:id="@+id/view_course_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@+id/course_date_image"
+                android:text="课程有效期"
+                android:textColor="@color/black" />
+
+
+        </RelativeLayout>
+
+    </LinearLayout>
+</ScrollView>

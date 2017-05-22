@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <!--android:background="@drawable/chat_item_bg"-->
+    <RelativeLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.youjing.yjeducation.wiget.CustomImage
+            android:id="@+id/img_user_photo"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:layout_centerVertical="true"
+            android:clickable="true"
+            android:scaleType="fitXY"
+            android:src="@mipmap/img_app_logo" />
+        <TextView
+            android:id="@+id/identity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="2dp"
+            android:layout_marginEnd="8dp"
+            android:visibility="gone"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="8dp"
+            android:background="@drawable/identity_bg"
+            android:textColor="@android:color/white"
+            android:textSize="12sp"
+            android:text="@string/teacher"/>
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="7dp"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/img_user_photo"
+            android:textColor="@color/white"
+            android:textSize="12sp" />
+        <TextView
+            android:id="@+id/time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:visibility="gone"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="10dp"
+            android:textColor="@color/white"
+            android:textSize="12sp"/>
+
+        <TextView
+            android:id="@+id/txt_colon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:text=":"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/name"
+            android:textSize="12sp"/>
+        <TextView
+            android:id="@+id/content"
+            android:layout_width="wrap_content"
+            android:layout_toRightOf="@id/txt_colon"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="3dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="12sp"/>
+
+        <ImageView
+            android:id="@+id/img_gift"
+            android:visibility="gone"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_centerInParent="true"
+            android:clickable="true"
+            android:src="@mipmap/img_app_logo" />
+        <TextView
+            android:id="@+id/txt_gift_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="8dp"
+            android:text="X6"
+            android:visibility="gone"
+            android:layout_toRightOf="@id/img_gift"
+            android:textColor="@color/blue"
+            android:textStyle="bold"
+            android:textSize="@dimen/text_size_b" />
+
+    </RelativeLayout>
+
+
+</LinearLayout>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+    <!--老师头像start-->
+    <com.youjing.yjeducation.wiget.CustomImage
+        android:id="@+id/img_live_course_photo"
+        style="@style/image_style"
+        android:layout_width="71dp"
+        android:layout_height="71dp"
+        android:layout_marginLeft="25dp"
+        android:scaleType="fitXY" />
+    <!--老师头像end-->
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp">
+
+        <!--时间日期和信息start-->
+        <TextView
+            android:id="@+id/item_live_course_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="@color/yellow_text"
+            android:textSize="17sp" />
+
+
+        <TextView
+            android:id="@+id/item_live_course_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/item_live_course_date"
+            android:layout_marginTop="10dp"
+            android:ellipsize="end"
+            android:maxEms="18"
+            android:singleLine="true"
+            android:text=""
+            android:textColor="@color/black" />
+        <!--时间日期和信息end-->
+        <!--名字人数和状态start-->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/item_live_course_info"
+            android:layout_marginTop="10dp">
+
+            <ImageView
+                android:id="@+id/image_teacherName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/item_live_course_teachername" />
+
+            <TextView
+                android:id="@+id/item_live_course_teacherName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_toRightOf="@+id/image_teacherName"
+                android:text=""
+                android:textColor="@color/gray_text"
+                android:textSize="11sp" />
+
+            <ImageView
+                android:id="@+id/image_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_toRightOf="@+id/item_live_course_teacherName"
+                android:src="@mipmap/item_live_course_count" />
+
+            <TextView
+                android:id="@+id/item_live_course_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_toRightOf="@+id/image_count"
+                android:text=""
+                android:textColor="@color/gray_text"
+                android:textSize="11sp" />
+
+            <ImageView
+                android:id="@+id/item_live_course_state_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="6dp"
+                android:layout_toLeftOf="@+id/item_live_course_state_text" />
+
+            <TextView
+                android:id="@+id/item_live_course_state_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="8dp"
+                android:text=""
+                android:textColor="@color/gray_text"
+                android:textSize="11sp" />
+        </RelativeLayout>
+        <!--名字人数和状态start-->
+    </RelativeLayout>
+</LinearLayout>

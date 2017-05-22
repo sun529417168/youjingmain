@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:descendantFocusability="blocksDescendants">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="47dp"
+        android:background="@drawable/item_change_bg"
+        android:clickable="true">
+
+        <TextView
+            android:id="@+id/txt_task_title"
+            style="@style/task_black_text_style"
+            android:paddingLeft="@dimen/my_common_margin_min"
+            android:text="完善资料"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/txt_task_status"
+            android:layout_width="36dp"
+            android:layout_height="15dp"
+            android:paddingTop="1dp"
+            android:paddingBottom="1dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="8dp"
+            android:clickable="true"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="9sp" />
+
+        <TextView
+            android:id="@+id/txt_whale_money_num"
+            style="@style/task_black_text_style"
+            android:layout_marginRight="8dp"
+            android:layout_toLeftOf="@id/txt_task_status"
+            android:text="+ 20"
+            android:textColor="@color/yellow_text"
+            android:textSize="14sp" />
+
+        <ImageView
+            android:id="@+id/img_rmb"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="6dp"
+            android:layout_toLeftOf="@id/txt_whale_money_num"
+            android:src="@mipmap/whale_money" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/view_height_width"
+            android:layout_alignParentBottom="true"
+            android:background="@color/view" />
+    </RelativeLayout>
+</RelativeLayout>

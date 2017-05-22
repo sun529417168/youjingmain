@@ -1,0 +1,41 @@
+package com.youjing.yjeducation.ui.dispaly.activity;
+
+import android.content.Intent;
+
+import com.baidu.mobstat.StatService;
+import com.youjing.yjeducation.R;
+import com.youjing.yjeducation.core.YJBaseActivity;
+import com.youjing.yjeducation.core.YJUpdate;
+import com.youjing.yjeducation.service.TimeService;
+
+import org.vwork.mobile.ui.utils.VLayoutTag;
+
+/**
+ * user  秦伟宁
+ * Date 2016/3/11
+ * Time 10:46
+ */
+@VLayoutTag(R.layout.splash)
+public class AYJSplashActivity extends YJBaseActivity {
+
+    @Override
+    protected void onLoadingView() {
+        super.onLoadingView();
+        Intent intent = new Intent(AYJSplashActivity.this, TimeService.class);
+        startService(intent);//启动服务
+        YJUpdate update = new YJUpdate(this, false, true);
+        update.UpdateApp(true);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        StatService.onResume(getContext());
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        StatService.onPause(getContext());
+    }
+}

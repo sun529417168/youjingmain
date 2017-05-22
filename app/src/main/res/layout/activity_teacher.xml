@@ -1,0 +1,98 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/re_title"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:background="#0CAAFE">
+
+
+        <RelativeLayout
+            android:id="@+id/layout_title"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:clickable="true">
+
+            <TextView
+                android:id="@+id/txt_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:clickable="true"
+                android:text="选择年级"
+                android:textColor="@color/white"
+                android:textSize="18sp" />
+
+            <ImageView
+                android:id="@+id/iv_arrow"
+                android:layout_width="15dp"
+                android:layout_height="8dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="7dp"
+                android:layout_toRightOf="@id/txt_title"
+                android:src="@mipmap/course_down" />
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/activity_teacher_data"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <com.youjing.yjeducation.wiget.MsgListView
+            android:id="@+id/msgListView"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/light_gray"
+            android:cacheColorHint="#00000000"
+            android:divider="@null"
+            android:fadingEdge="none"
+            android:overScrollMode="never"
+            android:scrollbars="none"
+            android:scrollingCache="false" />
+
+    </RelativeLayout>
+
+    <!--没有数据的时候加载的页面start-->
+    <RelativeLayout
+        android:id="@+id/activity_teacher_list_nothing"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#F4F4F4"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/teacher_list_image"
+            android:layout_width="125dp"
+            android:layout_height="92dp"
+            android:layout_centerInParent="true"
+            android:background="@mipmap/img_no_data_bg" />
+
+        <TextView
+            android:id="@+id/teacher_text1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/teacher_list_image"
+            android:gravity="center"
+            android:text="小鲸正在玩儿命加班中..." />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/teacher_text1"
+            android:gravity="center"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:text="暂时没有老师在哦" />
+    </RelativeLayout>
+    <!--没有数据的时候加载的页面end-->
+
+</LinearLayout>

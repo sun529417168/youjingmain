@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <ListView
+        android:id="@+id/view_course_related_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/light_gray"
+        android:cacheColorHint="#00000000"
+        android:divider="@null"
+        android:fadingEdge="none"
+        android:overScrollMode="never"
+        android:scrollbars="none"
+        android:scrollingCache="false"
+        android:visibility="visible" />
+
+    <RelativeLayout
+        android:id="@+id/view_course_related_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/gray_view_bg"
+        android:visibility="gone">
+
+
+
+        <TextView
+            android:id="@+id/nothing_text1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="visible"
+            android:gravity="center"
+            android:lineSpacingExtra="5dp"
+            android:layout_centerHorizontal="true"
+            android:text="课程拼命组装中，要不先去围观大家都在学啥？" />
+        <ImageView
+            android:id="@+id/nothing_imageview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="10dp"
+            android:layout_above="@id/nothing_text1"
+            android:src="@mipmap/img_no_data_bg" />
+        <TextView
+            android:id="@+id/nothing_text2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:gravity="center"
+            android:visibility="gone"
+            android:layout_below="@+id/nothing_text1"
+            android:layout_centerHorizontal="true"
+            android:text="课程拼命组装中，要不先去围观大家都在学啥？" />
+
+        <TextView
+            android:id="@+id/view_course_related_selection"
+            android:layout_width="250dp"
+            android:layout_height="40dp"
+            android:layout_below="@id/nothing_text2"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/shape_blue_round"
+            android:gravity="center"
+            android:text="立 即 前 往"
+            android:textColor="@color/white" />
+    </RelativeLayout>
+
+</LinearLayout>

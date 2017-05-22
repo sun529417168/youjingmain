@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/custom_title_layout"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/re_title"
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/aliwx_title_bar_height"
+        android:background="@color/blue_title"
+        android:gravity="center_vertical">
+
+
+        <TextView
+            android:id="@+id/back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dip"
+            android:drawableLeft="@drawable/aliwx_common_back_btn_bg"
+            android:gravity="left"
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:ellipsize="middle"
+            android:maxWidth="200dp"
+            android:singleLine="true"
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
+
+        <ImageView
+            android:id="@+id/title_button"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/aliwx_title_bar_height"
+            android:layout_alignParentRight="true"
+            android:paddingRight="@dimen/aliwx_column_up_unit_margin"
+            android:scaleType="center"
+
+            android:src="@mipmap/demo_tribe_info_icon" />
+
+        <RelativeLayout
+            android:id="@+id/aliwx_at_content"
+            android:layout_width="@dimen/aliwx_title_bar_height"
+            android:layout_height="@dimen/aliwx_title_bar_height"
+            android:layout_alignWithParentIfMissing="true"
+            android:layout_centerInParent="true"
+            android:layout_toLeftOf="@id/title_button"
+            android:visibility="gone">
+            <!--这里包一层的原因是在Android 5.1上alignTop无效,所以改为alignParentTop-->
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true">
+
+                <ImageView
+                    android:id="@+id/aliwx_at_image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/aliwx_tribe_at_icon"
+                    android:visibility="visible" />
+
+                <ImageView
+                    android:id="@+id/aliwx_at_msg_unread"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignRight="@+id/aliwx_at_image"
+                    android:src="@drawable/aliwx_topbar_at_icon_new"
+                    android:visibility="gone" />
+            </RelativeLayout>
+
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/re_notice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/black_change_bg"
+        android:clickable="true">
+
+        <TextView
+            android:id="@+id/txt_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="12dp"
+            android:textSize="13sp"
+            android:lineSpacingExtra="3dp"
+            android:layout_marginTop="8dp"
+            android:text="公告内容"
+            android:textColor="@color/white" />
+
+        <RelativeLayout
+            android:id="@+id/btn_delete"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:clickable="true">
+
+            <ImageView
+
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+               android:layout_centerInParent="true"
+                android:src="@mipmap/img_delete" />
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+</LinearLayout>

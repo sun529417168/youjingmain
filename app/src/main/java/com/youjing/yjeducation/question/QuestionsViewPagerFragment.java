@@ -1,0 +1,392 @@
+package com.youjing.yjeducation.question;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import android.app.Activity;
+import android.content.Context;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import com.youjing.yjeducation.util.StringUtils;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.webkit.WebView;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.TextView;
+
+import com.youjing.yjeducation.R;
+import com.youjing.yjeducation.util.StringUtils;
+
+/**
+ * user  秦伟宁
+ * Date 2016/6/22
+ * Time 14:33
+ */
+public class QuestionsViewPagerFragment extends Fragment {
+
+    public View view;
+    private Context context;
+    private QuestionsDataInfo info;
+    private List<QuestionsDataOptions> options;
+    private Integer number=0, sum=0;
+    private static boolean isNextPage = true;
+    private int isShow = 1;
+    public TextView tv_type, tv_number, tv_sum, tv_answer, tv_knowledge,
+            tv_statistics;
+    public WebView wv_title, wv_analysis, wv_AskQuestion;
+    public LinearLayout answerLayout, mLayoutGroup, layoutLine, layoutAnswer,
+            layoutAskQuestion;
+    private Button isShow_bt;
+
+    public QuestionsViewPagerFragment() {
+        super();
+    }
+
+    public QuestionsViewPagerFragment(Context context, QuestionsDataInfo info,Integer number, Integer sum) {
+        super();
+        this.context = context;
+        this.info = info;
+        this.number = number;
+        StringUtils.Log(TAG, "number=" + number);
+        this.sum = sum;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.questions_layout_viewpager, container,
+                false);
+
+        mLayoutGroup = (LinearLayout) view.findViewById(R.id.item_RadioGroup);
+        tv_type = (TextView) view
+                .findViewById(R.id.textView_QuestionsMain_vPager_examQuestionType);
+        tv_number = (TextView) view
+                .findViewById(R.id.textView_QuestionsMain_vPager_CompletedNumber);
+        tv_sum = (TextView) view
+                .findViewById(R.id.textView_QuestionsMain_vPager_CompletedSum);
+        wv_title = (WebView) view
+                .findViewById(R.id.webview_QuestionsMain_vPager_examQuestionTitle);
+
+        return view;
+    }
+
+    public enum ExamQuestionType {
+        SingleChoice("单选题"), MultiChoice("多选题"), UndefinedChoice("不定项"), TrueOrFalse(
+                "判断题"), AskQuestion("问答题"), AskCalculation("计算题"), Material(
+                "材料"), A1("A1型题"), // 单选
+        A2("A2型题"), // 单选
+        A3("A3型题"), // 材料
+        A4("A4型题"), // 材料
+        B1("B1型题"), // 材料
+        A("A型题"), // 单选
+        B("B型题"), // 材料
+        B0("B0型题"), // B材料单选
+        X("X型题"), // 多选
+        C("C型题"); // 材料
+
+        private String chineseName;
+
+        private ExamQuestionType(String chineseName) {
+            this.chineseName = chineseName;
+        }
+
+        public String getChineseName() {
+            return chineseName;
+        }
+    }
+
+    private String TAG = "QuestionsViewPagerFragment";
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        tv_number.setText(number+"");
+        tv_sum.setText("/" + sum + "题");
+
+        StringUtils.Log(TAG, "number=" + number);
+        options = info.getOptions();
+        if (info.getMaterialType().equals("")) {
+            try {
+                tv_type.setText("【"
+                        + ExamQuestionType.valueOf(info.getExamQuestionType())
+                        .getChineseName() + "】");// 题类型
+                WebViewUtils.initDatas(wv_title, info.getExamQuestionTitle(),
+                        "");// 题目
+            } catch (Exception e) {
+            }
+
+        } else {
+            WebViewUtils.initDatas(wv_title, info.getMaterial(), "");
+
+            TextView tv_CrossheadType = new TextView(context);
+            tv_CrossheadType.setTextSize(16);
+            tv_CrossheadType.setTextColor(getResources().getColor(R.color.blue));
+            if (!info.getMaterialType().equals("Material")) {
+                tv_type.setText("【"
+                        + ExamQuestionType.valueOf(info.getMaterialType())
+                        .getChineseName() + "】");// 题类型
+                tv_CrossheadType.setVisibility(View.GONE);
+
+                isShow_bt = (Button) view
+                        .findViewById(R.id.button_QuestionsMain_isShow);
+                isShow_bt.setVisibility(View.VISIBLE);
+                isShow_bt.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        LinearLayout linelLayout = (LinearLayout) view
+                                .findViewById(R.id.layout_QuestionsMain_examQuestionTitle_line);
+                        if (isShow == -1) {
+                            wv_title.setVisibility(View.VISIBLE);
+                            linelLayout.setVisibility(View.VISIBLE);
+                            isShow_bt.setText("隐藏题干");
+                            isShow = 1;
+                        } else {
+                            wv_title.setVisibility(View.GONE);
+                            linelLayout.setVisibility(View.GONE);
+                            isShow_bt.setText("显示题干");
+                            isShow = -1;
+                        }
+
+                    }
+                });
+
+            } else {
+                tv_type.setText("【材料】");
+                tv_CrossheadType.setText("【"
+                        + ExamQuestionType.valueOf(info.getExamQuestionType())
+                        .getChineseName() + "】");
+            }
+
+            WebView webViewCrosshead = WebViewUtils.initwebWebViewOther(
+                    context, info.getExamQuestionTitle(), info.getImgUrl());
+            mLayoutGroup.addView(tv_CrossheadType);
+            mLayoutGroup.addView(webViewCrosshead);
+        }
+
+        if ("SingleChoice".equals(info.getExamQuestionType())// 单选
+                || "TrueOrFalse".equals(info.getExamQuestionType())
+                || "A1".equals(info.getExamQuestionType())
+                || "A2".equals(info.getExamQuestionType())
+                || "A".equals(info.getExamQuestionType())
+                || "B0".equals(info.getExamQuestionType())) {
+            final List<TextView> textViews = new ArrayList<TextView>();
+            final List<RadioButton> radioButtons = new ArrayList<RadioButton>();
+            for (int i = 0; i < options.size(); i++) {
+                LinearLayout layout = initLinearLayout(context, LayoutParams.MATCH_PARENT,
+                        LayoutParams.MATCH_PARENT);
+                final String option = options.get(i)
+                        .getExamQuestionOptionName();
+                LayoutInflater inflater = LayoutInflater.from(getActivity());
+                FrameLayout optionsLayout = (FrameLayout) inflater.inflate(R.layout.questions_options_radiobutton_item, null);
+                final RadioButton radioButton = (RadioButton) optionsLayout.findViewById(R.id.questions_options_item_RadioButton);
+                radioButton.setId(10000 + i);
+                // final TextView tv_sequence = (TextView) optionsLayout
+                // .findViewById(R.id.questions_options_RadioButton_item_TextView);
+                if (option.equals("A")) {
+                    radioButton.setButtonDrawable(R.drawable.radiobutton_single_a);
+                } else if (option.equals("B")) {
+                    radioButton.setButtonDrawable(R.drawable.radiobutton_single_b);
+                } else if (option.equals("C")) {
+                    radioButton.setButtonDrawable(R.drawable.radiobutton_single_c);
+                } else if (option.equals("D")) {
+                    radioButton.setButtonDrawable(R.drawable.radiobutton_single_d);
+                } else if (option.equals("E")) {
+                    radioButton.setButtonDrawable(R.drawable.radiobutton_single_e);
+                } else if (option.equals("F")) {
+                    radioButton.setButtonDrawable(R.drawable.radiobutton_single_e);
+                } else if (option.equals("G")) {
+                    radioButton.setButtonDrawable(R.drawable.radiobutton_single_e);
+                }
+                if (options.get(i).getImgUrl() == null) {
+                    options.get(i).setImgUrl("");
+                }
+
+                if (options.get(i).getExamQuestionOptionTitle() == null) {
+                    options.get(i).setExamQuestionOptionTitle("");
+                }
+
+                LinearLayout wvLyaout = initLinearLayout(context, LayoutParams.WRAP_CONTENT,
+                        LayoutParams.WRAP_CONTENT);
+                WebView wv_sequenceText = WebViewUtils.initWebView(context, "", options.get(i).getExamQuestionOptionTitle(), options.get(i).getImgUrl(), false);
+
+                layout.setOnClickListener(new OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        String answer = "";
+                        for (int j = 0; j < radioButtons.size(); j++) {
+                            radioButtons.get(j).setChecked(false);
+                        }
+                        radioButton.setChecked(true);
+
+                        answer = option;
+                        if (answer == "") {
+                            QuestionsActivity.questionsAnswerMap.put(
+                                    info.getId(), null);
+                        } else {
+                            QuestionsActivity.questionsAnswerMap.put(
+                                    info.getId(), answer);
+                        }
+                        if (isNextPage()) {
+                            QuestionsActivity.NextPage();
+                            setNextPage(false);
+                        }
+                    }
+                });
+                // QuestionsViewPagerControl.initSelectRadioButton(info.getId(),
+                // radioButton, tv_sequence, radioButton.getId());
+                wvLyaout.addView(wv_sequenceText);
+                layout.addView(optionsLayout);
+                layout.addView(wvLyaout);
+                mLayoutGroup.addView(layout);// 往父容器RadioGroup中添加
+                radioButtons.add(radioButton);
+                optionsLayout =null;
+                wv_sequenceText = null;
+                wvLyaout = null;
+                layout = null;
+
+                // textViews.add(tv_sequence);
+            }
+        } else if ("MultiChoice".equals(info.getExamQuestionType())// 多选
+                || "UndefinedChoice".equals(info.getExamQuestionType())
+                || "X".equals(info.getExamQuestionType())) {
+            // final List<TextView> textViews = new ArrayList<TextView>();
+            final List<CheckBox> checkBoxs = new ArrayList<CheckBox>();
+            final List<String> answers = new ArrayList<String>();
+            for (int i = 0; i < options.size(); i++) {
+                LinearLayout layout = initLinearLayout(context, LayoutParams.MATCH_PARENT,
+                        LayoutParams.WRAP_CONTENT);
+                final String option = options.get(i)
+                        .getExamQuestionOptionName();
+
+                LayoutInflater inflater = LayoutInflater.from(getActivity());
+                FrameLayout optionsLayout = (FrameLayout) inflater.inflate(R.layout.questions_options_checkbox_item, null);
+                final CheckBox checkBox = (CheckBox) optionsLayout.findViewById(R.id.questions_options_item_CheckBox);
+                checkBox.setId(1000 + i);
+                // final TextView tv_sequence = (TextView) optionsLayout
+                // .findViewById(R.id.questions_options_CheckBox_item_TextView);
+                // tv_sequence.setText(option);
+                if (option.equals("A")) {
+                    checkBox.setButtonDrawable(R.drawable.radiobutton_multi_a);
+                } else if (option.equals("B")) {
+                    checkBox.setButtonDrawable(R.drawable.radiobutton_multi_b);
+                } else if (option.equals("C")) {
+                    checkBox.setButtonDrawable(R.drawable.radiobutton_multi_c);
+                } else if (option.equals("D")) {
+                    checkBox.setButtonDrawable(R.drawable.radiobutton_multi_d);
+                } else if (option.equals("E")) {
+                    checkBox.setButtonDrawable(R.drawable.radiobutton_multi_e);
+                } else if (option.equals("F")) {
+                    checkBox.setButtonDrawable(R.drawable.radiobutton_multi_e);
+                } else if (option.equals("G")) {
+                    checkBox.setButtonDrawable(R.drawable.radiobutton_multi_e);
+                }
+
+                if (options.get(i).getImgUrl() == null) {
+                    options.get(i).setId("");
+                }
+                if (options.get(i).getExamQuestionOptionTitle() == null) {
+                    options.get(i).setExamQuestionOptionTitle("");
+                }
+                WebView wv_sequenceText = WebViewUtils.initWebView(context, "",
+                        options.get(i).getExamQuestionOptionTitle(), options
+                                .get(i).getImgUrl(), false);
+
+                layout.setOnClickListener(new OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        if (!checkBox.isChecked()) {
+                            checkBox.setChecked(true);
+                            // tv_sequence.setTextColor(getResources().getColor(
+                            // color.white));
+                        } else {
+                            checkBox.setChecked(false);
+                            // tv_sequence.setTextColor(getResources().getColor(
+                            // color.blue));
+                        }
+
+                        String answer = "";
+                        for (int j = 0; j < checkBoxs.size(); j++) {
+                            if (checkBoxs.get(j).isChecked()) {
+                                answer = answer + answers.get(j);
+                            }
+                        }
+
+                        if (answer == "") {
+                            QuestionsActivity.questionsAnswerMap.put(
+                                    info.getId(), null);
+                        } else {
+                            QuestionsActivity.questionsAnswerMap.put(
+                                    info.getId(), answer);
+                        }
+                    }
+                });
+                // QuestionsViewPagerControl.initSelectCheckBox(info.getId(),
+                // checkBox, tv_sequence);
+                layout.addView(optionsLayout);
+                layout.addView(wv_sequenceText);
+                mLayoutGroup.addView(layout);// 往父容器RadioGroup中添加
+                checkBoxs.add(checkBox);
+                // textViews.add(tv_sequence);
+                answers.add(option);
+                optionsLayout = null;
+                wv_sequenceText = null;
+                layout =null;
+            }
+        } else if ("AskQuestion".equals(info.getExamQuestionType())
+                || "AskCalculation".equals(info.getExamQuestionType())) {
+
+        }
+
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Bundle bundle = new Bundle();
+        bundle.putBooleanArray("daan", new boolean[]{});
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+    }
+
+    public QuestionsDataInfo getInfo() {
+        return info;
+    }
+
+    public void setInfo(QuestionsDataInfo info) {
+        this.info = info;
+    }
+
+    public static boolean isNextPage() {
+        return isNextPage;
+    }
+
+    public static void setNextPage(boolean isNextPage) {
+        QuestionsViewPagerFragment.isNextPage = isNextPage;
+    }
+
+    public static LinearLayout initLinearLayout(Context context, int layoutWidth, int layoutHeight) {
+        LinearLayout layout = new LinearLayout(context);
+        layout.setLayoutParams(new LayoutParams(layoutWidth, layoutWidth));
+        layout.setGravity(Gravity.CENTER_VERTICAL);
+        return layout;
+    }
+}

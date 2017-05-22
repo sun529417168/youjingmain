@@ -1,0 +1,78 @@
+package com.youjing.yjeducation.ui.actualize.activity;
+
+import android.util.Log;
+
+import com.alibaba.fastjson.JSON;
+import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.TextHttpResponseHandler;
+import com.youjing.yjeducation.R;
+import com.youjing.yjeducation.core.YJGlobal;
+import com.youjing.yjeducation.core.YJReqURLProtocol;
+import com.youjing.yjeducation.core.YJStudentReqManager;
+import com.youjing.yjeducation.model.YJConsumeHistoryModel;
+import com.youjing.yjeducation.model.YJCourseListModel;
+import com.youjing.yjeducation.ui.dispaly.activity.AYJCourseListActivity;
+import com.youjing.yjeducation.ui.dispaly.activity.AYJMyWalletActivity;
+import com.youjing.yjeducation.util.MakeSign;
+
+import org.apache.http.Header;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * user  秦伟宁
+ * Date 2016/3/31
+ * Time 20:13
+ */
+public class YJMyWalletActivity extends AYJMyWalletActivity {
+
+    private String TAG = "YJMyWalletActivity";
+    @Override
+    protected void getMyConsumHistory() {
+        YJStudentReqManager.getServerData(YJReqURLProtocol.GET_CONSUM_HISTORY, null, true, new TextHttpResponseHandler() {
+                      @Override
+                      public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                          showToast(getString(R.string.no_net_work));
+                          Log.d(TAG, "失败=" + s);
+                      }
+
+                      @Override
+                      public void onSuccess(int i, Header[] headers, String s) {
+                          try {
+                              Log.d(TAG, "成功s=" + s);
+                              JSONObject json = null;
+                              json = new JSONObject(s);
+                              switch (json.getInt("code")) {
+                                  case 200:
+                                      JSONObject jsonData = new JSONObject(json.getString("data"));
+                                      List<YJConsumeHistoryModel> yjConsumeHistoryModelList = JSON.parseArray(jsonData.getString("coinLogList"), YJConsumeHistoryModel.class);
+                                      startActivity(createIntent(YJConsumeHistoryActivity.class, createTransmitData(YJConsumeHistoryActivity.YJ_CONSUM_MODEL_LIST, yjConsumeHistoryModelList)));
+                                      break;
+                                  case 300:
+                                      break;
+                                  case 400:
+                                      break;
+                                  case 401:
+                                      break;
+                                  case 402:
+                                      break;
+                                  case 500:
+                                      break;
+                                  case 600:
+                                      startActivity(createIntent(YJLoginActivity.class, createTransmitData(YJLoginActivity.LOGIN_OUT, 1).set(YJLoginActivity.MY_LOGIN_OUT, true)));
+                                      finishAll();
+                                      break;
+                                  default:
+                                      break;
+                              }
+                          } catch (JSONException e) {
+                              e.printStackTrace();
+                          }
+                      }
+                  });
+    }
+}

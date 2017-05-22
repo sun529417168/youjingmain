@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="frameworklibs.VWorkUtils">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/frameworklibs/VWorkUtils.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

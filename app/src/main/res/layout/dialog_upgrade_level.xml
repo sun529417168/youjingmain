@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/upgrade_level_activity"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        style="@style/upgrade_level_info_background"
+        android:layout_width="187dp"
+        android:layout_height="256dp"
+        android:layout_centerInParent="true"
+        android:background="@mipmap/upgrade_level_background">
+
+        <TextView
+            android:id="@+id/dialog_upgrade_level_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="90dp"
+            android:text=""
+            android:textColor="@color/yellow_text"
+            android:textSize="17sp" />
+        <!--中间的奖励和勋章start-->
+        <RelativeLayout
+            android:id="@+id/center_audio_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/dialog_upgrade_level_info"
+            android:layout_marginTop="19dp">
+            <!--左边的文字start-->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:orientation="vertical">
+                <!--鲸币srart-->
+                <LinearLayout
+                    android:id="@+id/dialog_upgrade_level_jingbiLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="11dp"
+                        android:layout_height="11dp"
+                        android:src="@mipmap/whale_money" />
+
+                    <TextView
+                        style="@style/upgrade_level_text"
+                        android:text="@string/upgrade_level_jingbi" />
+
+                    <TextView
+                        android:id="@+id/dialog_upgrade_level_coinNum"
+                        style="@style/upgrade_level_info"
+                        android:text="" />
+                </LinearLayout>
+                <!--鲸币end-->
+                <!--经验srart-->
+                <LinearLayout
+                    android:id="@+id/dialog_upgrade_level_jingyanLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="11dp"
+                        android:layout_height="11dp"
+                        android:src="@mipmap/upgrade_level_experience" />
+
+                    <TextView
+                        style="@style/upgrade_level_text"
+                        android:text="@string/upgrade_level_jingyan" />
+
+                    <TextView
+                        android:id="@+id/dialog_upgrade_level_experience"
+                        style="@style/upgrade_level_info"
+                        android:text="" />
+                </LinearLayout>
+                <!--经验end-->
+                <!--勋章srart-->
+                <LinearLayout
+                    android:id="@+id/dialog_upgrade_level_xunzhangLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="11dp"
+                        android:layout_height="11dp"
+                        android:src="@mipmap/upgrade_level_medal" />
+
+                    <TextView
+                        style="@style/upgrade_level_text"
+                        android:text="@string/upgrade_level_xunzhang" />
+
+                    <TextView
+                        android:id="@+id/dialog_upgrade_level_medal"
+                        style="@style/upgrade_level_info"
+                        android:text="" />
+                </LinearLayout>
+                <!--勋章end-->
+            </LinearLayout>
+            <!--左边的文字end-->
+            <!--右边的勋章start-->
+            <ImageView
+                android:id="@+id/dialog_upgrade_level_medal_image"
+                android:layout_width="58dp"
+                android:layout_height="58dp"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="21dp" />
+            <!--右边的勋章end-->
+        </RelativeLayout>
+        <!--中间的奖励和勋章end-->
+        <!--立即分享按钮start-->
+        <Button
+            android:id="@+id/dialog_upgrade_level_share"
+            android:layout_width="148dp"
+            android:layout_height="32dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="20dp"
+            android:background="@mipmap/upgrade_level_share"
+            android:text="@string/upgrade_level_fenxiang"
+            android:textColor="@color/white"
+            android:textSize="14sp" />
+        <!--立即分享按钮end-->
+    </RelativeLayout>
+</RelativeLayout>

@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <include
+            android:id="@+id/title"
+            layout="@layout/title_blue_bg" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp">
+
+            <TextView
+                android:id="@+id/txt_gift_card"
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:clickable="true"
+                android:padding="10dp"
+                android:textColor="#ff7f00"
+                android:textSize="14sp"
+                android:text="跳过"/>
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="49dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentLeft="true"
+                android:layout_centerHorizontal="true"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="卡　号"
+                android:textSize="14sp"
+                android:textColor="@color/black" />
+
+            <EditText
+                android:id="@+id/edt_account"
+                style="@style/login_txt"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="4"
+                android:background="@color/white"
+                android:textColor="@color/black"
+                android:drawablePadding="10dp"
+                android:textSize="14sp"
+                android:text=""
+                android:hint="请输入礼品卡卡号"
+                android:textColorHint="@color/light_gray" />
+        </LinearLayout>
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:background="@color/view" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="49dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentLeft="true"
+                android:layout_centerHorizontal="true"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="14sp"
+                android:text="密　码"
+                android:textColor="@color/black" />
+
+            <EditText
+                android:id="@+id/edt_password"
+                style="@style/login_txt"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="4"
+                android:background="@color/white"
+                android:textColor="@color/black"
+                android:drawablePadding="10dp"
+                android:textSize="14sp"
+                android:gravity="center_vertical"
+                android:hint="请输入礼品卡密码"
+                android:text=""
+                android:phoneNumber="true"
+                android:password="true"
+                android:textColorHint="@color/light_gray" />
+
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:background="@color/view" />
+
+        <Button
+            android:id="@+id/btn_activate"
+            android:layout_width="match_parent"
+            android:layout_height="47dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="21dp"
+            android:background="@mipmap/login_login_bg"
+            android:text="激活"
+            android:textColor="#fff"
+            android:textSize="17sp" />
+        <!--android:textColor="#a6d7ff"-->
+        <!--<TextView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:gravity="center"-->
+            <!--android:layout_marginTop="15dp"-->
+            <!--android:paddingLeft="8dp"-->
+            <!--android:paddingRight="8dp"-->
+            <!--android:text="注:"-->
+            <!--android:textColor="#969696"-->
+            <!--android:textSize="12sp" />-->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:text="注:1、礼品卡只能使用一次，输入卡号和密码就可以完成激活。"
+            android:textColor="#969696"
+            android:textSize="12sp" />
+        <!--<TextView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:paddingLeft="8dp"-->
+            <!--android:paddingRight="8dp"-->
+            <!--android:layout_marginTop="3dp"-->
+            <!--android:text="2、购买配套图书，附带礼品卡，切勿用于商业用途。"-->
+            <!--android:textColor="#969696"-->
+            <!--android:textSize="12sp" />-->
+        <!--<TextView-->
+            <!--android:id="@+id/txt_login_address"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:paddingLeft="8dp"-->
+            <!--android:paddingRight="8dp"-->
+            <!--android:layout_marginTop="3dp"-->
+            <!--android:text="3、如需帮助，请登录www.wxsl.com"-->
+            <!--android:textColor="#969696"-->
+            <!--android:textSize="12sp" />-->
+    </LinearLayout>
+
+
+</RelativeLayout>

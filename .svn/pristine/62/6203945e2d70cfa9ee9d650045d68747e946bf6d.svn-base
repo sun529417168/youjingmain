@@ -1,0 +1,79 @@
+package com.youjing.yjeducation.util;
+
+import android.content.SharedPreferences;
+import android.nfc.Tag;
+import android.preference.PreferenceManager;
+import android.util.Log;
+
+import com.alibaba.fastjson.JSON;
+import com.loopj.android.http.TextHttpResponseHandler;
+import com.youjing.yjeducation.model.YJCourseListModel;
+import com.youjing.yjeducation.ui.actualize.activity.YJCourseListlActivity;
+import com.youjing.yjeducation.ui.actualize.activity.YJLoginActivity;
+import com.youjing.yjeducation.ui.dispaly.activity.AYJCourseListActivity;
+
+import org.apache.http.Header;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.vwork.mobile.ui.IVActivity;
+
+import java.util.List;
+
+/**
+ * user  秦伟宁
+ * Date 2016/5/23
+ * Time 20:40
+ */
+public abstract class MyTextHttpResponseHandler extends TextHttpResponseHandler {
+    private String TAG = "MyTextHttpResponseHandler";
+
+    private IVActivity mIVActivity;
+    public MyTextHttpResponseHandler(IVActivity IVActivity) {
+        mIVActivity = IVActivity;
+    }
+    @Override
+    public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+        onMyFailure(i,headers,s,throwable);
+    }
+
+    @Override
+    public void onSuccess(int i, Header[] headers, String s) {
+        try {
+            Log.d(TAG, "成功s=" + s);
+            JSONObject json = null;
+            json = new JSONObject(s);
+            switch (json.getInt("code")) {
+                case 500:
+                    Log.d(TAG, "服务器异常");
+                    break;
+                case 600:
+                    Log.d(TAG,"已登录");
+                    logOut();
+                    mIVActivity.finishAll();
+                    mIVActivity.startActivity(mIVActivity.createIntent(YJLoginActivity.class, mIVActivity.createTransmitData(YJLoginActivity.LOGIN_OUT, 1)));
+                    break;
+                default:
+                    onMySuccess(i,headers,s);
+                    break;
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+    private void logOut() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mIVActivity.getContext());
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("isLogin", false);
+        // editor.putString("phone", "");
+        // editor.putString("password", "");
+
+        editor.commit();
+    }
+
+    public abstract void   onMyFailure(int i, Header[] headers, String s, Throwable throwable);
+    public abstract void   onMySuccess(int i, Header[] headers, String s);
+}

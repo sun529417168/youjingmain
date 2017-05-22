@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="TabItemView">
+        <attr name="contentTextSize" format="dimension"/> <!-- 字体大小 -->
+        <attr name="contentTextColor" format="color"/> <!-- 字体颜色 -->
+        <attr name="contentTextString" format="string"/> <!-- 显示的默认文字 -->
+        <attr name="contentLogoBack" format="reference"/> <!-- item背景 -->
+        <attr name="contentLogoWidth" format="dimension" />
+        <attr name="contentLogoHeigth" format="dimension" />
+    </declare-styleable>
+</resources>

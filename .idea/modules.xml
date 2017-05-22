@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/OneSDK/OneSDK.iml" filepath="$PROJECT_DIR$/OneSDK/OneSDK.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Scan/Scan.iml" filepath="$PROJECT_DIR$/Scan/Scan.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/frameworklibs/frameworklibs.iml" filepath="$PROJECT_DIR$/frameworklibs/frameworklibs.iml" />
+      <module fileurl="file://$PROJECT_DIR$/playerLibRelease/playerLibRelease.iml" filepath="$PROJECT_DIR$/playerLibRelease/playerLibRelease.iml" />
+      <module fileurl="file://$PROJECT_DIR$/playerskin/playerskin.iml" filepath="$PROJECT_DIR$/playerskin/playerskin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/youjingmain.iml" filepath="$PROJECT_DIR$/youjingmain.iml" />
+    </modules>
+  </component>
+</project>

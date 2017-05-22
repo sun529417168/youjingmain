@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:id="@+id/play_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:id="@+id/ppt_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:id="@+id/title_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/translucence">
+
+                <ImageView
+                    android:id="@+id/iv_go_back"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_centerVertical="true"
+                    android:padding="8dp"
+                    android:src="@mipmap/go_back" />
+
+                <TextView
+                    android:id="@+id/tv_live_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:layout_toRightOf="@id/iv_go_back"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:text="@string/live_wait_title"
+                    android:textColor="@color/white"
+                    android:textSize="14sp" />
+
+                <ImageView
+                    android:id="@+id/teacher_ic"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_alignLeft="@id/tv_live_title"
+                    android:layout_below="@+id/tv_live_title"
+                    android:src="@mipmap/zhubo" />
+
+                <TextView
+                    android:id="@+id/tv_zhubo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tv_live_title"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="5dp"
+                    android:layout_toRightOf="@id/teacher_ic"
+                    android:text="@string/init_zhubo"
+                    android:textColor="@color/white"
+                    android:textSize="12sp" />
+
+                <ImageView
+                    android:id="@+id/member_ic"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_below="@id/tv_live_title"
+                    android:layout_marginLeft="15dp"
+                    android:layout_toRightOf="@id/tv_zhubo"
+                    android:src="@mipmap/member" />
+
+                <TextView
+                    android:id="@+id/tv_memberTotal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tv_live_title"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="5dp"
+                    android:layout_toRightOf="@id/member_ic"
+                    android:textColor="@color/white"
+                    android:textSize="12sp" />
+
+                <ImageView
+                    android:id="@+id/head"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="10dp" />
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/operation_btn_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:orientation="vertical"
+                android:padding="10dp">
+
+                <ImageView
+                    android:id="@+id/fullScreen_iv"
+                    style="@style/float_iv_bg"
+                    android:src="@mipmap/fullscreen" />
+
+                <ImageView
+                    android:id="@+id/video_visibility_iv"
+                    style="@style/float_iv_bg"
+                    android:layout_marginTop="8dp"
+                    android:src="@mipmap/video_visible" />
+
+                <ImageView
+                    android:id="@+id/network_choice_iv"
+                    style="@style/float_iv_bg"
+                    android:layout_marginTop="8dp"
+                    android:src="@mipmap/network" />
+
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/tab_container"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@color/white"
+            android:orientation="vertical">
+
+            <include layout="@layout/tab_layout" />
+
+            <android.support.v4.view.ViewPager
+                android:id="@+id/view_pager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/video_container"
+        android:layout_width="160dp"
+        android:layout_height="120dp" />
+</merge>

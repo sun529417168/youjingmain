@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:background="@color/translucence_"
+    android:layout_height="match_parent">
+    <RelativeLayout
+        android:layout_width="366dp"
+        android:layout_height="176dp"
+        android:layout_centerInParent="true">
+
+        <RelativeLayout
+            android:id="@+id/lay_main"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginRight="36dp"
+            android:layout_marginLeft="36dp"
+            android:layout_marginBottom="15dp"
+            android:layout_marginTop="18dp"
+            android:background="@drawable/dialog_bg"
+            android:paddingTop="30dp">
+
+            <TextView
+                android:id="@+id/txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:text="直播还未结束，是否退出？"
+                android:textColor="@color/black"
+                android:textSize="17dp" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="53dp"
+                android:layout_alignParentBottom="true">
+
+                <Button
+                    android:id="@+id/dialog_cancel"
+                    android:layout_width="144dp"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentLeft="true"
+                    android:background="@color/white"
+                    android:text="确认退出"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginBottom="2dp"
+                    android:textColor="@color/black"
+                    android:textSize="17dp" />
+                <Button
+                    android:id="@+id/dialog_ok"
+                    android:layout_width="144dp"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentRight="true"
+                    android:background="@color/white"
+                    android:layout_marginRight="2dp"
+                    android:text="继续观看"
+                    android:layout_marginBottom="2dp"
+                    android:textColor="@color/blue_title"
+                    android:textSize="17dp" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:layout_alignParentTop="true"
+                    android:background="@color/view" />
+                <View
+                    android:layout_width="0.5dp"
+                    android:layout_height="match_parent"
+                    android:layout_toRightOf="@id/dialog_cancel"
+                    android:background="@color/view" />
+            </RelativeLayout>
+        </RelativeLayout>
+
+    </RelativeLayout>
+</RelativeLayout>

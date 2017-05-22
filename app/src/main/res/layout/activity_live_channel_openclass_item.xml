@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:descendantFocusability="blocksDescendants">
+
+    <RelativeLayout
+        android:id="@+id/lay_item"
+        android:layout_width="match_parent"
+        android:layout_height="117dp"
+        android:background="@drawable/item_change_background">
+
+        <RelativeLayout
+            android:id="@+id/rl_but_status"
+            android:layout_width="87dp"
+            android:layout_height="match_parent">
+
+            <com.youjing.yjeducation.wiget.CustomImage
+                android:id="@+id/img_teacher_photo"
+                style="@style/image_style"
+                android:layout_width="55dp"
+                android:layout_height="55dp"
+                android:layout_centerInParent="true"
+                android:clickable="true"
+                android:scaleType="fitXY"
+                android:src="@mipmap/img_app_logo" />
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/lay_join"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="6dp"
+            android:layout_toRightOf="@id/rl_but_status">
+
+            <TextView
+                android:id="@+id/txt_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:textSize="19sp"
+                android:ellipsize="end"
+                android:maxEms="13"
+                android:singleLine="true"
+                android:textColor="@color/red_text_live_channel"
+                android:text=""/>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@id/txt_time"
+                android:layout_marginBottom="9dp">
+
+                <TextView
+                    android:id="@+id/txt_course_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text=""
+                    android:ellipsize="end"
+                    android:maxEms="11"
+                    android:singleLine="true"
+                    android:textColor="@color/gray_text"
+                    android:textSize="17sp" />
+
+                <TextView
+                    android:id="@+id/txt_course_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="直播中"
+                    android:layout_marginRight="17dp"
+                    android:textColor="@color/red_text_live_channel"
+                    android:layout_alignParentRight="true"
+                    android:textSize="12sp" />
+
+                <ImageView
+                    android:id="@+id/img_course_living"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="8dp"
+                    android:scaleType="fitXY"
+                    android:layout_toLeftOf="@id/txt_course_status"
+                    android:src="@mipmap/img_course_living"/>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/txt_time"
+                android:layout_marginTop="9dp">
+
+                <TextView
+                    android:id="@+id/txt_user_num"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentLeft="true"
+                    android:text=""
+                    android:textColor="@color/gray_text"
+                    android:textSize="14sp" />
+
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="4.5dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:scaleType="fitXY"
+                    android:layout_marginRight="17dp"
+                    android:src="@mipmap/img_three_point"/>
+
+            </RelativeLayout>
+        </RelativeLayout>
+    </RelativeLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/view"
+        android:visibility="visible" />
+</RelativeLayout>

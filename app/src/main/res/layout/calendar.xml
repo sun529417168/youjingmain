@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/re_calendar_bg"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/translucence"
+    android:clickable="true">
+
+    <LinearLayout
+        android:id="@+id/ll_calendar"
+        android:layout_width="match_parent"
+        android:layout_height="332dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginLeft="25dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:clickable="true"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="@drawable/shape_calendar_blue"
+            android:orientation="vertical">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+
+                android:clickable="true"
+                android:orientation="horizontal">
+
+                <RelativeLayout
+                    android:id="@+id/prevMonth"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:clickable="true">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="16dp"
+                        android:src="@mipmap/img_left_arow" />
+                </RelativeLayout>
+
+
+                <TextView
+                    android:id="@+id/currentMonth"
+                    android:layout_width="0dp"
+                    android:layout_height="35dp"
+                    android:layout_weight="3"
+                    android:gravity="center"
+                    android:text="2014年6月"
+                    android:textColor="@color/white"
+                    android:textSize="18dp" />
+
+                <RelativeLayout
+                    android:id="@+id/nextMonth"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:clickable="true">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_gravity="center"
+                        android:layout_marginRight="16dp"
+                        android:src="@mipmap/img_right_arow" />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="20dp">
+
+                <TextView
+                    style="@style/weekName"
+                    android:text="SUN"
+                    android:textColor="#ffffff" />
+
+                <TextView
+                    style="@style/weekName"
+                    android:text="MON" />
+
+                <TextView
+                    style="@style/weekName"
+                    android:text="TUE" />
+
+                <TextView
+                    style="@style/weekName"
+                    android:text="WED" />
+
+                <TextView
+                    style="@style/weekName"
+                    android:text="THU" />
+
+                <TextView
+                    style="@style/weekName"
+                    android:text="FRI" />
+
+                <TextView
+                    style="@style/weekName"
+                    android:text="STA"
+                    android:textColor="#ffffff" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <ViewFlipper
+            android:id="@+id/flipper"
+            android:layout_width="match_parent"
+            android:background="@color/white"
+            android:layout_height="275dp" />
+    </LinearLayout>
+    <RelativeLayout
+        android:id="@+id/re_calendar_bottom"
+        android:layout_height="6dp"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="0.5dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/ll_calendar"
+        android:background="@color/white">
+
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:layout_below="@id/re_calendar_bottom">
+
+        <TextView
+            android:id="@+id/txt_live_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:textSize="17sp"
+            android:layout_marginRight="32dp"
+            android:text="回放"/>
+        <ImageView
+            android:id="@+id/img_red_point"
+            android:layout_width="13dp"
+            android:layout_height="13dp"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:layout_toLeftOf="@id/txt_live_back"
+            android:layout_marginRight="6dp"
+            android:src="@mipmap/img_yellow_point_b" />
+        <TextView
+            android:id="@+id/txt_live"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:layout_toLeftOf="@id/img_red_point"
+            android:layout_centerVertical="true"
+            android:textSize="17sp"
+            android:layout_marginRight="8dp"
+            android:text="直播课"/>
+
+        <ImageView
+            android:layout_width="13dp"
+            android:layout_height="13dp"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:layout_toLeftOf="@id/txt_live"
+            android:layout_marginRight="6dp"
+            android:src="@mipmap/img_red_point_b" />
+    </RelativeLayout>
+
+
+</RelativeLayout>

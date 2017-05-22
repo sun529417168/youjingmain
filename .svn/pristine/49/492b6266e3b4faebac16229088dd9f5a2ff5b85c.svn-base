@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include
+        android:id="@+id/input"
+        layout="@layout/edt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true" />
+
+    <ListView
+        android:id="@+id/chat_lv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/input"
+        android:divider="@null"
+        android:dividerHeight="8dp"
+        android:listSelector="@android:color/transparent"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:paddingTop="8dp" />
+
+    <LinearLayout
+        android:id="@+id/expressionLayout"
+        android:layout_width="200dp"
+        android:layout_height="80dp"
+        android:layout_above="@id/input"
+        android:background="@color/expressionLayoutBackground"
+        android:visibility="gone" />
+</RelativeLayout>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/dialog_bg">
+
+    <RelativeLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp">
+
+
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="15dp"
+            android:layout_marginTop="@dimen/my_common_margin_small"
+            android:background="@drawable/shape_white_round"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp"
+            android:text="@string/btn_cancel"
+            android:textColor="@color/title_btn_text"
+            android:textSize="@dimen/text_size_large" />
+
+        <Button
+            android:id="@+id/btn_take_photo"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_above="@id/btn_cancel"
+            android:background="@drawable/shape_white_bottom"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp"
+            android:text="@string/btn_take_photo"
+            android:textColor="@color/title_btn_text"
+            android:textSize="@dimen/text_size_large" />
+
+        <View
+            android:id="@+id/view_line"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_above="@+id/btn_take_photo"
+            android:background="@color/gray_view_bg" />
+
+        <Button
+            android:id="@+id/btn_select_from_album"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_above="@id/view_line"
+            android:background="@drawable/shape_white_top"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp"
+            android:text="@string/btn_select_from_album"
+            android:textColor="@color/title_btn_text"
+            android:textSize="@dimen/text_size_large" />
+
+        <RelativeLayout
+            android:id="@+id/re_gray_bg"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:layout_above="@id/btn_select_from_album">
+
+        </RelativeLayout>
+    </RelativeLayout>
+</RelativeLayout>

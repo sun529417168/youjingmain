@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="204dp"
+        android:background="#474747"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="30dp">
+
+            <ImageView
+                android:id="@+id/img_whale_money"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="8dp"
+                android:src="@mipmap/whale_money" />
+
+            <TextView
+                android:id="@+id/txt_whale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="7dp"
+                android:layout_toRightOf="@id/img_whale_money"
+                android:text="鲸币余额:"
+                android:textColor="@color/white"
+                android:textSize="17sp" />
+
+            <TextView
+                android:id="@+id/txt_whale_money"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="7dp"
+                android:layout_toRightOf="@id/txt_whale"
+                android:text="300"
+                android:textColor="@color/yellow_text"
+                android:textSize="17sp" />
+        </RelativeLayout>
+
+        
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="127dp">
+
+            <android.support.v4.view.ViewPager
+                android:id="@+id/viewpager"
+                android:layout_width="match_parent"
+                android:layout_height="107dp"
+                android:layout_gravity="center" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_alignParentBottom="true"
+                android:layout_height="20dp">
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:background="#551e1e1e"
+            android:layout_height="47dp">
+            <TextView
+                android:id="@+id/txt_gift_num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="8dp"
+                android:text="数量"
+                android:textColor="@color/white"
+                android:textSize="17sp" />
+
+            <LinearLayout
+                android:layout_width="99dp"
+                android:layout_height="33dp"
+                android:layout_marginLeft="20dp"
+                android:layout_toRightOf="@id/txt_gift_num"
+                android:layout_centerVertical="true">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@mipmap/img_gift_num_de"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="33dp"
+                            android:clickable="true"
+                            android:layout_height="match_parent" />
+                        <TextView
+                            android:layout_width="33dp"
+                            android:text="5"
+                            android:gravity="center"
+                            android:textSize="18sp"
+                            android:layout_height="match_parent" />
+                        <TextView
+                            android:layout_width="33dp"
+                            android:clickable="true"
+                            android:layout_height="match_parent" />
+                    </LinearLayout>
+
+                </FrameLayout>
+            </LinearLayout>
+            <Button
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="8dp"
+                android:text="发送"
+                android:textSize="16sp"
+                android:textColor="@color/white"
+                android:background="@mipmap/img_gift_send"
+                android:layout_alignParentRight="true"/>
+
+        </RelativeLayout>
+    </LinearLayout>
+</LinearLayout>

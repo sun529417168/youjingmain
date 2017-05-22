@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/obtain_medal_activity"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <RelativeLayout
+        android:id="@+id/obtain_medal_layout"
+        style="@style/upgrade_level_info_background"
+        android:layout_width="250dp"
+        android:layout_height="281dp"
+        android:layout_centerInParent="true"
+        android:background="@mipmap/obtain_medal_img">
+
+
+        <ImageView
+            android:id="@+id/dialog_obtain_medal_image"
+            android:layout_width="118dp"
+            android:layout_height="118dp"
+            android:layout_above="@+id/dialog_obtain_medal_name"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="73dp" />
+
+        <TextView
+            android:id="@+id/dialog_obtain_medal_name"
+            android:layout_width="130dp"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/dialog_obtain_medal_share"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="14dp"
+            android:text=""
+            android:textColor="@color/black"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/dialog_obtain_medal_share"
+            android:layout_width="120dp"
+            android:layout_height="32dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="13dp"
+            android:layout_marginLeft="72dp"
+            android:background="@mipmap/upgrade_level_share"
+            android:text="@string/upgrade_level_fenxiang"
+            android:textColor="@color/white"
+            android:textSize="14sp" />
+    </RelativeLayout>
+
+
+</RelativeLayout>

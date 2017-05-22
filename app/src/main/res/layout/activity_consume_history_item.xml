@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="47dp"
+    android:orientation="vertical"
+    android:clickable="true"
+    android:background="@drawable/item_change_bg">
+
+    <RelativeLayout
+        android:id="@+id/re_title"
+        android:layout_width="match_parent"
+        android:layout_marginRight="76dp"
+        android:layout_height="25dp">
+        <TextView
+            android:id="@+id/txt_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:layout_marginLeft="8dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentBottom="true"
+            android:text="购买礼物—鲜花"
+            android:textColor="@color/black"/>
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/re_time"
+        android:layout_below="@id/re_title"
+        android:layout_width="match_parent"
+        android:layout_marginRight="76dp"
+        android:layout_height="25dp">
+        <TextView
+            android:id="@+id/txt_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="10sp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="8dp"
+            android:text="2016-03-29 13:18"
+            android:textColor="@color/gray_text"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/re_num"
+        android:layout_width="76dp"
+        android:layout_centerVertical="true"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true">
+
+        <ImageView
+            android:id="@+id/consume_history_item_whaleMoney"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="7dp"
+            android:layout_toLeftOf="@id/txt_whale_money"
+            android:src="@mipmap/whale_money" />
+
+        <TextView
+            android:id="@+id/txt_whale_money"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="+320"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="8dp"
+            android:gravity="center_vertical"
+            android:layout_centerVertical="true"
+            android:textSize="14sp"
+            android:textColor="@color/yellow_text" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_below="@id/re_time"
+        android:layout_height="@dimen/view_height_width"
+        android:background="@color/view" />
+</RelativeLayout>

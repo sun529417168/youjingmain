@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="frameworklibs.NativeSDKEncode">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/frameworklibs/NativeSDKEncode.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

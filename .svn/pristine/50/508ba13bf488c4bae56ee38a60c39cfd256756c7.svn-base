@@ -1,0 +1,832 @@
+package com.youjing.yjeducation.ui.actualize.activity;
+
+import android.content.Context;
+import android.content.Intent;
+import android.os.Handler;
+import android.os.Message;
+import android.text.TextUtils;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+
+import com.alibaba.fastjson.JSON;
+import com.lidroid.xutils.BitmapUtils;
+import com.loopj.android.http.TextHttpResponseHandler;
+import com.youjing.yjeducation.R;
+import com.youjing.yjeducation.adapter.CourseTypesAdapter;
+import com.youjing.yjeducation.core.YJBaseActivity;
+import com.youjing.yjeducation.core.YJGlobal;
+import com.youjing.yjeducation.core.YJNotifyTag;
+import com.youjing.yjeducation.core.YJReqURLProtocol;
+import com.youjing.yjeducation.core.YJStudentReqManager;
+import com.youjing.yjeducation.core.YJUserStudyData;
+import com.youjing.yjeducation.model.YJBannerModel;
+import com.youjing.yjeducation.model.YJCourseCatalogModel;
+import com.youjing.yjeducation.model.YJCourseModel;
+import com.youjing.yjeducation.model.YJCustomerSignModel;
+import com.youjing.yjeducation.model.YJIndexUserInfo;
+import com.youjing.yjeducation.model.YJMyCourseModel;
+import com.youjing.yjeducation.talkfun.YJLiveActivity;
+import com.youjing.yjeducation.talkfun.YJPlaybackModeTwo;
+import com.youjing.yjeducation.talkfun.customtalkfun.YJCustomLiveActivity;
+import com.youjing.yjeducation.ui.actualize.dialog.YJSignInDialog;
+import com.youjing.yjeducation.ui.dispaly.activity.AYJCourseActivity;
+import com.youjing.yjeducation.ui.dispaly.activity.AYJWebviewActivity;
+import com.youjing.yjeducation.util.ClickUtil;
+import com.youjing.yjeducation.util.MyRequestUtils;
+import com.youjing.yjeducation.util.ScanBannerUtils;
+import com.youjing.yjeducation.util.SharedUtil;
+import com.youjing.yjeducation.util.StringUtils;
+import com.youjing.yjeducation.wiget.ImageCycleView;
+
+import org.apache.http.Header;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.vwork.mobile.ui.IVActivity;
+import org.vwork.utils.base.VParams;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+
+/**
+ * user  秦伟宁
+ * Date 2016/3/10
+ * Time 17:55
+ */
+public class YJCourseActivity extends AYJCourseActivity implements CourseTypesAdapter.GetCourseList {
+    private String TAG = "YJCourseActivity";
+    private List<YJBannerModel> yjBannerModelList;
+    private boolean isCoutseType = false;
+
+    private Handler mHandler = new Handler() {
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case 0: {
+                    notifyListener(YJNotifyTag.MY_TASK, "");
+                    break;
+                }
+
+                default:
+                    break;
+            }
+        }
+    };
+
+    @Override
+    protected void initViewPager() {
+        ArrayList<String> urlList = new ArrayList<>();
+        ArrayList<String> linkList = new ArrayList<>();
+        yjBannerModelList = YJGlobal.getYjBannerModelList();
+        Log.i("yjBannerModelList", yjBannerModelList.toString());
+        if (yjBannerModelList != null) {
+            for (YJBannerModel yjBannerModel : yjBannerModelList) {
+                urlList.add(yjBannerModel.getBannerPic());
+                linkList.add(yjBannerModel.getJumpUrl());
+
+                //urlList.add(loopPicture.getPictureUrl());
+                //linkList.add(loopPicture.getLinkUrl());
+            }
+        }
+        initCarsuelView(urlList, linkList);
+    }
+
+    /**
+     * 初始化轮播图
+     */
+    private void initCarsuelView(ArrayList<String> urlList, final ArrayList<String> linkList) {
+        LinearLayout.LayoutParams cParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        mCycleView.setLayoutParams(cParams);
+        ImageCycleView.ImageCycleViewListener mAdCycleViewListener = new ImageCycleView.ImageCycleViewListener() {
+            @Override
+            public void onImageClick(int position, View imageView) {
+                if (StringUtils.isUrl(yjBannerModelList.get(position).getJumpUrl()) == false) {
+                    showToast("无法识别的地址");
+                    return;
+                }
+                Log.i("banner链接地址",yjBannerModelList.get(position).getJumpUrl());
+                ScanBannerUtils.intentPage((YJBaseActivity) getActivity(), yjBannerModelList.get(position).getJumpUrl(), TAG, mIsLogin,0);
+            }
+
+            @Override
+            public void displayImage(String imageURL, ImageView imageView) {
+                BitmapUtils.create(getContext()).display(imageView, imageURL);
+            }
+        };
+        /**设置数据*/
+        //mCycleView.setImageResources(imageDescList,urlList, mAdCycleViewListener);
+        mCycleView.setImageResources(urlList, mAdCycleViewListener);
+        mCycleView.startImageCycle();
+    }
+
+    /**
+     * 得到屏幕的高度
+     *
+     * @param context
+     * @return
+     */
+    private static int getScreenHeight(Context context) {
+        if (null == context) {
+            return 0;
+        }
+        DisplayMetrics dm = new DisplayMetrics();
+        dm = context.getApplicationContext().getResources().getDisplayMetrics();
+        return dm.heightPixels;
+    }
+
+
+    @Override
+    public void getMyCourse() {
+        YJStudentReqManager.getServerData(YJReqURLProtocol.GET_MY_COURSE, null, true, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                showToast(getString(R.string.no_net_work));
+                Log.d(TAG, "失败=" + s);
+            }
+
+            @Override
+            public void onSuccess(int i, Header[] headers, String s) {
+                try {
+                    Log.d(TAG, "成功s=" + s);
+                    JSONObject json = null;
+                    json = new JSONObject(s);
+                    switch (json.getInt("code")) {
+                        case 200:
+                            JSONObject jsonData = new JSONObject(json.getString("data"));
+                            List<YJMyCourseModel> yjMyCourseModelList = JSON.parseArray(jsonData.getString("customerCourseList"), YJMyCourseModel.class);
+                            startActivity(createIntent(YJMyCourseActivity.class, createTransmitData(YJMyCourseActivity.YJ_COURSE_MODEL_LIST, yjMyCourseModelList)));
+                            break;
+                        case 500:
+                            break;
+                        case 600:
+                            startActivity(createIntent(YJLoginActivity.class, createTransmitData(YJLoginActivity.LOGIN_OUT, 1).set(YJLoginActivity.MY_LOGIN_OUT, true)));
+                            finishAll();
+                            break;
+                        default:
+                            break;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    @Override
+    public void getIndexInfo() {
+        YJStudentReqManager.getServerData(YJReqURLProtocol.GET_USER_INDEX, null, true, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                showToast(getString(R.string.no_net_work));
+                Log.d(TAG, "失败=" + s);
+            }
+
+            @Override
+            public void onSuccess(int i, Header[] headers, String s) {
+                try {
+                    Log.d(TAG, "成功s=" + s);
+                    JSONObject json = null;
+                    json = new JSONObject(s);
+                    switch (json.getInt("code")) {
+                        case 200:
+                            JSONObject jsonData = new JSONObject(json.getString("data"));
+                            YJIndexUserInfo yjIndexUserInfo = JSON.parseObject(jsonData.getString("customer"), YJIndexUserInfo.class);
+                            Log.d(TAG, "yjIndexUserInfo.toString()=" + yjIndexUserInfo.toString());
+                            YJGlobal.setYjIndexUserInfo(yjIndexUserInfo);
+
+                            if (yjIndexUserInfo != null) {
+                                if (!TextUtils.isEmpty(yjIndexUserInfo.getGoingStudyDays())) {
+                                    mTxt_lern.setText(yjIndexUserInfo.getGoingStudyDays());
+                                } else {
+                                    mTxt_lern.setText("0");
+                                }
+                                if (!TextUtils.isEmpty(yjIndexUserInfo.getCustomerCourseCount()) && !TextUtils.isEmpty(yjIndexUserInfo.getCustomerOverCourseCount())) {
+                                    mTxt_have_buy_num.setText(yjIndexUserInfo.getCustomerOverCourseCount() + "/" + yjIndexUserInfo.getCustomerCourseCount());
+                                } else {
+                                    mTxt_have_buy_num.setText(0 + "/" + 0);
+                                }
+                                if (!TextUtils.isEmpty(yjIndexUserInfo.getCustomerWeekRanking())) {
+                                    if (yjIndexUserInfo.getCustomerWeekRanking().equals("0")) {
+                                        mTxt_over_step.setText("暂无");
+                                    } else {
+                                        mTxt_over_step.setText(yjIndexUserInfo.getCustomerWeekRanking() + "%");
+                                    }
+                                } else {
+                                    mTxt_over_step.setText("暂无");
+                                }
+
+                                if (!TextUtils.isEmpty(yjIndexUserInfo.getLevel())) {
+                                    mCourse_list_head_leave_text.setText(yjIndexUserInfo.getLevel());
+                                } else {
+                                    mCourse_list_head_leave_text.setText("1");
+                                }
+                                if (!TextUtils.isEmpty(yjIndexUserInfo.getNickName())) {
+                                    mNickName.setText(yjIndexUserInfo.getNickName());
+                                }
+                                if (!TextUtils.isEmpty(yjIndexUserInfo.getPic())) {
+                                    Log.d(TAG, "pic=" + yjIndexUserInfo.getPic());
+                                    BitmapUtils.create(getContext()).display(mImg_user_photo, yjIndexUserInfo.getPic());
+                                }
+                                signinSetData(yjIndexUserInfo);
+                            }
+                            break;
+                        case 500:
+                            break;
+                        case 600:
+                            startActivity(createIntent(YJLoginActivity.class, createTransmitData(YJLoginActivity.LOGIN_OUT, 1).set(YJLoginActivity.MY_LOGIN_OUT, true)));
+                            finishAll();
+                            break;
+                        default:
+                            break;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    @Override
+    public void getCourseCatalog(int groupPosition, int childPosition, final boolean flag) {
+        Map<String, Object> objectMap = new HashMap<>();
+        try {
+            if (childPosition == 1) {
+                if (flag) {
+                    objectMap.put("courseId", yjRecommendCourseModelList.get(groupPosition).getCourseId());
+                } else {
+                    objectMap.put("courseId", yjRecommendCourseModelList.get(groupPosition).getCourseId());
+                }
+            }
+            if (childPosition == 2) {
+                objectMap.put("courseId", yjRecommendCourseLiveModelList.get(groupPosition).getCourseId());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        YJStudentReqManager.getServerData(YJReqURLProtocol.GET_COURSE_CATALOG, objectMap, mIsLogin, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                Log.d(TAG, "失败=" + s);
+               /* if (progDialog.isShowing()) {
+                    progDialog.dismiss();
+                }*/
+                showToast(getString(R.string.no_net_work));
+            }
+
+            @Override
+            public void onSuccess(int i, Header[] headers, String s) {
+
+                try {
+
+                    // String ss = "{ 'id':12, 'name':'11111111', 'sequence':1,'isTry':'No','code':'Wgi1LikG7Rpw+Z46PAcVrg==','courseVideoShape':'DVR','planDate':1459394340000,'realDate':1460099640000,'courseVideoType':'OpenClass','duration':35,'followCount':6,'studyStatus':null,'isDownload':'No','isFollow':'No'}";
+                    Log.d(TAG, "成功s=" + s);
+                    JSONObject json = null;
+                    json = new JSONObject(s);
+
+
+                    switch (json.getInt("code")) {
+                        case 200:
+                            JSONObject jsonObject = new JSONObject(json.getString("data"));
+                            YJCourseModel yjCourseModel = JSON.parseObject(jsonObject.getString("course"), YJCourseModel.class);
+                            Log.d(TAG, "yjCourseModel=" + yjCourseModel.toString());
+                            if (yjCourseModel.getCourseCatalogList().size() == 0) {
+                                showToast("暂时没有视频课程");
+                            } else {
+                                if (flag) {
+                                    startActivity(createIntent(YJCoursePlayActivity.class, createTransmitData(YJCoursePlayActivity.YJ_COURSE_MODEL, yjCourseModel)));
+                                } else {
+                                    startActivity(createIntent(YJCourseLiveListActivity.class, createTransmitData(YJCourseLiveListActivity.YJ_COURSE_MODEL, yjCourseModel)));
+                                }
+                            }
+                          /*  if (progDialog.isShowing()) {
+                                progDialog.dismiss();
+                            }*/
+                            break;
+                        case 300:
+                            break;
+                        case 400:
+                            break;
+                        case 401:
+                            break;
+                        case 402:
+                            break;
+                        case 500:
+                            break;
+                        case 600:
+                          /*  if (progDialog.isShowing()) {
+                                progDialog.dismiss();
+                            }*/
+                            startActivity(createIntent(YJLoginActivity.class, createTransmitData(YJLoginActivity.LOGIN_OUT, 1).set(YJLoginActivity.MY_LOGIN_OUT, true)));
+                            finishAll();
+                            break;
+                        default:
+                            break;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    /**
+     * 首页直播推荐正在直播
+     *
+     * @param position
+     */
+    @Override
+    public void getTakenLive(final int position, final boolean isShowDialog, final int isLiveType) {
+
+        Map<String, Object> objectMap = new HashMap<>();
+        try {
+            objectMap.put("teacherId", yjRecommendCourseLiveModelList.get(position).getTeacher().getTeacherId());
+            objectMap.put("courseVideoId", yjRecommendCourseLiveModelList.get(position).getCourseVideoId());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        YJStudentReqManager.getServerData(YJReqURLProtocol.GET_LIVE_INFO, objectMap, true, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                Log.d(TAG, "失败=" + s);
+                showToast(getString(R.string.no_net_work));
+               /* if (progDialog.isShowing()) {
+                    progDialog.dismiss();
+                }*/
+            }
+
+            @Override
+            public void onSuccess(int i, Header[] headers, String s) {
+                try {
+                    JSONObject json = null;
+                    json = new JSONObject(s);
+                    Log.d(TAG, "成功s=" + s);
+                    switch (json.getInt("code")) {
+                        case 200:
+                            JSONObject jsonData = new JSONObject(json.getString("data"));
+                            JSONObject jsonTaken = new JSONObject(jsonData.getString("roomInfo"));
+                            String token = jsonTaken.getString("access_token");
+                            Log.d(TAG, "token=" + token);
+//                            enterLiveRoom(token);
+
+                            enterLiveRoom(token, yjRecommendCourseLiveModelList.get(position).getTeacherId(), yjRecommendCourseLiveModelList.get(position).getTeacher().getTrueName(),
+                                    yjRecommendCourseLiveModelList.get(position).getCourseVideoId(), yjRecommendCourseLiveModelList.get(position).getCourseId(),
+                                    yjRecommendCourseLiveModelList.get(position).getPlanDate(), yjRecommendCourseLiveModelList.get(position).getPlanEndDate(), isShowDialog, yjRecommendCourseLiveModelList.get(position).getName(), yjRecommendCourseLiveModelList.get(position).getCourseCatalogId(), isLiveType);
+
+
+                            YJCourseCatalogModel yjCourseCatalogModel = new YJCourseCatalogModel();
+                            yjCourseCatalogModel.setCourseCatalogId(yjRecommendCourseLiveModelList.get(position).getCourseCatalogId());
+                            yjCourseCatalogModel.setCourseVideoId(yjRecommendCourseLiveModelList.get(position).getCourseVideoId());
+
+                            List<YJCourseCatalogModel> yjCourseCatalogModelList = new ArrayList<YJCourseCatalogModel>();
+                            yjCourseCatalogModelList.add(yjCourseCatalogModel);
+
+                            YJCourseModel yjCourseModel = new YJCourseModel();
+                            yjCourseModel.setCourseId(yjRecommendCourseLiveModelList.get(position).getCourseId());
+                            yjCourseModel.setCourseCatalogList(yjCourseCatalogModelList);
+
+                            YJUserStudyData.liveCatalogBeginStudy(yjCourseModel, 0);
+                            break;
+                        case 300:
+                           /* if (progDialog.isShowing()) {//加载数据的loading 先注释掉 用的时候换样式
+                                progDialog.dismiss();
+                            }*/
+                            showToast("参数不合法");
+                            break;
+                        case 400:
+                           /* if (progDialog.isShowing()) {//加载数据的loading 先注释掉 用的时候换样式
+                                progDialog.dismiss();
+                            }*/
+                            showToast("用户不存在");
+                            break;
+                        case 401:
+                          /*  if (progDialog.isShowing()) {//加载数据的loading 先注释掉 用的时候换样式
+                                progDialog.dismiss();
+                            }*/
+                            showToast("直播准备中");
+                            break;
+                        case 500:
+                         /*   if (progDialog.isShowing()) {//加载数据的loading 先注释掉 用的时候换样式
+                                progDialog.dismiss();
+                            }*/
+                            showToast("服务器异常");
+                            break;
+                        case 600:
+                           /* if (progDialog.isShowing()) {
+                                progDialog.dismiss();
+                            }*/
+                            startActivity(createIntent(YJLoginActivity.class, createTransmitData(YJLoginActivity.LOGIN_OUT, 1).set(YJLoginActivity.MY_LOGIN_OUT, true)));
+                            finishAll();
+                            break;
+                        default:
+                            break;
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    /**
+     * 首页直播已结束
+     *
+     * @param position
+     */
+    @Override
+    public void getTakenBack(final int position) {
+        Map<String, Object> objectMap = new HashMap<>();
+        try {
+            objectMap.put("courseVideoId", yjRecommendCourseLiveModelList.get(position).getCourseVideoId());
+            objectMap.put("teacherId", yjRecommendCourseLiveModelList.get(position).getTeacher().getTeacherId());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        YJStudentReqManager.getServerData(YJReqURLProtocol.GET_LIVE_BACK_INFO, objectMap, true, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                Log.d(TAG, "失败=" + s);
+               /* if (progDialog.isShowing()) {//加载数据的loading 先注释掉 用的时候换样式
+                    progDialog.dismiss();
+                }*/
+                showToast(getString(R.string.no_net_work));
+            }
+
+            @Override
+            public void onSuccess(int i, Header[] headers, String s) {
+                try {
+                    JSONObject json = null;
+                    json = new JSONObject(s);
+                    Log.d(TAG, "成功s=" + s);
+                    switch (json.getInt("code")) {
+                        case 200:
+                            JSONObject jsonData = new JSONObject(json.getString("data"));
+                            JSONObject jsonTaken = new JSONObject(jsonData.getString("replayInfo"));
+                            String token = jsonTaken.getString("access_token");
+                            Log.d(TAG, "token=" + token);
+                            enterBackRoom(token);
+
+
+                            YJCourseCatalogModel yjCourseCatalogModel = new YJCourseCatalogModel();
+                            yjCourseCatalogModel.setCourseCatalogId(yjRecommendCourseLiveModelList.get(position).getCourseCatalogId());
+                            yjCourseCatalogModel.setCourseVideoId(yjRecommendCourseLiveModelList.get(position).getCourseVideoId());
+
+                            List<YJCourseCatalogModel> yjCourseCatalogModelList = new ArrayList<YJCourseCatalogModel>();
+                            yjCourseCatalogModelList.add(yjCourseCatalogModel);
+
+                            YJCourseModel yjCourseModel = new YJCourseModel();
+                            yjCourseModel.setCourseId(yjRecommendCourseLiveModelList.get(position).getCourseId());
+                            yjCourseModel.setCourseCatalogList(yjCourseCatalogModelList);
+
+                            YJUserStudyData.liveCatalogBeginStudy(yjCourseModel, 0);
+                            break;
+                        case 300:
+                           /* if (progDialog.isShowing()) {//加载数据的loading 先注释掉 用的时候换样式
+                                progDialog.dismiss();
+                            }*/
+                            //   showToast("参数不合法");
+                            break;
+                        case 400:
+                          /*  if (progDialog.isShowing()) {//加载数据的loading 先注释掉 用的时候换样式
+                                progDialog.dismiss();
+                            }*/
+                            // showToast("用户不存在");
+                            break;
+                        case 401:
+                          /*  if (progDialog.isShowing()) {//加载数据的loading 先注释掉 用的时候换样式
+                                progDialog.dismiss();
+                            }*/
+                            showToast("回放准备中");
+                            break;
+                        case 500:
+                          /*  if (progDialog.isShowing()) {//加载数据的loading 先注释掉 用的时候换样式
+                                progDialog.dismiss();
+                            }*/
+                            //    showToast("服务器异常");
+                            break;
+                        case 600:
+                            startActivity(createIntent(YJLoginActivity.class, createTransmitData(YJLoginActivity.LOGIN_OUT, 1).set(YJLoginActivity.MY_LOGIN_OUT, true)));
+                            finishAll();
+                            break;
+                        default:
+                            break;
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    /**
+     * 首页直播推荐判断这个用户是否购买课程
+     *
+     * @param position
+     */
+    @Override
+    public void getisBuy(final int position) {
+        Map<String, Object> objectMap = new HashMap<>();
+        try {
+            objectMap.put("courseId", yjRecommendCourseLiveModelList.get(position).getCourseId());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        YJStudentReqManager.getServerData(YJReqURLProtocol.GET_COURSE_ISBUY, objectMap, true, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                Log.d(TAG, "失败=" + s);
+                showToast(getString(R.string.no_net_work));
+              /*  if (progDialog.isShowing()) {
+                    progDialog.dismiss();
+                }*/
+            }
+
+            @Override
+            public void onSuccess(int i, Header[] headers, String s) {
+                try {
+                    JSONObject json = null;
+                    json = new JSONObject(s);
+                    Log.d(TAG, "成功s=" + s);
+                    switch (json.getInt("code")) {
+                        case 200:
+                            JSONObject jsonData = new JSONObject(json.getString("data"));
+                            String isBuy = jsonData.getString("isBuy");
+                            switch (isBuy) {
+                                case "true":
+
+                                    if (yjRecommendCourseLiveModelList.get(position).getLiveStatus().equals("ing")) {
+                                        //   progDialog = DialogUtil.showWaitDialog(getContext());//加载数据的loading
+                                        getTakenLive(position, false, 1);
+
+                                    }
+                                    if (yjRecommendCourseLiveModelList.get(position).getLiveStatus().equals("over")) {
+                                        //  progDialog = DialogUtil.showWaitDialog(getContext());//加载数据的loading
+                                        if ("Yes".equals(yjRecommendCourseLiveModelList.get(position).getIsReplay())) {
+                                            getTakenBack(position);
+                                        }
+                                        if ("No".equals(yjRecommendCourseLiveModelList.get(position).getIsReplay())) {
+                                            getTakenLive(position, true, 2);
+                                        }
+
+                                    }
+                                    if (yjRecommendCourseLiveModelList.get(position).getLiveStatus().equals("no")) {
+                                        getTakenLive(position, true, 1);
+                                    }
+                                    break;
+                                case "false":
+                                    if (ClickUtil.isFastDoubleClick()) {
+                                        return;
+                                    }
+                                    if (yjRecommendCourseLiveModelList.get(position).getCourseShape().equals("DVR")) {
+                                        getCourseCatalog(position, 2, true);
+                                    } else if (yjRecommendCourseLiveModelList.get(position).getCourseShape().equals("All")) {
+                                        getCourseCatalog(position, 2, true);
+                                    } else {
+                                        getCourseCatalog(position, 2, false);
+                                    }
+                                    break;
+                            }
+                            break;
+                        case 300:
+                          /*  if (progDialog.isShowing()) {//加载数据的loading 先注释掉 用的时候换样式
+                                progDialog.dismiss();
+                            }*/
+                            showToast("参数不合法");
+                            break;
+                        case 500:
+                          /*  if (progDialog.isShowing()) {//加载数据的loading 先注释掉 用的时候换样式
+                                progDialog.dismiss();
+                            }*/
+                            showToast("服务器异常");
+                            break;
+                        case 600:
+                            startActivity(createIntent(YJLoginActivity.class, createTransmitData(YJLoginActivity.LOGIN_OUT, 1).set(YJLoginActivity.MY_LOGIN_OUT, true)));
+                            finishAll();
+                            break;
+                        default:
+                            break;
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private void enterLiveRoom(String token, String teacherId, String teacherName, String courseVideoId, String openClassId, String startTime, String endTime, boolean isShowDialog, String courseName, String courseCatalogId, int isLiveType) {
+        Log.d(TAG, "enterLiveRoom=");
+        if (!TextUtils.isEmpty(token)) {
+            Intent intent = new Intent();
+            intent.setClass(getContext(), YJCustomLiveActivity.class);
+            intent.putExtra("token", token);
+            intent.putExtra("teacherId", teacherId);
+            intent.putExtra("teacherName", teacherName);
+            intent.putExtra("courseVideoId", courseVideoId);
+            intent.putExtra("courseId", openClassId);
+            intent.putExtra("startTime", startTime);
+            intent.putExtra("endTime", endTime);
+            intent.putExtra("courseName", courseName);
+            intent.putExtra("courseCatalogId", courseCatalogId);
+            intent.putExtra("isShowDialog", isShowDialog);
+            intent.putExtra("isLiveType", isLiveType);
+
+            intent.putExtra("isPlayback", false);
+            intent.putExtra("mode", 2);
+            startActivity(intent);
+
+        } else {
+            showToast("进入直播间失败");
+        }
+        if (progDialog.isShowing()) {//加载数据的loading 先注释掉 用的时候换样式
+            progDialog.dismiss();
+        }
+    }
+
+    /**
+     * 课程首页用户签到的接口
+     */
+    @Override
+    public void getSign() {
+        YJStudentReqManager.getServerData(YJReqURLProtocol.GET_CUSTOMER_SIGN, null, true, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                Log.d(TAG, "失败=" + s);
+            }
+
+            @Override
+            public void onSuccess(int i, Header[] headers, String s) {
+                try {
+                    Log.d(TAG, "成功s=" + s);
+                    JSONObject json = null;
+                    json = new JSONObject(s);
+                    switch (json.getInt("code")) {
+                        case 200:
+                            YJCustomerSignModel customerSignModel = JSON.parseObject(json.getString("data"), YJCustomerSignModel.class);
+                            mCourse_list_head_level.setBackgroundResource(R.mipmap.signin_background_yes);
+                            mCourse_list_head_sign.setText("已签到");
+                            mCourse_list_head_signData.setVisibility(View.VISIBLE);
+                            mCourse_list_head_signData.setText("已连续" + customerSignModel.getCustomer().getSignDays() + "天");
+                            MyRequestUtils.getUserInfo(YJCourseActivity.this, true);
+                            YJSignInDialog yjSignInDialog = new YJSignInDialog();
+                            VParams data = createTransmitData(yjSignInDialog.SIGNINDATANUM, customerSignModel.getCustomer().getSignDays()).set(yjSignInDialog.SIGNINWHALENUM, customerSignModel.getRewardCoin());
+                            showDialog(yjSignInDialog, data);
+
+                            break;
+                        case 300:
+                            break;
+                        case 400:
+                            break;
+                        case 401:
+                            break;
+                        case 500:
+                            break;
+                        case 600:
+                            startActivity(createIntent(YJLoginActivity.class, createTransmitData(YJLoginActivity.LOGIN_OUT, 1).set(YJLoginActivity.MY_LOGIN_OUT, true)));
+                            finishAll();
+                            break;
+                        default:
+                            break;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private void enterBackRoom(String token) {
+
+        if (!TextUtils.isEmpty(token)) {
+            Intent intent = new Intent();
+            intent.setClass(getContext(), YJPlaybackModeTwo.class);
+            intent.putExtra("token", token);
+            intent.putExtra("isPlayback", true);
+            intent.putExtra("mode", 2);
+            startActivity(intent);
+        } else {
+            showToast("回放准备中");
+        }
+        if (progDialog.isShowing()) {//加载数据的loading 先注释掉 用的时候换样式
+            progDialog.dismiss();
+        }
+    }
+
+    private void enterLiveRoom(String token) {
+
+        if (!TextUtils.isEmpty(token)) {
+            Intent intent = new Intent();
+            intent.setClass(getContext(), YJLiveActivity.class);
+            intent.putExtra("token", token);
+            intent.putExtra("isPlayback", false);
+            intent.putExtra("mode", 2);
+            startActivity(intent);
+
+        } else {
+            showToast("进入直播间失败");
+        }
+      /*  if (progDialog.isShowing()) {//加载数据的loading 先注释掉 用的时候换样式
+            progDialog.dismiss();
+        }*/
+    }
+
+
+    @Override
+    public void courseList(View view, final int position, String name, String courseTypeId) {
+        for (int i = 0; i < YJGlobal.getYJCOURSETYPESBASEMEDEL().size(); i++) {
+            if (courseTypeId.equals(YJGlobal.getYJCOURSETYPESBASEMEDEL().get(i).getCourseTypeId())) {
+                getCourseList(view, i, name, courseTypeId);
+            }
+        }
+//        getCourseList(view, position, name, courseTypeId);
+    }
+
+    @Override
+    public void courseCatalog(View view, int position, String courseId, String courseShape) {
+        if (ClickUtil.isFastDoubleClick()) {
+            return;
+        }
+        if ("DVR".equals(courseShape)) {
+            getCourseCatalog(courseId, 1, true);
+        } else if ("All".equals(courseShape)) {
+            getCourseCatalog(courseId, 1, true);
+        } else {
+            getCourseCatalog(courseId, 1, false);
+        }
+    }
+
+    public void getCourseCatalog(String courseId, int childPosition, final boolean flag) {
+        Map<String, Object> objectMap = new HashMap<>();
+        try {
+            if (flag) {
+                Log.d(TAG, "mYjCourseModelList.get(groupPosition).getCourseId()=" + courseId);
+                objectMap.put("courseId", courseId);
+            } else {
+                objectMap.put("courseId", courseId);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        YJStudentReqManager.getServerData(YJReqURLProtocol.GET_COURSE_CATALOG, objectMap, mIsLogin, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                Log.d(TAG, "失败=" + s);
+                showToast(getString(R.string.no_net_work));
+            }
+
+            @Override
+            public void onSuccess(int i, Header[] headers, String s) {
+
+                try {
+
+                    Log.d(TAG, "成功s=" + s);
+                    JSONObject json = null;
+                    json = new JSONObject(s);
+
+
+                    switch (json.getInt("code")) {
+                        case 200:
+                            JSONObject jsonObject = new JSONObject(json.getString("data"));
+                            YJCourseModel yjCourseModel = JSON.parseObject(jsonObject.getString("course"), YJCourseModel.class);
+                            Log.d(TAG, "yjCourseModel=" + yjCourseModel.toString());
+                            if (yjCourseModel.getCourseCatalogList().size() == 0) {
+                                showToast("暂时没有视频课程");
+                            } else {
+                                if (flag) {
+                                    startActivity(createIntent(YJCoursePlayActivity.class, createTransmitData(YJCoursePlayActivity.YJ_COURSE_MODEL, yjCourseModel)));
+                                } else {
+                                    startActivity(createIntent(YJCourseLiveListActivity.class, createTransmitData(YJCourseLiveListActivity.YJ_COURSE_MODEL, yjCourseModel)));
+                                }
+                            }
+                            break;
+                        case 300:
+                            break;
+                        case 400:
+                            break;
+                        case 401:
+                            break;
+                        case 402:
+                            break;
+                        case 500:
+                            break;
+                        case 600:
+                            startActivity(createIntent(YJLoginActivity.class, createTransmitData(YJLoginActivity.LOGIN_OUT, 1).set(YJLoginActivity.MY_LOGIN_OUT, true)));
+                            finishAll();
+                            break;
+                        default:
+                            break;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+}

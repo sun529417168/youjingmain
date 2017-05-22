@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray_view_bg"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/title"
+        layout="@layout/title_blue_bg" />
+
+    <RelativeLayout
+        android:id="@+id/lay_user"
+        android:layout_width="match_parent"
+        android:layout_height="238dp"
+        android:layout_below="@id/title"
+        android:paddingLeft="@dimen/my_common_padding_small"
+        android:paddingRight="@dimen/my_common_padding_small">
+
+
+        <ImageView
+            android:id="@+id/img_logo"
+            android:layout_width="122dp"
+            android:layout_height="133dp"
+            android:layout_centerInParent="true"
+            android:src="@mipmap/img_about_app_logo" />
+        <TextView
+            android:id="@+id/txt_app_version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="11sp"
+            android:layout_below="@id/img_logo"
+            android:layout_centerHorizontal="true"
+            android:text="版本号：V1.0.0"
+            android:textColor="@color/black"/>
+    </RelativeLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:lineSpacingExtra="3dp"
+        android:paddingLeft="54dp"
+        android:layout_below="@id/lay_user"
+        android:paddingRight="54dp"
+        android:text="游鲸是为中小学生量身打造的移动学习平台，师资力量均由平台自主培养，励志于通过在线互动课程为学生提供优质的教辅培训服务。"
+        android:textColor="@color/gray_text"
+        android:textSize="12sp" />
+    <TextView
+        android:id="@+id/txt_youjing"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:gravity="center"
+        android:layout_alignParentBottom="true"
+        android:text="北京游鲸信息科技有限公司"
+        android:textColor="@color/gray_text"
+        android:textSize="13sp" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="3dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:layout_above="@id/txt_youjing"
+        android:gravity="center"
+        android:text="Copyright  2016"
+        android:textColor="@color/gray_text"
+        android:textSize="12sp" />
+</RelativeLayout>

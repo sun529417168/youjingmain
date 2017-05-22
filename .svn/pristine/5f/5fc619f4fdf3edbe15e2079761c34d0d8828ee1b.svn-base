@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="TabItemView">
+        <attr name="contentTextSize" format="dimension" />
+        <!-- 字体大小 -->
+        <attr name="contentTextColor" format="color" />
+        <!-- 字体颜色 -->
+        <attr name="contentTextString" format="string" />
+        <!-- 显示的默认文字 -->
+        <attr name="contentLogoBack" format="reference" />
+        <!-- item背景 -->
+        <attr name="contentLogoWidth" format="dimension" />
+        <attr name="contentLogoHeigth" format="dimension" />
+    </declare-styleable>
+    <!--返回手势右滑动关闭当前页面start-->
+    <declare-styleable name="SlidingMenu">
+        <attr name="mode">
+            <enum name="left" value="0" />
+            <enum name="right" value="1" />
+        </attr>
+        <attr name="viewAbove" format="reference" />
+        <attr name="viewBehind" format="reference" />
+        <attr name="behindOffset" format="dimension" />
+        <attr name="behindWidth" format="dimension" />
+        <attr name="behindScrollScale" format="float" />
+        <attr name="touchModeAbove">
+            <enum name="margin" value="0" />
+            <enum name="fullscreen" value="1" />
+        </attr>
+        <attr name="touchModeBehind">
+            <enum name="margin" value="0" />
+            <enum name="fullscreen" value="1" />
+        </attr>
+        <attr name="shadowDrawable" format="reference" />
+        <attr name="shadowWidth" format="dimension" />
+        <attr name="fadeEnabled" format="boolean" />
+        <attr name="fadeDegree" format="float" />
+        <attr name="selectorEnabled" format="boolean" />
+        <attr name="selectorDrawable" format="reference" />
+    </declare-styleable>
+    <!--返回手势右滑动关闭当前页面end-->
+</resources>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:id="@+id/dialog_medal_details"
+    android:clickable="true"
+    android:layout_height="match_parent"
+    android:background="@color/dialog_bg"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="238dp"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@drawable/dialog_bg">
+
+        <ImageView
+            android:id="@+id/medal_details_image"
+            android:layout_width="160dp"
+            android:layout_height="163dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="17dp" />
+
+        <TextView
+            android:id="@+id/medal_details_remark"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/medal_details_image"
+            android:layout_marginTop="15dp"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:textColor="#FDAD4D"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/medal_details_access"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/medal_details_remark"
+            android:layout_marginTop="13dp"
+            android:paddingLeft="15dp"
+            android:textColor="@color/black"
+            android:paddingRight="15dp"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/medal_details_personnum"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/medal_details_access"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="15dp"
+            android:paddingLeft="15dp"
+            android:textColor="@color/black"
+            android:paddingRight="15dp"
+            android:textSize="12sp" />
+    </RelativeLayout>
+
+</RelativeLayout>

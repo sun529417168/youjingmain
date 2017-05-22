@@ -1,0 +1,354 @@
+package com.youjing.yjeducation.util;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Handler;
+import android.os.Message;
+import android.preference.PreferenceManager;
+import android.text.TextUtils;
+import android.util.Log;
+
+import com.alibaba.fastjson.JSON;
+import com.loopj.android.http.TextHttpResponseHandler;
+import com.youjing.yjeducation.R;
+import com.youjing.yjeducation.core.YJBaseActivity;
+import com.youjing.yjeducation.core.YJGlobal;
+import com.youjing.yjeducation.core.YJNotifyTag;
+import com.youjing.yjeducation.core.YJReqURLProtocol;
+import com.youjing.yjeducation.core.YJStudentReqManager;
+import com.youjing.yjeducation.model.YJCourseListModel;
+import com.youjing.yjeducation.model.YJCourseModel;
+import com.youjing.yjeducation.model.YJCourseTypeModel;
+import com.youjing.yjeducation.model.YJCourseTypesBaseMedel;
+import com.youjing.yjeducation.scan.CaptureActivity;
+import com.youjing.yjeducation.ui.actualize.activity.YJCourseListlActivity;
+import com.youjing.yjeducation.ui.actualize.activity.YJCourseLiveListActivity;
+import com.youjing.yjeducation.ui.actualize.activity.YJCoursePlayActivity;
+import com.youjing.yjeducation.ui.actualize.activity.YJLoginActivity;
+import com.youjing.yjeducation.ui.dispaly.activity.AYJCourseListActivity;
+import com.youjing.yjeducation.ui.dispaly.activity.AYJScanWebviewActivity;
+
+import org.apache.http.Header;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.vwork.mobile.ui.IVActivity;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+
+/**
+ * @author stt
+ *         类说明：扫一扫或者banner区域的逻辑跳转
+ *         创建时间：2016.7.20
+ */
+public class ScanBannerUtils {
+    protected static List<YJCourseTypesBaseMedel> yjCourseTypeModelList;
+    private static boolean isHasCourseTypeId = true;
+    private static YJBaseActivity mActivity;
+
+
+    private static Handler mHandler = new Handler() {
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case 0: {
+                    mActivity.notifyListener(YJNotifyTag.MY_TASK, "");
+                    break;
+                }
+                case 1: {
+                    mActivity.notifyListener(YJNotifyTag.MY_CARD, "");
+                    break;
+                }
+                default:
+                    break;
+            }
+        }
+    };
+
+
+    public static void intentPage(YJBaseActivity activity, String msg, String TAG, boolean mIsLogin, int index) {
+        mActivity = activity;
+        boolean isInApp = false;
+        String strRequestKeyAndValues = "";
+        Map<String, String> mapRequest = ParseURL.URLRequest(msg);
+        for (String strRequestKey : mapRequest.keySet()) {
+            String strRequestValue = mapRequest.get(strRequestKey);
+            strRequestKeyAndValues += "key:" + strRequestKey + ",Value:" + strRequestValue + ";";
+            Log.d(TAG, "strRequestKeyAndValues=" + strRequestKeyAndValues);
+            if (strRequestKey.equals("yj_type_one")) {
+                isInApp = true;
+            }
+        }
+        if (!isInApp) {
+            Intent intent = new Intent();
+            intent.setClass(activity, AYJScanWebviewActivity.class);
+            intent.putExtra("msg", msg);
+            activity.startActivity(intent);
+        } else {
+            if (!TextUtils.isEmpty(mapRequest.get("yj_type_one")) && mapRequest.get("yj_type_one").equals("in")) {
+                String yj_type_app = mapRequest.get("yj_type_app");
+                Log.d(TAG, "yj_type_app=" + yj_type_app);
+                if (!TextUtils.isEmpty(yj_type_app)) {
+                    switch (yj_type_app) {
+                        case "course_list":
+                            String courseTypeId = mapRequest.get("coursetypeid");
+                            if (!TextUtils.isEmpty(courseTypeId)) {
+                                scanCourseList((YJBaseActivity) activity, courseTypeId, TAG, mIsLogin);
+                            }
+                            if (index == 1) {
+                                activity.finish();
+                            }
+                            break;
+                        case "course_detail":
+                            String courseId = mapRequest.get("courseid");
+                            Log.d(TAG, "courseid=" + courseId);
+                            if (!TextUtils.isEmpty(courseId)) {
+                                getCourseCatalog((YJBaseActivity) activity, courseId, false, TAG, mIsLogin);
+                            }
+                            if (index == 1) {
+                                activity.finish();
+                            }
+                            break;
+                        case "live_menu":
+                            activity.notifyListener(YJNotifyTag.MAIN_VIDEO, 2);
+                            if (index == 1) {
+                                activity.finish();
+                            }
+                            break;
+                        case "questions_list":
+                            activity.notifyListener(YJNotifyTag.MAIN_QUESTION, 1);
+                            if (index == 1) {
+                                activity.finish();
+                            }
+                            break;
+                        case "task_list":
+                            if (mIsLogin) {
+                                activity.notifyListener(YJNotifyTag.MAIN_MY, 3);
+                                final Timer timer = new Timer();
+                                timer.schedule(new TimerTask() {
+                                    public void run() {
+                                        mHandler.sendEmptyMessage(0);
+                                        timer.cancel();
+                                    }
+                                }, 300);
+                            } else {                                                                                           //1：去我的卡包  2：任务中心
+                                activity.startActivity(activity.createIntent(YJLoginActivity.class, activity.createTransmitData(YJLoginActivity.REGIST_INFO, "2").set(YJLoginActivity.LOGIN_OUT, -1).set(YJLoginActivity.MY_LOGIN_OUT, false)));
+                            }
+                            if (index == 1) {
+                                activity.finish();
+                            }
+                            break;
+                        case "card_list":
+                            if (mIsLogin) {
+                                activity.notifyListener(YJNotifyTag.MAIN_MY, 3);
+                                final Timer timer = new Timer();
+                                timer.schedule(new TimerTask() {
+                                    public void run() {
+                                        mHandler.sendEmptyMessage(1);
+                                        timer.cancel();
+                                    }
+                                }, 300);
+                            } else {                                                                                        //1：去我的卡包  2：任务中心
+                                activity.startActivity(activity.createIntent(YJLoginActivity.class, activity.createTransmitData(YJLoginActivity.REGIST_INFO, "1").set(YJLoginActivity.LOGIN_OUT, -1).set(YJLoginActivity.MY_LOGIN_OUT, false)));
+                            }
+                            if (index == 1) {
+                                activity.finish();
+                            }
+                            break;
+                        case "create_order":
+                            String orderCourseId = mapRequest.get("courseid");
+                            if (!TextUtils.isEmpty(orderCourseId)) {
+                                getCourseCatalog((YJBaseActivity) activity, orderCourseId, true, TAG, mIsLogin);
+                            }
+                            if (index == 1) {
+                                activity.finish();
+                            }
+                            break;
+                        default:
+                            activity.showToast("无法识别");
+                            break;
+                    }
+                }
+            } else if (!TextUtils.isEmpty(mapRequest.get("yj_type_one")) && mapRequest.get("yj_type_one").equals("out")) {
+                Intent intent = new Intent();
+                intent.setClass((Context) activity, AYJScanWebviewActivity.class);
+                intent.putExtra("msg", msg);
+                activity.startActivity(intent);
+            }
+        }
+    }
+
+    private static void scanCourseList(YJBaseActivity activity, String courseTypeId, String TAG, boolean mIsLogin) {
+        yjCourseTypeModelList = YJGlobal.getYJCOURSETYPESBASEMEDEL();
+        if (yjCourseTypeModelList != null) {
+            for (int i = 0; i < yjCourseTypeModelList.size(); i++) {
+                if (yjCourseTypeModelList.get(i).getCourseTypeId().equals(courseTypeId)) {
+                    isHasCourseTypeId = false;
+                    getCourseList(activity, i, TAG, mIsLogin,  courseTypeId);
+                }
+            }
+            if (isHasCourseTypeId) {
+                getCourseList(activity, 0, TAG, mIsLogin,  courseTypeId);
+            }
+        } else {
+            return;
+        }
+
+    }
+
+    //扫码进入直播详情页面
+    private static void getCourseCatalog(final YJBaseActivity activity, String courseId, final boolean isScan, final String TAG, boolean mIsLogin) {
+        Map<String, Object> objectMap = new HashMap<>();
+        try {
+            objectMap.put("courseId", courseId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        YJStudentReqManager.getServerData(YJReqURLProtocol.GET_COURSE_CATALOG, objectMap, mIsLogin, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                Log.d(TAG, "失败getCourseCatalog=" + s);
+                activity.showToast(activity.getString(R.string.no_net_work));
+            }
+
+            @Override
+            public void onSuccess(int i, Header[] headers, String s) {
+
+                try {
+                    // String ss = "{ 'id':12, 'name':'11111111', 'sequence':1,'isTry':'No','code':'Wgi1LikG7Rpw+Z46PAcVrg==','courseVideoShape':'DVR','planDate':1459394340000,'realDate':1460099640000,'courseVideoType':'OpenClass','duration':35,'followCount':6,'studyStatus':null,'isDownload':'No','isFollow':'No'}";
+                    Log.d(TAG, "成功getCourseCatalog=" + s);
+                    JSONObject json = null;
+                    json = new JSONObject(s);
+                    switch (json.getInt("code")) {
+                        case 200:
+                            JSONObject jsonObject = new JSONObject(json.getString("data"));
+                            YJCourseModel yjCourseModel = JSON.parseObject(jsonObject.getString("course"), YJCourseModel.class);
+                            Log.d(TAG, "yjCourseModel=" + yjCourseModel.toString());
+
+                            if (yjCourseModel != null) {
+                                String courseShape = yjCourseModel.getCourseShape();
+                                if (yjCourseModel.getCourseCatalogList().size() == 0) {
+                                    activity.showToast("暂时没有视频课程");
+                                } else {
+                                    if (isScan) {
+                                        yjCourseModel.setIsScan("Yes");
+                                    }
+                                    if (!TextUtils.isEmpty(courseShape) && courseShape.equals("DVR")) {
+                                        activity.startActivity(activity.createIntent(YJCoursePlayActivity.class, activity.createTransmitData(YJCoursePlayActivity.YJ_COURSE_MODEL, yjCourseModel)));
+                                    } else if (!TextUtils.isEmpty(courseShape) && courseShape.equals("LIVE")) {
+                                        activity.startActivity(activity.createIntent(YJCourseLiveListActivity.class, activity.createTransmitData(YJCourseLiveListActivity.YJ_COURSE_MODEL, yjCourseModel)));
+                                    } else {
+                                        activity.showToast("暂时没有视频课程");
+                                    }
+                                }
+                            }
+
+                            break;
+                        case 300:
+                            break;
+                        case 400:
+                            break;
+                        case 401:
+                            break;
+                        case 402:
+                            break;
+                        case 500:
+                            break;
+                        case 600:
+                            activity.startActivity(activity.createIntent(YJLoginActivity.class, activity.createTransmitData(YJLoginActivity.LOGIN_OUT, 1).set(YJLoginActivity.MY_LOGIN_OUT, true)));
+                            activity.finishAll();
+                            break;
+                        default:
+                            break;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    //扫码课程列表页
+    private static void getCourseList(final YJBaseActivity activity, final int position, final String TAG, boolean mIsLogin, String courseTypeId) {
+        Map<String, Object> objectMap = new HashMap<>();
+        if (yjCourseTypeModelList != null) {
+            Log.d(TAG, "subjectId=" + YJGlobal.getMy_subjectId() + "courseTypeId=" + yjCourseTypeModelList.get(position).getCourseTypeId());
+            Log.d(TAG, "gradeId=" + YJGlobal.getMy_grade_id());
+            saveGrade(yjCourseTypeModelList.get(position).getName(), position, activity,courseTypeId);
+            try {
+                objectMap.put("subjectId", YJGlobal.getMy_subjectId());
+                objectMap.put("gradeId", YJGlobal.getMy_grade_id());
+                objectMap.put("courseTypeId", yjCourseTypeModelList.get(position).getCourseTypeId());
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        YJStudentReqManager.getServerData(YJReqURLProtocol.GET_COURSE_LIST, objectMap, mIsLogin, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                Log.d(TAG, "失败=" + s);
+                activity.showToast(activity.getString(R.string.no_net_work));
+            }
+
+            @Override
+            public void onSuccess(int i, Header[] headers, String s) {
+                try {
+                    Log.d(TAG, "成功s=" + s);
+                    JSONObject json = null;
+                    json = new JSONObject(s);
+                    switch (json.getInt("code")) {
+                        case 200:
+                            JSONObject jsonData = new JSONObject(json.getString("data"));
+                            List<YJCourseListModel> yjCourseListModelList = JSON.parseArray(jsonData.getString("knowledgeList"), YJCourseListModel.class);
+                            Log.d(TAG, "yjCourseListModelList.toString()=" + yjCourseListModelList.toString());
+                            activity.startActivity(activity.createIntent(YJCourseListlActivity.class, activity.createTransmitData(AYJCourseListActivity.COURSE_MODELLIST, getYjCourseModel(yjCourseListModelList)).set(AYJCourseListActivity.LIST_POSITION, position)));
+                            break;
+                        case 300:
+                            break;
+                        case 400:
+                            break;
+                        case 401:
+                            break;
+                        case 402:
+                            break;
+                        case 500:
+                            break;
+                        case 600:
+                            activity.startActivity(activity.createIntent(YJLoginActivity.class, activity.createTransmitData(YJLoginActivity.LOGIN_OUT, 1).set(YJLoginActivity.MY_LOGIN_OUT, true)));
+                            activity.finishAll();
+                            break;
+                        default:
+                            break;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private static void saveGrade(String course, int num, YJBaseActivity activity, String courseTypeId) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("course", course);
+        editor.putInt("courseNum", num);
+        editor.putString("courseTypeId", courseTypeId);
+        editor.commit();
+    }
+
+    private static List<YJCourseModel> getYjCourseModel(List<YJCourseListModel> yjCourseListModelList) {
+        List<YJCourseModel> yjCourseModelsList = new ArrayList<YJCourseModel>();
+        for (int i = 0; i < yjCourseListModelList.size(); i++) {
+            for (int j = 0; j < yjCourseListModelList.get(i).getCourseList().size(); j++) {
+                yjCourseModelsList.add(yjCourseListModelList.get(i).getCourseList().get(j));
+            }
+        }
+        return yjCourseModelsList;
+    }
+}

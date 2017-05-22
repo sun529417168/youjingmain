@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="#333333"
+    android:orientation="vertical"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp">
+
+        <RelativeLayout
+            android:padding="5dp"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textSize="13dp"
+                    android:textColor="@color/white"
+                    android:text="正在刷新"/>
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/head_contentLayout"
+            android:paddingLeft="30dp"
+            >
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    >
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:src="@mipmap/img_pull_refresh_arrow"
+                            android:id="@+id/head_arrowImageView"
+                            />
+                        <ProgressBar
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            style="?android:attr/progressBarStyleSmall"
+                            android:layout_gravity="center"
+                            android:id="@+id/head_progressBar"
+                            android:visibility="gone"
+                            android:indeterminateDrawable="@drawable/refresh_progress_bar"
+                            />
+
+                </FrameLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:orientation="vertical"
+                    android:layout_centerInParent="true"
+                    >
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/pull_refresh"
+                            android:textColor="@color/white"
+                            android:textSize="12sp"
+                            android:id="@+id/head_tipsTextView"
+                            />
+                </LinearLayout>
+        </RelativeLayout>
+</LinearLayout>

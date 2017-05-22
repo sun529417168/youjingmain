@@ -1,0 +1,5 @@
+include ':app', ':frameworklibs'
+include ':OneSDK'
+include ':Scan'
+include ':playerLibRelease'
+include ':playerskin'

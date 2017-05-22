@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/dialog_bg">
+
+    <LinearLayout
+        android:id="@+id/lay_picker"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp">
+
+        <com.youjing.yjeducation.wiget.PickerView
+            android:id="@+id/pv_period"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_weight="1"/>
+        <!--<com.youjing.yjeducation.wiget.PickerView-->
+            <!--android:id="@+id/pv_grade"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="150dp"-->
+            <!--android:layout_weight="1"/>-->
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/my_common_height"
+        android:layout_alignTop="@id/lay_picker"
+        android:layout_marginTop="60dp">
+
+        <View
+            android:layout_width="6dp"
+            android:layout_height="match_parent"
+            android:background="@color/blue" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/view_height_width"
+            android:background="@color/view" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/view_height_width"
+            android:layout_alignParentBottom="true"
+            android:background="@color/view" />
+    </RelativeLayout>
+    <include
+        android:id="@+id/sex_title"
+        layout="@layout/two_btn_title"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/my_common_height"
+        android:layout_above="@id/lay_picker" />
+</RelativeLayout>

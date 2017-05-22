@@ -1,0 +1,109 @@
+package com.youjing.yjeducation.ui.dispaly.activity;
+
+import android.app.Activity;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.View;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.lidroid.xutils.BitmapUtils;
+import com.tencent.connect.common.Constants;
+import com.tencent.tauth.IUiListener;
+import com.tencent.tauth.Tencent;
+import com.tencent.tauth.UiError;
+import com.youjing.yjeducation.R;
+import com.youjing.yjeducation.core.YJBaseActivity;
+import com.youjing.yjeducation.core.YJNotifyTag;
+import com.youjing.yjeducation.model.YJMedalGetMedel;
+import com.youjing.yjeducation.talkfun.BaseActivity;
+import com.youjing.yjeducation.ui.actualize.dialog.YJShareDialog;
+
+import org.vwork.mobile.ui.delegate.IVClickDelegate;
+
+/**
+ * @author stt
+ *         类说明：获得勋章弹框
+ *         创建时间：2016.6.25
+ */
+public class AYJObtainMedalDialogActivity extends YJBaseActivity {
+    private ImageView mDialog_obtain_medal_image;//勋章图片
+    private TextView mDialog_obtain_medal_name;//等级称谓
+    private Button mDialog_obtain_medal_share;//立即分享
+    private YJMedalGetMedel medalGetMedel;
+    private RelativeLayout mObtain_medal_activity;
+    private IUiListener qqShareListener;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        requestWindowFeature(Window.FEATURE_NO_TITLE);// 设置没有标题
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.dialog_obtain_medal);
+        init();
+        medalGetMedel = (YJMedalGetMedel) this.getIntent().getSerializableExtra("medalGetMedel");
+        setLivelUpMedel();
+        mDialog_obtain_medal_share.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                YJShareDialog yjShareDialog = new YJShareDialog();
+                showDialog(yjShareDialog);
+            }
+        });
+        mObtain_medal_activity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        qqShareListener = new IUiListener() {
+            @Override
+            public void onCancel() {
+                notifyListener(YJNotifyTag.SHARE_SUCESS_INFO, "fail");
+                showToast("分享取消");
+            }
+
+            @Override
+            public void onComplete(Object response) {
+                notifyListener(YJNotifyTag.SHARE_SUCESS_INFO, "sucess");
+                //showToast(getString(R.string.share_success));
+            }
+
+            @Override
+            public void onError(UiError e) {
+                notifyListener(YJNotifyTag.SHARE_SUCESS_INFO, "fail");
+                showToast(getString(R.string.share_fail));
+            }
+        };
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == Constants.REQUEST_QQ_SHARE) {
+            if (resultCode == Constants.ACTIVITY_OK) {
+                Tencent.onActivityResultData(requestCode, resultCode, data, qqShareListener);
+            }
+        }
+    }
+
+    private void setLivelUpMedel() {
+        if (TextUtils.isEmpty(medalGetMedel.getMedalPic())) {
+            mDialog_obtain_medal_image.setBackgroundResource(R.mipmap.obtain_medal_image);
+        } else {
+            BitmapUtils.create(this).display(mDialog_obtain_medal_image, medalGetMedel.getMedalPic());
+        }
+        mDialog_obtain_medal_name.setText(TextUtils.isEmpty(medalGetMedel.getMedalName()) ? "" : medalGetMedel.getMedalName());
+    }
+
+    private void init() {
+        mDialog_obtain_medal_image = (ImageView) findViewById(R.id.dialog_obtain_medal_image);
+        mDialog_obtain_medal_name = (TextView) findViewById(R.id.dialog_obtain_medal_name);
+        mDialog_obtain_medal_share = (Button) findViewById(R.id.dialog_obtain_medal_share);
+        mObtain_medal_activity = (RelativeLayout) findViewById(R.id.obtain_medal_activity);
+    }
+
+
+}

@@ -1,0 +1,313 @@
+package com.youjing.yjeducation.ui.actualize.activity;
+
+import android.content.Intent;
+import android.text.TextUtils;
+import android.util.Log;
+
+import com.alibaba.fastjson.JSON;
+import com.loopj.android.http.TextHttpResponseHandler;
+import com.youjing.yjeducation.R;
+import com.youjing.yjeducation.core.YJGlobal;
+import com.youjing.yjeducation.core.YJNotifyTag;
+import com.youjing.yjeducation.core.YJReqURLProtocol;
+import com.youjing.yjeducation.core.YJStudentReqManager;
+import com.youjing.yjeducation.core.YJUserStudyData;
+import com.youjing.yjeducation.model.YJTeacherAskModel;
+import com.youjing.yjeducation.talkfun.YJPlaybackModeTwo;
+import com.youjing.yjeducation.talkfun.customtalkfun.YJCustomLiveActivity;
+import com.youjing.yjeducation.ui.dispaly.activity.AYJCoursePlayActivity;
+import com.youjing.yjeducation.ui.dispaly.activity.AYJCoursePlayNewActivity;
+import com.youjing.yjeducation.util.DialogUtil;
+
+import org.apache.http.Header;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * user  秦伟宁
+ * Date 2016/3/25
+ * Time 10:34
+ */
+public class YJCoursePlayNewActivity extends AYJCoursePlayNewActivity {
+    private String TAG = "YJCoursePlayNewActivity";
+    private String mStudyId;
+
+
+
+
+    @Override
+    public  void getTakenLive( final int position,final boolean isShowDialog,final int isLiveType ) {
+        Map<String, Object> objectMap = new HashMap<>();
+        try {
+            objectMap.put("teacherId", mYjCourseModel.getTeacherId());
+            objectMap.put("courseVideoId", mYjCourseModel.getCourseCatalogList().get(position).getCourseVideoId());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        YJStudentReqManager.getServerData(YJReqURLProtocol.GET_LIVE_INFO, objectMap, true, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                Log.d(TAG, "失败=" + s);
+                showToast(getString(R.string.no_net_work));
+                if (progDialog.isShowing()) {
+                    progDialog.dismiss();
+                }
+            }
+
+            @Override
+            public void onSuccess(int i, Header[] headers, String s) {
+                try {
+                    JSONObject json = null;
+                    json = new JSONObject(s);
+                    Log.d(TAG, "成功s=" + s);
+                    switch (json.getInt("code")) {
+                        case 200:
+                            JSONObject jsonData = new JSONObject(json.getString("data"));
+                            JSONObject jsonTaken = new JSONObject(jsonData.getString("roomInfo"));
+                            String token = jsonTaken.getString("access_token");
+                            Log.d(TAG, "token=" + token);
+//                                  enterLiveRoom(token);
+
+                            enterLiveRoom(token, mYjCourseModel.getTeacher().getTeacherId(), mYjCourseModel.getTeacher().getTrueName(),
+                                    mYjCourseModel.getCourseCatalogList().get(position).getCourseVideoId(), mYjCourseModel.getCourseId(),
+                                    mYjCourseModel.getCourseCatalogList().get(position).getPlanDate(),mYjCourseModel.getCourseCatalogList().get(position).getPlanEndDate(), isShowDialog, mYjCourseModel.getName(), mYjCourseModel.getCourseCatalogList().get(position).getCourseCatalogId(),isLiveType);
+                            YJUserStudyData.liveCatalogBeginStudy(mYjCourseModel, position);
+                            YJUserStudyData.liveCatalogBeginStudy(mYjCourseModel, position);
+                            break;
+                        case 300:
+                            if (progDialog.isShowing()) {
+                                progDialog.dismiss();
+                            }
+                            //  showToast("参数不合法");
+                            break;
+                        case 400:
+                            if (progDialog.isShowing()) {
+                                progDialog.dismiss();
+                            }
+                            // showToast("用户不存在");
+                            break;
+                        case 401:
+                            if (progDialog.isShowing()) {
+                                progDialog.dismiss();
+                            }
+                            showToast("直播准备中");
+                            // showToast("找不到老师对应的直播间");
+                            break;
+                        case 500:
+                            if (progDialog.isShowing()) {
+                                progDialog.dismiss();
+                            }
+                            // showToast("服务器异常");
+                            break;
+                        case 600:
+                            startActivity(createIntent(YJLoginActivity.class, createTransmitData(YJLoginActivity.LOGIN_OUT, 1).set(YJLoginActivity.MY_LOGIN_OUT, true)));
+                            finishAll();
+                            break;
+                        default:
+                            break;
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    @Override
+    public void getTakenBack(final int position) {
+        if ("No".equals(mYjCourseModel.getCourseCatalogList().get(position).getIsReplay())) {
+//            showDialog(new YJIsReplayDialog());
+            getTakenLive(position,true,2);
+            return;
+        }
+        progDialog = DialogUtil.showWaitDialog(getContext());//加载数据的loading 先注释掉 用的时候换样式
+        Map<String, Object> objectMap = new HashMap<>();
+        try {
+            objectMap.put("courseVideoId", mYjCourseModel.getCourseCatalogList().get(position).getCourseVideoId());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        YJStudentReqManager.getServerData(YJReqURLProtocol.GET_LIVE_BACK_INFO, objectMap, true, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                Log.d(TAG, "失败=" + s);
+                showToast(getString(R.string.no_net_work));
+                if (progDialog.isShowing()) {
+                    progDialog.dismiss();
+                }
+            }
+
+            @Override
+            public void onSuccess(int i, Header[] headers, String s) {
+                try {
+                    JSONObject json = null;
+                    json = new JSONObject(s);
+                    Log.d(TAG, "成功s=" + s);
+                    switch (json.getInt("code")) {
+                        case 200:
+                            JSONObject jsonData = new JSONObject(json.getString("data"));
+                            JSONObject jsonTaken = new JSONObject(jsonData.getString("replayInfo"));
+                            String token = jsonTaken.getString("access_token");
+                            Log.d(TAG, "token=" + token);
+                            enterBackRoom(token);
+                            YJUserStudyData.liveCatalogBeginStudy(mYjCourseModel, position);
+
+                            break;
+                        case 300:
+                            if (progDialog.isShowing()) {
+                                progDialog.dismiss();
+                            }
+                            // showToast("参数不合法");
+                            break;
+                        case 400:
+                            if (progDialog.isShowing()) {
+                                progDialog.dismiss();
+                            }
+                            //showToast("用户不存在");
+                            break;
+                        case 401:
+                            if (progDialog.isShowing()) {
+                                progDialog.dismiss();
+                            }
+                            showToast("回放准备中");
+                            break;
+                        case 500:
+                            if (progDialog.isShowing()) {
+                                progDialog.dismiss();
+                            }
+                            //  showToast("服务器异常");
+                            break;
+                        case 600:
+                            startActivity(createIntent(YJLoginActivity.class, createTransmitData(YJLoginActivity.LOGIN_OUT, 1).set(YJLoginActivity.MY_LOGIN_OUT, true)));
+                            finishAll();
+                            break;
+                        default:
+                            break;
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+
+    private int mode = 2;
+    private void enterLiveRoom(String token,String teacherId,String teacherName,String courseVideoId,String openClassId,String startTime,String endTime,boolean isShowDialog,String courseName,String courseCatalogId,int isLiveType) {
+        Log.d(TAG, "enterLiveRoom=");
+        isYJCustomLiveActivityDestroy = false;
+        if (!TextUtils.isEmpty(token)) {
+            Intent intent = new Intent();
+            intent.setClass(getContext(), YJCustomLiveActivity.class);
+            intent.putExtra("token", token);
+            intent.putExtra("teacherId", teacherId);
+            intent.putExtra("teacherName", teacherName);
+            intent.putExtra("courseVideoId", courseVideoId);
+            intent.putExtra("courseId", openClassId);
+            intent.putExtra("startTime", startTime);
+            intent.putExtra("endTime", endTime);
+            intent.putExtra("courseName", courseName);
+            intent.putExtra("courseCatalogId", courseCatalogId);
+            intent.putExtra("isShowDialog", isShowDialog);
+            intent.putExtra("isLiveType", isLiveType);
+
+            intent.putExtra("isPlayback", false);
+            intent.putExtra("mode", 2);
+            startActivity(intent);
+
+        } else {
+            showToast("进入直播间失败");
+        }
+        if (progDialog.isShowing()) {//加载数据的loading 先注释掉 用的时候换样式
+            progDialog.dismiss();
+        }
+    }
+
+    private void enterBackRoom(String token) {
+
+        if (!TextUtils.isEmpty(token)) {
+            Intent intent = new Intent();
+            intent.setClass(this, YJPlaybackModeTwo.class);
+            intent.putExtra("token", token);
+            intent.putExtra("isPlayback", true);
+            intent.putExtra("mode", 2);
+            startActivity(intent);
+        } else {
+            showToast("回放准备中");
+        }
+        if (progDialog.isShowing()) {
+            progDialog.dismiss();
+        }
+    }
+
+    public void getTeacherList(final String gradeId, final String subjectId) {
+        Log.d(TAG, "gradeId=" + gradeId + "subjectId=" + subjectId);
+        Map<String, Object> objectMap = new HashMap<>();
+        try {
+            objectMap.put("subjectId", subjectId);
+            objectMap.put("gradeId", gradeId);
+            objectMap.put("currentPage", 1);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        YJStudentReqManager.getServerData(YJReqURLProtocol.GET_TEACHER_LIST, objectMap, mIsLogin, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                Log.d(TAG, "失败=" + s);
+                showToast(getString(R.string.no_net_work));
+                YJGlobal.setMy_subjectId(subjectId);
+                YJGlobal.setMy_grade_id(gradeId);
+            }
+
+            @Override
+            public void onSuccess(int i, Header[] headers, String s) {
+                try {
+                    Log.d(TAG, "成功s=" + s);
+                    JSONObject json = null;
+                    json = new JSONObject(s);
+                    switch (json.getInt("code")) {
+                        case 200:
+                            JSONObject jsonData = new JSONObject(json.getString("data"));
+                            List<YJTeacherAskModel> yjTeacherAskModelList = JSON.parseArray(jsonData.getString("teacherList"), YJTeacherAskModel.class);
+                            YJGlobal.setYjTeacherAskModelList(yjTeacherAskModelList);
+                            Log.d(TAG, "yjTeacherAskModelList.toString()=" + yjTeacherAskModelList.toString());
+
+                            YJGlobal.setMy_subjectId(subjectId);
+                            YJGlobal.setMy_grade_id(gradeId);
+                            notifyListener(YJNotifyTag.TEACHER_LIST, yjTeacherAskModelList);
+                            break;
+                        case 300:
+                            break;
+                        case 400:
+                            Log.d(TAG, "400");
+                            // YJGlobal.setYjCourseTypeModelList(null);
+//                            notifyListener(YJNotifyTag.TEACHER_LIST, null);
+                            break;
+                        case 401:
+                            break;
+                        case 402:
+                            break;
+                        case 500:
+                            break;
+                        case 600:
+                            startActivity(createIntent(YJLoginActivity.class, createTransmitData(YJLoginActivity.LOGIN_OUT, 1).set(YJLoginActivity.MY_LOGIN_OUT, true)));
+                            finishAll();
+                            break;
+                        default:
+                            break;
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+    }
+}

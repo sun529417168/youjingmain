@@ -1,0 +1,88 @@
+package com.youjing.yjeducation.model;
+
+import java.io.Serializable;
+
+/**
+ * user  秦伟宁
+ * Date 2016/5/21
+ * Time 12:10
+ */
+public class YJVersionInfoModel implements Serializable {
+
+    private String id;
+    private String versionNum;
+    private String address;
+    private String description;
+    private String compelUpdate;
+    private String examineStatus;
+    private String operatePlatforms;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getVersionNum() {
+        return versionNum;
+    }
+
+    public void setVersionNum(String versionNum) {
+        this.versionNum = versionNum;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getCompelUpdate() {
+        return compelUpdate;
+    }
+
+    public void setCompelUpdate(String compelUpdate) {
+        this.compelUpdate = compelUpdate;
+    }
+
+    public String getExamineStatus() {
+        return examineStatus;
+    }
+
+    public void setExamineStatus(String examineStatus) {
+        this.examineStatus = examineStatus;
+    }
+
+    public String getOperatePlatforms() {
+        return operatePlatforms;
+    }
+
+    public void setOperatePlatforms(String operatePlatforms) {
+        this.operatePlatforms = operatePlatforms;
+    }
+
+    @Override
+    public String toString() {
+        return "YJVersionInfoModel{" +
+                "id='" + id + '\'' +
+                ", versionNum='" + versionNum + '\'' +
+                ", address='" + address + '\'' +
+                ", description='" + description + '\'' +
+                ", compelUpdate='" + compelUpdate + '\'' +
+                ", examineStatus='" + examineStatus + '\'' +
+                ", operatePlatforms='" + operatePlatforms + '\'' +
+                '}';
+    }
+}

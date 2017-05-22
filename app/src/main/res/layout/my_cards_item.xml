@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:background="@color/gray_view_bg"
+    android:layout_height="148dp">
+
+    <RelativeLayout
+        android:id="@+id/my_cards_item_lay_item"
+        android:layout_marginTop="9dp"
+        android:layout_width="match_parent"
+        android:layout_height="139dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:background="@mipmap/img_card_no_activate_bg">
+
+        <TextView
+            android:id="@+id/txt_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textSize="11sp"
+            android:textColor="@color/black"
+            android:text="可用于购买课程、礼物、挑战次数；"/>
+
+        <TextView
+            android:id="@+id/txt_card_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/yellow_text"
+            android:textSize="29sp"
+            android:text="200"
+            android:layout_marginLeft="2dp"
+            android:layout_above="@id/txt_name"/>
+        <TextView
+            android:id="@+id/txt_card"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/gray_text"
+            android:textSize="11sp"
+            android:text="礼卡面值"
+            android:layout_toLeftOf="@id/txt_card_num"
+            android:layout_marginBottom="5dp"
+            android:layout_above="@id/txt_name"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/gray_text"
+            android:textSize="11sp"
+            android:text="鲸币"
+            android:layout_marginBottom="5dp"
+            android:layout_alignBottom="@id/txt_card_num"
+            android:layout_toRightOf="@id/txt_card_num"
+            android:layout_above="@id/txt_name"/>
+
+        <TextView
+            android:id="@+id/txt_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textColor="@color/gray_text"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="11dp"
+            android:layout_marginBottom="10dp"
+            android:layout_alignParentLeft="true"
+            android:text="有效期：2016.01.01—2017.01.01"/>
+    </RelativeLayout>
+</RelativeLayout>

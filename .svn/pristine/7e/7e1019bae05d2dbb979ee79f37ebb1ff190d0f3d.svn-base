@@ -1,0 +1,2298 @@
+package com.youjing.yjeducation.ui.dispaly.activity;
+
+import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.PixelFormat;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.preference.PreferenceManager;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.Surface;
+import android.view.SurfaceHolder;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.alibaba.fastjson.JSON;
+import com.lecloud.download.control.DownloadCenter;
+import com.lecloud.entity.ActionInfo;
+import com.lecloud.entity.LiveInfo;
+import com.lecloud.entity.LiveStatus;
+import com.lecloud.entity.LiveStatusCallback;
+import com.lecloud.leutils.LeLog;
+import com.lecloud.log.KLog;
+import com.lecloud.volley.VolleyError;
+import com.letv.controller.LetvPlayer;
+import com.letv.controller.PlayContext;
+import com.letv.controller.PlayProxy;
+import com.letv.controller.imp.LetvPlayerControllerImp;
+import com.letv.controller.interfacev1.ILetvPlayerController;
+import com.letv.controller.interfacev1.ISplayerController;
+import com.letv.skin.interfacev1.IActionCallback;
+import com.letv.skin.utils.UIPlayContext;
+import com.letv.skin.v4.V4PlaySkin;
+import com.letv.universal.iplay.EventPlayProxy;
+import com.letv.universal.iplay.ISplayer;
+import com.letv.universal.iplay.OnPlayStateListener;
+import com.letv.universal.play.util.PlayerParamsHelper;
+import com.letv.universal.widget.ILeVideoView;
+import com.letv.universal.widget.ReSurfaceView;
+import com.lidroid.xutils.BitmapUtils;
+import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.TextHttpResponseHandler;
+import com.tencent.connect.common.Constants;
+import com.tencent.tauth.IUiListener;
+import com.tencent.tauth.Tencent;
+import com.tencent.tauth.UiError;
+import com.youjing.yjeducation.R;
+import com.youjing.yjeducation.core.YJBaseActivity;
+import com.youjing.yjeducation.core.YJGlobal;
+import com.youjing.yjeducation.core.YJNotifyTag;
+import com.youjing.yjeducation.core.YJReqURLProtocol;
+import com.youjing.yjeducation.core.YJStudentReqManager;
+import com.youjing.yjeducation.core.YJUserStudyData;
+import com.youjing.yjeducation.model.YJCourseListModel;
+import com.youjing.yjeducation.model.YJCourseModel;
+import com.youjing.yjeducation.model.YJGradeModel;
+import com.youjing.yjeducation.model.YJSubjectModel;
+import com.youjing.yjeducation.model.YJTeacherAskModel;
+import com.youjing.yjeducation.talkfun.customtalkfun.YJCustomLiveActivity;
+import com.youjing.yjeducation.ui.actualize.activity.YJBuyCourseActivity;
+import com.youjing.yjeducation.ui.actualize.activity.YJCourseListlActivity;
+import com.youjing.yjeducation.ui.actualize.activity.YJLoginActivity;
+import com.youjing.yjeducation.ui.actualize.activity.YJRechargeWhaleMoney;
+import com.youjing.yjeducation.ui.actualize.dialog.YJDownLoadDialog;
+import com.youjing.yjeducation.ui.actualize.dialog.YJLoginDialog;
+import com.youjing.yjeducation.ui.actualize.dialog.YJLoginSuccessDialog;
+import com.youjing.yjeducation.ui.actualize.dialog.YJShareDialog;
+import com.youjing.yjeducation.ui.dispaly.dialog.AYJCourseExpiredDialog;
+import com.youjing.yjeducation.util.ClickUtil;
+import com.youjing.yjeducation.util.DES;
+import com.youjing.yjeducation.util.DialogUtil;
+import com.youjing.yjeducation.util.LetvParamsUtils;
+import com.youjing.yjeducation.util.LetvSimplePlayBoard;
+import com.youjing.yjeducation.util.LetvSimplePlayBoards;
+import com.youjing.yjeducation.util.MakeSign;
+import com.youjing.yjeducation.util.PlayerAssistant;
+import com.youjing.yjeducation.util.PlayerFactory;
+import com.youjing.yjeducation.util.PlayerSkinFactory;
+import com.youjing.yjeducation.util.SharedUtil;
+import com.youjing.yjeducation.util.StringUtils;
+import com.youjing.yjeducation.util.TimeUtil;
+import com.youjing.yjeducation.wiget.CustomImage;
+
+import org.apache.http.Header;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.vwork.mobile.ui.delegate.IVClickDelegate;
+import org.vwork.mobile.ui.utils.VLayoutTag;
+import org.vwork.mobile.ui.utils.VViewTag;
+import org.vwork.utils.base.VParamKey;
+import org.vwork.utils.base.VParams;
+import org.vwork.utils.notification.IVNotificationListener;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+
+/**
+ * user  秦伟宁
+ * Date 2016/3/5
+ * Time 15:25
+ */
+@VLayoutTag(R.layout.activity_play)
+public abstract class AYJCoursePlayActivity extends YJBaseActivity implements IVClickDelegate {
+    @VViewTag(R.id.lv_course_detail)
+    private ListView mLv_course_detail;
+    @VViewTag(R.id.btn_apply)
+    private Button mBtn_apply;
+    @VViewTag(R.id.img_share)
+    private ImageButton mImg_share;
+    @VViewTag(R.id.activity_play_share_Text)
+    private TextView mActivity_play_share_Text;
+    @VViewTag(R.id.img_download)
+    private ImageButton mImg_download;
+    @VViewTag(R.id.img_play_return)
+    private ImageView mImg_play_return;
+    @VViewTag(R.id.img_play_bg)
+    private ImageView img_play_bg;
+
+    @VViewTag(R.id.img_praise)
+    private ImageButton mImg_praise;
+    @VViewTag(R.id.img_play_start_de)
+    private ImageView mImg_play_start_de;
+    @VViewTag(R.id.txt_name)
+    private TextView mTxt_name;
+    @VViewTag(R.id.txt_num_praise)
+    private TextView mTxt_num_praise;
+    @VViewTag(R.id.txt_money)
+    private TextView mTxt_money;
+    @VViewTag(R.id.course_status)
+    private TextView course_status;
+    @VViewTag(R.id.re_play_start_de)
+    private RelativeLayout mRe_play_start_de;
+    @VViewTag(R.id.img_rmb)
+    private ImageView mImg_rmb;
+    @VViewTag(R.id.videobody)
+    private V4PlaySkin v4PlaySkin;
+    @VViewTag(R.id.txt_course_num)
+    private TextView mTxt_course_num;
+
+
+    protected Dialog progDialog;
+    protected boolean isPlayFlag = false;
+    protected boolean mFlag = true;
+    private String TAG = "AYJCoursePlayActivity";
+    public final static String DATA = "data";
+    protected boolean mIsLogin;
+    protected int mPosition = -1;
+
+    protected boolean isYJCustomLiveActivityDestroy = true;
+    //记录上一次点击的位置
+    protected int mLastPosition = -1;
+    public static final VParamKey<YJCourseModel> YJ_COURSE_MODEL = new VParamKey<YJCourseModel>(null);
+
+    //判断是否是第一次播放记录学生观看行为时使用
+    protected boolean isFirstPlay = true;
+    private LetvsSimplePlayBoard playBoard;
+    //  private VAdapter adapter =null;
+    private MyAdapter adapter = null;
+    private Bundle bundle;
+    private LinearLayout mCourse_foot_item;
+    private ISplayer iSplayer;
+    protected YJCourseModel mYjCourseModel;
+    private Bitmap NO_LOAD_BITMAP;
+    private boolean isTry = true;
+    private Timer timer;
+    private boolean isFirst = true;
+    private List<YJGradeModel> list;
+    private List mGradeList;
+    private int mGrade, mSubject;
+    private List<YJSubjectModel> mSubjectModelList;
+    private List subjectList;
+
+    private int playPosition = 0;
+    private int mplayPosition = 0;
+    private IUiListener qqShareListener;
+    private static final String ACTION_NAME = "发送广播";
+    private Handler mHandler = new Handler() {
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case 0: {
+                    mImg_play_start_de.setVisibility(View.INVISIBLE);
+                    break;
+                }
+                case 1: {
+                    mImg_play_start_de.setVisibility(View.VISIBLE);
+                    break;
+                }
+                case 2: {
+                    if (playBoard != null) {
+                        ISplayer player = playBoard.getPlayer();
+                        if (player != null) {
+                            player.pause();
+                            //  showToast("试听已结束，请购买课程后观看");
+                            mImg_play_start_de.setVisibility(View.VISIBLE);
+                            mRe_play_start_de.setVisibility(View.VISIBLE);
+                            isTry = false;
+                        }
+                    }
+                    break;
+                }
+                case 4: {
+                    AYJCourseExpiredDialog yjCourseExpiredDialog = new AYJCourseExpiredDialog();
+                    VParams data = createTransmitData(AYJCourseExpiredDialog.TXT_INFO, "请续费后观看");
+                    showDialog(yjCourseExpiredDialog, data);
+                    break;
+                }
+                case 5: {
+                    AYJCourseExpiredDialog yjCourseExpiredDialog = new AYJCourseExpiredDialog();
+                    VParams data = createTransmitData(AYJCourseExpiredDialog.TXT_INFO, "请购买其他课程");
+                    showDialog(yjCourseExpiredDialog, data);
+                    break;
+                }
+                default:
+                    break;
+            }
+        }
+    };
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (SharedUtil.getInteger(getContext(), "baseIndex", 0)!=-1){
+            SharedUtil.setInteger(getContext(), "baseIndex", SharedUtil.getInteger(getContext(), "baseIndex", 0) + 1);
+        }
+        getWindow().setFormat(PixelFormat.TRANSLUCENT);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        mYjCourseModel = getTransmitData(YJ_COURSE_MODEL);
+        mIsLogin = PreferenceManager.getDefaultSharedPreferences(getContext()).getBoolean("isLogin", false);
+        if (mYjCourseModel != null) {
+            YJGlobal.setYjCourseModel(mYjCourseModel);
+            Log.d(TAG, "mYjCourseModel=" + mYjCourseModel.toString());
+
+            if (!TextUtils.isEmpty(mYjCourseModel.getIsScan()) && mYjCourseModel.getIsScan().equals("Yes") ){
+                if(!TextUtils.isEmpty(mYjCourseModel.getIsBuy())&&mYjCourseModel.getIsBuy().equals("No")&&!mYjCourseModel.getCoursePayWay().equals("FREE")){
+                    buyCourse();
+                }
+            }
+            initData(1);
+        }
+
+        //  UIPlayContext uiPlayContext = new UIPlayContext();
+        //  uiPlayContext.setvideoTitle("张良东的物理课  灰常灰常好看");
+        //iLetvPlayerController  =  uiPlayContext.getPlayerController();
+
+        //initBtn();
+        // start();
+        //pausePlay();
+
+        // start();
+        //timer();
+
+    }
+
+    private void initData(final int position) {
+        timer = new Timer();
+        if (!TextUtils.isEmpty(mYjCourseModel.getCourseServiceStatus())) {
+            if (mYjCourseModel.getCourseServiceStatus().equals("OVER")) {
+                if (!TextUtils.isEmpty(mYjCourseModel.getCourseStatus())) {
+                    if (mYjCourseModel.getCourseStatus().equals("SELLING")) {
+                        timer.schedule(new TimerTask() {
+                            public void run() {
+                                mHandler.sendEmptyMessage(4);
+                            }
+                        }, 600);
+
+                    } else {
+                        timer.schedule(new TimerTask() {
+                            public void run() {
+                                mHandler.sendEmptyMessage(5);
+                            }
+                        }, 600);
+                    }
+                } else {
+                    timer.schedule(new TimerTask() {
+                        public void run() {
+                            mHandler.sendEmptyMessage(5);
+                        }
+                    }, 600);
+                }
+            }
+        } else {
+        }
+        qqShareListener = new IUiListener() {
+            @Override
+            public void onCancel() {
+                notifyListener(YJNotifyTag.SHARE_SUCESS_INFO, "fail");
+                showToast("分享取消");
+            }
+
+            @Override
+            public void onComplete(Object response) {
+                notifyListener(YJNotifyTag.SHARE_SUCESS_INFO, "sucess");
+                // showToast(getString(R.string.share_success));
+            }
+
+            @Override
+            public void onError(UiError e) {
+                notifyListener(YJNotifyTag.SHARE_SUCESS_INFO, "fail");
+                showToast(getString(R.string.share_fail));
+            }
+        };
+
+
+        if (mYjCourseModel != null) {
+            if (mYjCourseModel.getLastNumber().equals("0") || mYjCourseModel.getLastNumber().equals("1")) {
+                mPosition = 0;
+            } else {
+                mPosition = Integer.parseInt(mYjCourseModel.getLastNumber()) - 1;
+            }
+            if (mIsLogin) {
+                if (!TextUtils.isEmpty(mYjCourseModel.getCourseServiceStatus()) && mYjCourseModel.getCourseServiceStatus().equals("OVER")) {
+                    if (!TextUtils.isEmpty(mYjCourseModel.getCourseStatus()) && mYjCourseModel.getCourseStatus().equals("SELLING")) {
+                        mBtn_apply.setVisibility(View.VISIBLE);
+                        mTxt_money.setVisibility(View.VISIBLE);
+                        if (mYjCourseModel.getCoursePayWay().equals("XNB")) {
+                            mImg_rmb.setVisibility(View.VISIBLE);
+                            course_status.setText(" 本课程购买后方可观看");
+                            mTxt_money.setText(mYjCourseModel.getPayCoin() + "");
+                        } else if (mYjCourseModel.getCoursePayWay().equals("RMB")) {
+                            mImg_rmb.setVisibility(View.GONE);
+                            course_status.setText(" 本课程购买后方可观看");
+                            mTxt_money.setText("￥" + mYjCourseModel.getPayMoney());
+                        }
+                    } else {
+                        mBtn_apply.setVisibility(View.VISIBLE);
+                        mBtn_apply.setBackgroundColor(getResources().getColor(R.color.gray_text));
+                        mBtn_apply.setTextColor(getResources().getColor(R.color.black));
+                    }
+                } else {
+                    if (mYjCourseModel.getCoursePayWay().equals("FREE")) {
+                        mBtn_apply.setVisibility(View.GONE);
+                        mImg_rmb.setVisibility(View.GONE);
+                        mTxt_money.setVisibility(View.GONE);
+                        course_status.setText("免费");
+                    } else if (mYjCourseModel.getIsBuy().equals("Yes")) {
+                        mBtn_apply.setVisibility(View.GONE);
+                        mImg_rmb.setVisibility(View.GONE);
+                        mTxt_money.setVisibility(View.VISIBLE);
+                        mTxt_money.setText("已购买");
+                        course_status.setText("课程有效期：" + TimeUtil.getYearTime(Long.parseLong(mYjCourseModel.getEndDate())) + "截止");
+                    } else if (mYjCourseModel.getIsBuy().equals("No")) {
+                        mBtn_apply.setVisibility(View.VISIBLE);
+                        mTxt_money.setVisibility(View.VISIBLE);
+                        if (mYjCourseModel.getCoursePayWay().equals("XNB")) {
+                            mImg_rmb.setVisibility(View.VISIBLE);
+                            course_status.setText(" 本课程购买后方可观看");
+                            mTxt_money.setText(mYjCourseModel.getPayCoin() + "");
+                        } else if (mYjCourseModel.getCoursePayWay().equals("RMB")) {
+                            mImg_rmb.setVisibility(View.GONE);
+                            course_status.setText(" 本课程购买后方可观看");
+                            mTxt_money.setText("￥" + mYjCourseModel.getPayMoney());
+                        }
+                    }
+                }
+            } else {
+                if (mYjCourseModel.getCoursePayWay().equals("FREE")) {
+                    mBtn_apply.setVisibility(View.GONE);
+                    mImg_rmb.setVisibility(View.GONE);
+                    mTxt_money.setVisibility(View.GONE);
+                    course_status.setText("免费");
+                } else if (mYjCourseModel.getCoursePayWay().equals("XNB")) {
+                    mBtn_apply.setVisibility(View.VISIBLE);
+                    mTxt_money.setVisibility(View.VISIBLE);
+                    mImg_rmb.setVisibility(View.VISIBLE);
+                    mTxt_money.setText(mYjCourseModel.getPayCoin() + "");
+                    course_status.setText(" 本课程购买后方可观看");
+                } else if (mYjCourseModel.getCoursePayWay().equals("RMB")) {
+                    mBtn_apply.setVisibility(View.VISIBLE);
+                    mTxt_money.setVisibility(View.VISIBLE);
+                    mImg_rmb.setVisibility(View.GONE);
+                    mTxt_money.setText("￥" + mYjCourseModel.getPayMoney());
+                    course_status.setText(" 本课程购买后方可观看");
+                }
+            }
+        }
+//        bindNotifyListener();
+
+        if (mYjCourseModel != null) {
+            if (!TextUtils.isEmpty(mYjCourseModel.getCoursePic())) {
+                BitmapUtils.create(getContext()).display(img_play_bg, mYjCourseModel.getCoursePic());
+            } else {
+                img_play_bg.setImageResource(R.mipmap.img_no_data_bg);
+            }
+
+            mTxt_course_num.setText("课程目录（" + mYjCourseModel.getCourseCatalogList().size() + "）");
+            mTxt_name.setText(mYjCourseModel.getName());
+            for (int i = 0; i < mYjCourseModel.getCourseCatalogList().size(); i++) {
+                try {
+                    Log.d(TAG, "uu=" + DES.decryptDES(mYjCourseModel.getCourseCatalogList().get(i).getCode()));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            if (position == 1) {
+                if (playBoard != null) {
+                    playBoard.onDestroy();
+                    playBoard = new LetvsSimplePlayBoard();
+                } else {
+                    playBoard = new LetvsSimplePlayBoard();
+                }
+            }
+            Log.d(TAG, "mYjCourseModel.getLastNumber()=" + mYjCourseModel.getLastNumber());
+            if (mYjCourseModel.getLastNumber().equals("0")) {
+
+                try {
+                    if (position == 1) {
+                        if (mYjCourseModel.getCourseCatalogList().get(0).getCourseVideoStatus().equals("Normal") && !TextUtils.isEmpty(mYjCourseModel.getCourseCatalogList().get(0).getUu().trim()) && !TextUtils.isEmpty(mYjCourseModel.getCourseCatalogList().get(0).getCode().trim())) {
+                            bundle = LetvParamsUtils.setVodParams(DES.decryptDES(mYjCourseModel.getCourseCatalogList().get(0).getUu()).trim(), DES.decryptDES(mYjCourseModel.getCourseCatalogList().get(0).getCode()).trim(), "", "151398", "", false);
+                            playBoard.init(bundle, v4PlaySkin);
+                            Log.d(TAG, "getUu3" + mYjCourseModel.getCourseCatalogList().get(0).getUu());
+                            playPosition = 0;
+                            select = 0;
+                        } else {
+                            for (int j = 0; j <= mYjCourseModel.getCourseCatalogList().size(); j++) {
+                                if (mYjCourseModel.getCourseCatalogList().get(j).getCourseVideoStatus().equals("Normal") && !TextUtils.isEmpty(mYjCourseModel.getCourseCatalogList().get(j).getUu()) && !TextUtils.isEmpty(mYjCourseModel.getCourseCatalogList().get(j).getCode())) {
+                                    bundle = LetvParamsUtils.setVodParams(DES.decryptDES(mYjCourseModel.getCourseCatalogList().get(j).getUu()).trim(), DES.decryptDES(mYjCourseModel.getCourseCatalogList().get(j).getCode()).trim(), "", "151398", "", false);
+                                    playBoard.init(bundle, v4PlaySkin);
+                                    Log.d(TAG, "getUu4" + mYjCourseModel.getCourseCatalogList().get(j).getUu());
+                                    playPosition = j;
+                                    select = j;
+                                    break;
+                                }
+
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                try {
+                    int i = (Integer.parseInt(mYjCourseModel.getLastNumber())) - 1;
+                    Log.d(TAG, "i=" + i);
+                    if (position == 1) {
+                        if (i < mYjCourseModel.getCourseCatalogList().size()) {
+                            if (mYjCourseModel.getCourseCatalogList().get(i).getCourseVideoStatus().equals("Normal") && !TextUtils.isEmpty(mYjCourseModel.getCourseCatalogList().get(i).getUu()) && !TextUtils.isEmpty(mYjCourseModel.getCourseCatalogList().get(i).getCode())) {
+                                bundle = LetvParamsUtils.setVodParams(DES.decryptDES(mYjCourseModel.getCourseCatalogList().get(i).getUu()).trim(), DES.decryptDES(mYjCourseModel.getCourseCatalogList().get(i).getCode()).trim(), "", "151398", "", false);
+                                playBoard.init(bundle, v4PlaySkin);
+                                Log.d(TAG, "getUu1=" + mYjCourseModel.getCourseCatalogList().get(i).getUu());
+                                playPosition = i;
+                                select = i;
+                            } else {
+                                for (int j = 0; j <= mYjCourseModel.getCourseCatalogList().size(); j++) {
+                                    if (mYjCourseModel.getCourseCatalogList().get(j).getCourseVideoStatus().equals("Normal") && !TextUtils.isEmpty(mYjCourseModel.getCourseCatalogList().get(j).getUu()) && !TextUtils.isEmpty(mYjCourseModel.getCourseCatalogList().get(j).getCode())) {
+                                        bundle = LetvParamsUtils.setVodParams(DES.decryptDES(mYjCourseModel.getCourseCatalogList().get(j).getUu()).trim(), DES.decryptDES(mYjCourseModel.getCourseCatalogList().get(j).getCode()).trim(), "", "151398", "", false);
+                                        playBoard.init(bundle, v4PlaySkin);
+                                        Log.d(TAG, "getUu2=" + mYjCourseModel.getCourseCatalogList().get(j).getUu());
+                                        playPosition = j;
+                                        select = j;
+                                        break;
+                                    }
+                                }
+                            }
+                        } else {
+                            for (int j = 0; j <= mYjCourseModel.getCourseCatalogList().size(); j++) {
+                                if (mYjCourseModel.getCourseCatalogList().get(j).getCourseVideoStatus().equals("Normal") && !TextUtils.isEmpty(mYjCourseModel.getCourseCatalogList().get(j).getUu()) && !TextUtils.isEmpty(mYjCourseModel.getCourseCatalogList().get(j).getCode())) {
+                                    bundle = LetvParamsUtils.setVodParams(DES.decryptDES(mYjCourseModel.getCourseCatalogList().get(j).getUu()).trim(), DES.decryptDES(mYjCourseModel.getCourseCatalogList().get(j).getCode()).trim(), "", "151398", "", false);
+                                    playBoard.init(bundle, v4PlaySkin);
+                                    Log.d(TAG, "getUu2=" + mYjCourseModel.getCourseCatalogList().get(j).getUu());
+                                    playPosition = j;
+                                    select = j;
+                                    break;
+                                }
+                            }
+                        }
+
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mCourse_foot_item = (LinearLayout) inflater.inflate(R.layout.course_foot_item, null);
+        CustomImage img_teacher_photo = (CustomImage) mCourse_foot_item.findViewById(R.id.img_teacher_photo);
+        Button bt_enter_group = (Button) mCourse_foot_item.findViewById(R.id.bt_enter_group);
+        TextView txt_teacher_name = (TextView) mCourse_foot_item.findViewById(R.id.txt_teacher_name);
+        TextView txt_play_num = (TextView) mCourse_foot_item.findViewById(R.id.txt_play_num);
+        RelativeLayout re_teacher_info = (RelativeLayout) mCourse_foot_item.findViewById(R.id.re_teacher_info);
+        TextView txt_online_status = (TextView) mCourse_foot_item.findViewById(R.id.txt_online_status);
+
+
+        bt_enter_group.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (ClickUtil.isFastDoubleClick()) {
+                    return;
+                }
+                StringUtils.setGradeAndSubject(getContext(), mYjCourseModel);
+                getTeacherList(YJGlobal.getGradeList().get(PreferenceManager.getDefaultSharedPreferences(getContext()).getInt("gradeNum", 0)).getGradeId(), YJGlobal.getGradeList().get(PreferenceManager.getDefaultSharedPreferences(getContext()).getInt("gradeNum", 0)).getSubjectVos().get(PreferenceManager.getDefaultSharedPreferences(getContext()).getInt("subjectNum", 0)).getSubjectId());
+                finishTo(AYJMainActivity.class);
+                notifyListener(YJNotifyTag.MAIN_QUESTION, 1);
+            }
+        });
+        re_teacher_info.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (ClickUtil.isFastDoubleClick()) {
+                    return;
+                }
+                StringUtils.setGradeAndSubject(getContext(), mYjCourseModel);
+                getTeacherList(YJGlobal.getGradeList().get(PreferenceManager.getDefaultSharedPreferences(getContext()).getInt("gradeNum", 0)).getGradeId(), YJGlobal.getGradeList().get(PreferenceManager.getDefaultSharedPreferences(getContext()).getInt("gradeNum", 0)).getSubjectVos().get(PreferenceManager.getDefaultSharedPreferences(getContext()).getInt("subjectNum", 0)).getSubjectId());
+                finishTo(AYJMainActivity.class);
+                notifyListener(YJNotifyTag.MAIN_QUESTION, 1);
+            }
+        });
+
+
+        if (NO_LOAD_BITMAP == null) {
+            NO_LOAD_BITMAP = BitmapFactory.decodeResource(getResources(), R.mipmap.user_default_photo);
+        }
+        if (mYjCourseModel != null) {
+            BitmapUtils.create(getContext()).display(img_teacher_photo, mYjCourseModel.getTeacher().getTeacherPic(), NO_LOAD_BITMAP);
+            txt_teacher_name.setText(mYjCourseModel.getTeacher().getTrueName());
+            if (!TextUtils.isEmpty(mYjCourseModel.getTeacher().getCourseCount())) {
+                txt_play_num.setText("学生数：" + mYjCourseModel.getTeacher().getStudentCount());
+            } else {
+                txt_play_num.setText("学生数：" + 0);
+            }
+            if (!TextUtils.isEmpty(mYjCourseModel.getTeacher().getIsOnline()) && mYjCourseModel.getTeacher().getIsOnline().equals("Yes")) {
+                txt_online_status.setText("在线");
+                bt_enter_group.setTextColor(getResources().getColor(R.color.white));
+                bt_enter_group.setBackgroundResource(R.mipmap.img_btn_bule_bg);
+                txt_online_status.setTextColor(getResources().getColor(R.color.white));
+                txt_online_status.setBackgroundResource(R.mipmap.img_yellow_bg);
+            } else if (!TextUtils.isEmpty(mYjCourseModel.getTeacher().getIsOnline()) && mYjCourseModel.getTeacher().getIsOnline().equals("No")) {
+                txt_online_status.setText("离线");
+                bt_enter_group.setTextColor(getResources().getColor(R.color.gray_text));
+                bt_enter_group.setBackgroundResource(R.mipmap.img_btn_gray_bg);
+                txt_online_status.setTextColor(getResources().getColor(R.color.gray_text));
+                txt_online_status.setBackgroundResource(R.mipmap.img_on_status_no);
+            }
+        }
+        if (position == 1) {
+            mLv_course_detail.addFooterView(mCourse_foot_item);
+        }
+        if (adapter == null) {
+            //adapter = new VAdapter(this, mLv_course_detail);
+            adapter = new MyAdapter();
+            mLv_course_detail.setAdapter(adapter);
+        } else {
+            adapter.notifyDataSetChanged();
+
+        }
+        mLv_course_detail.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                positionFlag++;
+                if (ClickUtil.isFastDoubleClick()) {
+                    return;
+                }
+                if (mYjCourseModel.getCourseCatalogList().get(i).getCourseVideoShape().equals("DVR")) {
+                    if (!mYjCourseModel.getCourseCatalogList().get(i).getCourseVideoStatus().equals("Normal")) {
+                        showToast("课程未上传");
+                        return;
+                    }
+                }
+                if (mIsLogin) {
+                    select = i;
+                    adapter.notifyDataSetChanged();
+
+                    if (!TextUtils.isEmpty(mYjCourseModel.getCourseServiceStatus()) && mYjCourseModel.getCourseServiceStatus().equals("OVER")) {
+                        if (!TextUtils.isEmpty(mYjCourseModel.getCourseStatus()) && mYjCourseModel.getCourseStatus().equals("SELLING")) {
+                            if (mYjCourseModel.getCoursePayWay().equals("XNB")) {
+                                if (Integer.parseInt(YJGlobal.getYjUser().getCoin()) >= mYjCourseModel.getPayCoin()) {
+                                    startActivity(createIntent(YJBuyCourseActivity.class, createTransmitData(YJBuyCourseActivity.COURSE_MODEL, mYjCourseModel).set(YJBuyCourseActivity.VISIBLE_FLAG, true)));
+                                } else {
+                                    startActivity(createIntent(YJRechargeWhaleMoney.class, createTransmitData(YJRechargeWhaleMoney.COURSE_MODEL, mYjCourseModel).set(YJRechargeWhaleMoney.VISIBLE_FLAG, true)));
+                                }
+                            } else if (mYjCourseModel.getCoursePayWay().equals("RMB")) {
+                                startActivity(createIntent(YJBuyCourseActivity.class, createTransmitData(YJBuyCourseActivity.COURSE_MODEL, mYjCourseModel).set(YJBuyCourseActivity.VISIBLE_FLAG, true)));
+                            }
+                        }
+                    } else {
+                        if (mYjCourseModel.getCourseCatalogList().get(i).getCourseVideoShape().equals("DVR")) {
+                            if (mYjCourseModel.getIsBuy().equals("Yes") || mYjCourseModel.getCoursePayWay().equals("FREE")) {
+                                Log.d(TAG, "LastNumber=" + mYjCourseModel.getLastNumber());
+                                Log.d(TAG, "adapterView.getCount()=" + adapterView.getCount());
+                           /* for (int j = 0; j < adapterView.getCount(); j++) {
+                                View v = adapterView.getChildAt(adapterView.getCount() - 1 - j);
+                                if (i == j) {
+                                    if(v != null){
+                                        v.setBackgroundColor(getResources().getColor(R.color.light_gray));
+                                    }
+                                } else {
+                                    if (v!= null){
+                                        v.setBackgroundColor(getResources().getColor(R.color.white));
+                                    }
+                                }
+                            }
+                            view.setBackgroundColor(getResources().getColor(R.color.light_gray));*/
+                                if (playBoard != null) {
+                                    iSplayer = playBoard.getPlayer();
+                                    if (iSplayer != null) {
+                                        if (iSplayer.isPlaying() && mPosition == i) {
+                                            return;
+                                        } else {
+                                            if (mYjCourseModel.getCoursePayWay().equals("FREE") || mYjCourseModel.getIsBuy().equals("Yes")) {
+                                                try {
+                                                    isPlayFlag = true;
+                                                    playBoard = new LetvsSimplePlayBoard();
+                                                    if (playBoard != null) {
+                                                        mPosition = i;
+                                                        iSplayer = playBoard.getPlayer();
+                                                        if (playPosition == i && isFirst) {
+                                                            playPosition = i;
+                                                            long duration = Long.parseLong(mYjCourseModel.getLastStudyTime());
+                                                            if (duration < iSplayer.getDuration()) {
+                                                                iSplayer.seekTo(duration * 1000);
+                                                            }
+                                                            iSplayer.start();
+                                                            isFirst = false;
+                                                            Log.d(TAG, "iSplayer.start()");
+                                                            //记录开始学习行为
+                                                            if (isFirstPlay) {
+                                                                YJUserStudyData.catalogBeginStudy(mYjCourseModel, playPosition, true);
+                                                                mplayPosition = playPosition;
+                                                                isFirstPlay = false;
+                                                            }
+
+                                                        } else {
+                                                            playPosition = i;
+                                                            iSplayer.stop();
+                                                            iSplayer.reset();
+                                                            Log.d(TAG, "iSplayer.prepareAsync()");
+                                                            iSplayer.setParameter(iSplayer.getPlayerId(), LetvParamsUtils.setVodParams(DES.decryptDES(mYjCourseModel.getCourseCatalogList().get(i).getUu()).trim(), DES.decryptDES(mYjCourseModel.getCourseCatalogList().get(i).getCode()).trim(), "", "151398", "", false));
+                                                            iSplayer.prepareAsync();
+                                                            if (isFirstPlay) {
+                                                                YJUserStudyData.catalogBeginStudy(mYjCourseModel, playPosition, true);
+                                                                mplayPosition = playPosition;
+                                                                isFirstPlay = false;
+                                                            } else {
+                                                                if (isComplete) {
+                                                                    YJUserStudyData.catalogEndStudyNoP(mYjCourseModel, mplayPosition);
+                                                                }
+                                                                YJUserStudyData.catalogBeginStudy(mYjCourseModel, playPosition, false);
+                                                                mplayPosition = playPosition;
+                                                                isComplete = true;
+                                                            }
+
+                                                        }
+                                                        //   }
+                                                    } else {
+                                                        showToast("暂无视频");
+                                                        return;
+                                                    }
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
+                                                }
+                                                if (playerController != null) {
+                                                    if (playerController.getIsPlayerController().isPlayCompleted()) {
+                                                        playerController.getIsPlayerController().resetPlay();
+                                                        mImg_play_start_de.setVisibility(View.GONE);
+                                                        mRe_play_start_de.setVisibility(View.GONE);
+                                                        img_play_bg.setVisibility(View.GONE);
+                                                    } else {
+                                                        if (playBoard != null) {
+                                                            iSplayer = playBoard.getPlayer();
+                                                            mImg_play_start_de.setVisibility(View.GONE);
+                                                            mRe_play_start_de.setVisibility(View.GONE);
+                                                            img_play_bg.setVisibility(View.GONE);
+                                                        }
+                                                    }
+                                                }
+                                            } else {
+                                                if (mYjCourseModel.getCoursePayWay().equals("XNB")) {
+                                                    if (Integer.parseInt(YJGlobal.getYjUser().getCoin()) >= mYjCourseModel.getPayCoin()) {
+                                                        startActivity(createIntent(YJBuyCourseActivity.class, createTransmitData(YJBuyCourseActivity.COURSE_MODEL, mYjCourseModel).set(YJBuyCourseActivity.VISIBLE_FLAG, true)));
+                                                    } else {
+                                                        startActivity(createIntent(YJRechargeWhaleMoney.class, createTransmitData(YJRechargeWhaleMoney.COURSE_MODEL, mYjCourseModel).set(YJRechargeWhaleMoney.VISIBLE_FLAG, true)));
+                                                    }
+                                                } else if (mYjCourseModel.getCoursePayWay().equals("RMB")) {
+                                                    startActivity(createIntent(YJBuyCourseActivity.class, createTransmitData(YJBuyCourseActivity.COURSE_MODEL, mYjCourseModel).set(YJBuyCourseActivity.VISIBLE_FLAG, true)));
+                                                }
+                                            }
+                                        }
+                                    } else {
+                                        Log.d(TAG, "iSplayer=kong");
+                                    }
+                                } else {
+                                    Log.d(TAG, "playBroad=kong");
+                                }
+                            } else {
+                                if (mYjCourseModel.getCourseCatalogList().get(i).getIsTry().equals("Yes")) {
+                                    if (isTry) {
+                                        iSplayer = playBoard.getPlayer();
+                                        if (iSplayer == null) {
+                                            showToast("暂无视频");
+                                        } else {
+                                            if (iSplayer.isPlaying() && mPosition == i) {
+                                                return;
+                                            }
+                                            mPosition = i;
+                                            iSplayer = playBoard.getPlayer();
+                                            if (playPosition == i && isFirst) {
+                                                playPosition = i;
+                                                long duration = Long.parseLong(mYjCourseModel.getLastStudyTime());
+                                                //  if (duration < iSplayer.getDuration()) {
+                                                iSplayer.seekTo(duration * 1000);
+                                                //  }
+                                                iSplayer.start();
+                                                isFirst = false;
+                                                Log.d(TAG, "isTry iSplayer.start()");
+                                                //记录开始学习行为
+                                                if (isFirstPlay) {
+                                                    YJUserStudyData.catalogBeginStudy(mYjCourseModel, playPosition, true);
+                                                    mplayPosition = playPosition;
+                                                    isFirstPlay = false;
+                                                }
+
+                                            } else {
+                                                playPosition = i;
+                                                try {
+                                                    iSplayer.stop();
+                                                    iSplayer.reset();
+                                                    iSplayer.setParameter(iSplayer.getPlayerId(), LetvParamsUtils.setVodParams(DES.decryptDES(mYjCourseModel.getCourseCatalogList().get(i).getUu()).trim(), DES.decryptDES(mYjCourseModel.getCourseCatalogList().get(i).getCode()).trim(), "", "151398", "", false));
+                                                    iSplayer.prepareAsync();
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
+                                                }
+                                                if (isFirstPlay) {
+                                                    YJUserStudyData.catalogBeginStudy(mYjCourseModel, playPosition, true);
+                                                    mplayPosition = playPosition;
+                                                    isFirstPlay = false;
+                                                } else {
+                                                    if (isComplete) {
+                                                        YJUserStudyData.catalogEndStudyNoP(mYjCourseModel, mplayPosition);
+                                                    }
+                                                    YJUserStudyData.catalogBeginStudy(mYjCourseModel, playPosition, false);
+                                                    mplayPosition = playPosition;
+                                                    isComplete = true;
+                                                }
+                                            }
+                                            mImg_play_start_de.setVisibility(View.GONE);
+                                            mRe_play_start_de.setVisibility(View.GONE);
+                                            img_play_bg.setVisibility(View.GONE);
+                                            // pause();
+                                        }
+
+                                    } else {
+                                        if (mYjCourseModel.getCoursePayWay().equals("XNB")) {
+                                            if (Integer.parseInt(YJGlobal.getYjUser().getCoin()) >= mYjCourseModel.getPayCoin()) {
+                                                startActivity(createIntent(YJBuyCourseActivity.class, createTransmitData(YJBuyCourseActivity.COURSE_MODEL, mYjCourseModel).set(YJBuyCourseActivity.VISIBLE_FLAG, true)));
+                                            } else {
+                                                startActivity(createIntent(YJRechargeWhaleMoney.class, createTransmitData(YJRechargeWhaleMoney.COURSE_MODEL, mYjCourseModel).set(YJRechargeWhaleMoney.VISIBLE_FLAG, true)));
+                                            }
+                                        } else if (mYjCourseModel.getCoursePayWay().equals("RMB")) {
+                                            startActivity(createIntent(YJBuyCourseActivity.class, createTransmitData(YJBuyCourseActivity.COURSE_MODEL, mYjCourseModel).set(YJBuyCourseActivity.VISIBLE_FLAG, true)));
+                                        }
+                                        mOnPause = false;
+                                        mImg_play_start_de.setVisibility(View.VISIBLE);
+                                        mRe_play_start_de.setVisibility(View.VISIBLE);
+                                        img_play_bg.setVisibility(View.VISIBLE);
+                                    }
+                                } else {
+                                    if (mYjCourseModel.getCoursePayWay().equals("XNB")) {
+                                        if (Integer.parseInt(YJGlobal.getYjUser().getCoin()) >= mYjCourseModel.getPayCoin()) {
+                                            startActivity(createIntent(YJBuyCourseActivity.class, createTransmitData(YJBuyCourseActivity.COURSE_MODEL, mYjCourseModel).set(YJBuyCourseActivity.VISIBLE_FLAG, true)));
+                                        } else {
+                                            startActivity(createIntent(YJRechargeWhaleMoney.class, createTransmitData(YJRechargeWhaleMoney.COURSE_MODEL, mYjCourseModel).set(YJRechargeWhaleMoney.VISIBLE_FLAG, true)));
+                                        }
+                                    } else if (mYjCourseModel.getCoursePayWay().equals("RMB")) {
+                                        startActivity(createIntent(YJBuyCourseActivity.class, createTransmitData(YJBuyCourseActivity.COURSE_MODEL, mYjCourseModel).set(YJBuyCourseActivity.VISIBLE_FLAG, true)));
+                                    }
+                                    mOnPause = false;
+                                    mImg_play_start_de.setVisibility(View.VISIBLE);
+                                    mRe_play_start_de.setVisibility(View.VISIBLE);
+                                    img_play_bg.setVisibility(View.VISIBLE);
+                                }
+                            }
+                        } else {
+                            if (mYjCourseModel.getCoursePayWay().equals("FREE") || mYjCourseModel.getIsBuy().equals("Yes")) {
+                                if (playBoard != null) {
+                                    playBoard.onDestroy();
+                                }
+                                isPlayFlag = true;
+                                mOnPause = false;
+
+                          /*  if(isFirstPlay){
+                                catalogBeginStudy(mPosition,"");
+                            }else {
+                                catalogEndStudy(mLastPosition,player.getDuration());
+                                catalogBeginStudy(mPosition,"");
+                            }
+*/
+                                if (!isYJCustomLiveActivityDestroy){
+                                    showToast("请稍后进入直播间");
+                                    return;
+                                }
+                                if (mYjCourseModel.getCourseCatalogList().get(i).getLiveStatus().equals("ing")) {
+                                    Log.d(TAG,"ing i=="+i);
+                                    mImg_play_start_de.setVisibility(View.VISIBLE);
+                                    mRe_play_start_de.setVisibility(View.VISIBLE);
+                                    img_play_bg.setVisibility(View.VISIBLE);
+                                   // progDialog = DialogUtil.showWaitDialog(getContext());//加载数据的loading 先注释掉 用的时候换样式
+
+                                    if (!isFirstPlay) {
+                                        YJUserStudyData.catalogEndStudyNoP(mYjCourseModel, mplayPosition);
+                                    }
+                                    if (isYJCustomLiveActivityDestroy){
+                                        getTakenLive(select,false,1);
+                                    }else {
+                                        showToast("请稍后进入直播间");
+                                    }
+                                }
+                                if (mYjCourseModel.getCourseCatalogList().get(i).getLiveStatus().equals("over")) {
+                                    Log.d(TAG,"over i=="+i);
+                                    mImg_play_start_de.setVisibility(View.VISIBLE);
+                                    mRe_play_start_de.setVisibility(View.VISIBLE);
+                                    img_play_bg.setVisibility(View.VISIBLE);
+
+                                    if (!isFirstPlay) {
+                                        YJUserStudyData.catalogEndStudyNoP(mYjCourseModel, mplayPosition);
+                                    }
+                                    if ("Yes".equals(mYjCourseModel.getCourseCatalogList().get(i).getIsReplay())) {
+                                        getTakenBack(i);
+                                    }
+                                    if ("No".equals(mYjCourseModel.getCourseCatalogList().get(i).getIsReplay())) {
+//                                showDialog(new YJIsReplayDialog());
+                                        getTakenLive(i, true, 2);//true 代表是否弹出预约页面， 1代表弹直播未开始，2代表弹出直播已结束
+                                    }
+                                }
+                                if (mYjCourseModel.getCourseCatalogList().get(i).getLiveStatus().equals("no")) {
+                                    Log.d(TAG,"no i=="+i);
+                                    mImg_play_start_de.setVisibility(View.VISIBLE);
+                                    mRe_play_start_de.setVisibility(View.VISIBLE);
+                                    img_play_bg.setVisibility(View.VISIBLE);
+//                                    showToast("直播未开始");
+                                    getTakenLive(i,true,1);
+                                }
+                            } else {
+                                if (mYjCourseModel.getCoursePayWay().equals("XNB")) {
+                                    if (Integer.parseInt(YJGlobal.getYjUser().getCoin()) >= mYjCourseModel.getPayCoin()) {
+                                        startActivity(createIntent(YJBuyCourseActivity.class, createTransmitData(YJBuyCourseActivity.COURSE_MODEL, mYjCourseModel).set(YJBuyCourseActivity.VISIBLE_FLAG, true)));
+                                    } else {
+                                        startActivity(createIntent(YJRechargeWhaleMoney.class, createTransmitData(YJRechargeWhaleMoney.COURSE_MODEL, mYjCourseModel).set(YJRechargeWhaleMoney.VISIBLE_FLAG, true)));
+                                    }
+                                } else if (mYjCourseModel.getCoursePayWay().equals("RMB")) {
+                                    startActivity(createIntent(YJBuyCourseActivity.class, createTransmitData(YJBuyCourseActivity.COURSE_MODEL, mYjCourseModel).set(YJBuyCourseActivity.VISIBLE_FLAG, true)));
+                                }
+
+                                mOnPause = false;
+                                isPlayFlag = true;
+                                mImg_play_start_de.setVisibility(View.VISIBLE);
+                                mRe_play_start_de.setVisibility(View.VISIBLE);
+                                img_play_bg.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    }
+                } else {
+                   /* YJLoginDialog dialog = new YJLoginDialog();
+                    showDialog(dialog);*/
+                    startActivity(YJLoginDialog.class);
+                }
+                mPosition = i;
+            }
+        });
+
+
+    }
+
+//    private void setData(){
+//        mGrade = PreferenceManager.getDefaultSharedPreferences(getContext()).getInt("gradeNum", 0);
+//        mSubject = PreferenceManager.getDefaultSharedPreferences(getContext()).getInt("subjectNum", 0);
+//        list = YJGlobal.getGradeList();
+//        mGradeList = new ArrayList();
+//        if (list != null) {
+//            Log.i("年级课程信息===", list.toString());
+//            for (int i = 0; i < list.size(); i++) {
+//                mGradeList.add(list.get(i).getGradeName());
+//                if (mYjCourseModel.getGradeId().equals(list.get(i).getGradeId())) {
+//                    notifyCourse(list.get(i).getGradeName(), true);
+//                    SharedUtil.saveGrade(getContext(), list.get(i).getGradeName(), i);
+//                }
+//            }
+//            YJGlobal.setMy_grade((String) mGradeList.get(mGrade));
+//            YJGlobal.setMy_grade_id(list.get(mGrade).getGradeId());
+//            mSubjectModelList = list.get(mGrade).getSubjectVos();
+//            ;
+//        }
+//        subjectList = new ArrayList();
+//        if (mSubjectModelList != null) {
+//            for (int i = 0; i < mSubjectModelList.size(); i++) {
+//                subjectList.add(mSubjectModelList.get(i).getSubjectName());
+//                if (mYjCourseModel.getSubjectId().equals(mSubjectModelList.get(i).getSubjectId())) {
+//                    notifyCourse(mSubjectModelList.get(i).getSubjectName(), false);
+//                    SharedUtil.saveProject(getContext(), mSubjectModelList.get(i).getSubjectName(), i);
+//                }
+//            }
+//            YJGlobal.setMy_subject((String) subjectList.get(mSubject));
+//        }
+//    }
+
+    //开始暂停
+    private void pause() {
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+
+                Message msg = mHandler.obtainMessage();
+                msg.what = 2;
+                mHandler.sendMessage(msg);
+
+            }
+        }, 15000);
+    }
+
+    //开始
+    private void start() {
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (playBoard != null) {
+                    iSplayer = playBoard.getPlayer();
+
+                    if (iSplayer != null) {
+                        long palySize = iSplayer.getDuration();
+                        Log.d(TAG, "视屏的总长度=" + palySize);
+
+                        long currentPosition = iSplayer.getCurrentPosition();
+                        Log.d(TAG, "当前进度=" + currentPosition);
+                    }
+                }
+            }
+        }, 4000, 5000);
+    }
+
+    private void timer() {
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (playBoard != null) {
+                    iSplayer = playBoard.getPlayer();
+
+                    if (iSplayer != null) {
+                        if (iSplayer.isPlaying()) {
+                            Log.d(TAG, "正在播放");
+                            Message msg = mHandler.obtainMessage();
+                            msg.what = 0;
+                            mHandler.sendMessage(msg);
+
+                        } else {
+                            Log.d(TAG, "暂停中");
+                            Message msg = mHandler.obtainMessage();
+                            msg.what = 1;
+                            mHandler.sendMessage(msg);
+                        }
+                    }
+
+                }
+            }
+        }, 1000, 500);
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (playBoard != null) {
+            playBoard.onResume();
+        }
+    }
+
+    private boolean mOnPause = true;
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (playBoard != null) {
+            playBoard.onPause();
+        }
+//         mOnPause = true;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        removeListeners();
+        if (playBoard != null) {
+            playBoard.onDestroy();
+        }
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        if (playBoard != null) {
+            playBoard.onDestroy();
+        }
+
+    }
+
+    int positionFlag = 0;
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            mFlag = false;
+            if (mYjCourseModel != null && mIsLogin) {
+                if (mYjCourseModel.getCoursePayWay().equals("FREE") || mYjCourseModel.getIsBuy().equals("Yes")) {
+                    mBtn_apply.setVisibility(View.GONE);
+                    mImg_play_return.setVisibility(View.VISIBLE);
+                } else {
+                    mBtn_apply.setVisibility(View.VISIBLE);
+                    mImg_play_return.setVisibility(View.VISIBLE);
+                }
+            } else {
+                mBtn_apply.setVisibility(View.VISIBLE);
+                mImg_play_return.setVisibility(View.VISIBLE);
+            }
+            if (playBoard != null) {
+                iSplayer = playBoard.getPlayer();
+                if (iSplayer != null && !iSplayer.isPlaying()) {
+                    mImg_play_start_de.setVisibility(View.VISIBLE);
+                }
+            }
+        }
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            if (!mIsLogin) {
+                mImg_play_start_de.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        playerController.getIsPlayerController().setScreenResolution(ISplayerController.SCREEN_ORIENTATION_USER_PORTRAIT);
+                        startActivity(YJLoginDialog.class);
+                    }
+                });
+            }
+            mFlag = false;
+            if (positionFlag == 0) {
+                mFlag = true;
+            }
+            mBtn_apply.setVisibility(View.GONE);
+            mImg_play_return.setVisibility(View.GONE);
+        }
+        if (playBoard != null) {
+            playBoard.onConfigurationChanged(newConfig);
+        }
+    }
+
+    private int mStatus = -1;
+
+    private void bindNotifyListener() {
+        addListener(YJNotifyTag.USER_LOGIN, new IVNotificationListener() {
+            @Override
+            public void onNotify(String s, Object value) {
+                mIsLogin = PreferenceManager.getDefaultSharedPreferences(getContext()).getBoolean("isLogin", false);
+                getCourseCatalog(1);
+
+            }
+        });
+        addListener(YJNotifyTag.PAY_SUCESS, new IVNotificationListener() {
+            @Override
+            public void onNotify(String s, Object value) {
+
+                mIsLogin = PreferenceManager.getDefaultSharedPreferences(getContext()).getBoolean("isLogin", false);
+                getCourseCatalog(2);
+            }
+        });
+
+        addListener(YJNotifyTag.COURSE_CLOSE, new IVNotificationListener() {
+            @Override
+            public void onNotify(String s, Object value) {
+                boolean colseFlag = (boolean) value;
+                if (colseFlag) {
+                    finish();
+                }
+            }
+        });
+       addListener(YJNotifyTag.YJCUSTOMLIVEACTIVITY_DESTROY, new IVNotificationListener() {
+            @Override
+            public void onNotify(String s, Object value) {
+                isYJCustomLiveActivityDestroy = true;
+            }
+        });
+
+
+    }
+
+    private void buyCourse(){
+
+        if (mIsLogin) {
+            if (mYjCourseModel.getCoursePayWay().equals("XNB")) {
+                if (Integer.parseInt(YJGlobal.getYjUser().getCoin()) >= mYjCourseModel.getPayCoin()) {
+                    startActivity(createIntent(YJBuyCourseActivity.class, createTransmitData(YJBuyCourseActivity.COURSE_MODEL, mYjCourseModel).set(YJBuyCourseActivity.VISIBLE_FLAG, true)));
+                } else {
+                    startActivity(createIntent(YJRechargeWhaleMoney.class, createTransmitData(YJRechargeWhaleMoney.COURSE_MODEL, mYjCourseModel).set(YJRechargeWhaleMoney.VISIBLE_FLAG, true)));
+                }
+            } else if (mYjCourseModel.getCoursePayWay().equals("RMB")) {
+                startActivity(createIntent(YJBuyCourseActivity.class, createTransmitData(YJBuyCourseActivity.COURSE_MODEL, mYjCourseModel).set(YJBuyCourseActivity.VISIBLE_FLAG, true)));
+            }
+        } else {
+            mStatus = 0;
+            startActivity(YJLoginDialog.class);
+        }
+    }
+    @Override
+    public void onClick(View view) {
+        if (view == mBtn_apply) {
+            if (ClickUtil.isFastDoubleClick()) {
+                return;
+            }
+            buyCourse();
+        } else if (view == mImg_share) {
+            if (ClickUtil.isFastDoubleClick()) {
+                return;
+            }
+            if (playBoard != null) {
+                playBoard.onPause();
+            }
+               /* YJLoginDialog dialog = new YJLoginDialog();
+                showDialog(dialog);*/
+            YJShareDialog yjShareDialog = new YJShareDialog();
+            showDialog(yjShareDialog);
+
+        } else if (view == mActivity_play_share_Text) {
+            if (ClickUtil.isFastDoubleClick()) {
+                return;
+            }
+            if (playBoard != null) {
+                playBoard.onPause();
+            }
+               /* YJLoginDialog dialog = new YJLoginDialog();
+                showDialog(dialog);*/
+            YJShareDialog yjShareDialog = new YJShareDialog();
+            showDialog(yjShareDialog);
+
+        } else if (view == mImg_download) {
+            if (ClickUtil.isFastDoubleClick()) {
+                return;
+            }
+            YJDownLoadDialog dialog = new YJDownLoadDialog();
+            showDialog(dialog);
+        } else if (view == mImg_praise) {
+            if (ClickUtil.isFastDoubleClick()) {
+                return;
+            }
+            YJLoginSuccessDialog dialog = new YJLoginSuccessDialog();
+            showDialog(dialog);
+        } else if (view == mImg_play_return) {
+            if (ClickUtil.isFastDoubleClick()) {
+                return;
+            }
+            finish();
+        } else if (view == mRe_play_start_de) {
+           /* if (ClickUtil.isFastDoubleClick()) {
+                return;
+            }
+            if (mIsLogin) {
+                if (mYjCourseModel.getIsBuy().equals("Yes") || mYjCourseModel.getCoursePayWay().equals("FREE")) {
+                    if (playerController != null) {
+                        if (playerController.getIsPlayerController().isPlayCompleted()) {
+                            playerController.getIsPlayerController().resetPlay();
+                            mImg_play_start_de.setVisibility(View.GONE);
+                            mRe_play_start_de.setVisibility(View.GONE);
+                            img_play_bg.setVisibility(View.GONE);
+                        }
+                    } else {
+                        if (playBoard != null) {
+                            iSplayer = playBoard.getPlayer();
+                            if (iSplayer != null){
+                                iSplayer.start();
+                            }
+                            mImg_play_start_de.setVisibility(View.GONE);
+                            mRe_play_start_de.setVisibility(View.GONE);
+                            img_play_bg.setVisibility(View.GONE);
+                        }
+                    }
+                } else {
+                    // showToast("请购买课程后观看");
+                }
+            } else {
+                // showToast("请购买课程后观看");
+            }*/
+        } else if (view == mImg_play_start_de) {
+            positionFlag++;
+            if (ClickUtil.isFastDoubleClick()) {
+                return;
+            }
+            mIsLogin = PreferenceManager.getDefaultSharedPreferences(getContext()).getBoolean("isLogin", false);
+            if (mIsLogin) {
+                if (mYjCourseModel.getCourseCatalogList().get(select).getCourseVideoShape().equals("DVR")) {
+                    if (!mYjCourseModel.getCourseCatalogList().get(select).getCourseVideoStatus().equals("Normal")) {
+                        showToast("课程未上传");
+                        return;
+                    }
+                }
+                if (mYjCourseModel.getCourseCatalogList().get(select).getCourseVideoShape().equals("DVR")) {
+                    if (!TextUtils.isEmpty(mYjCourseModel.getCourseServiceStatus()) && mYjCourseModel.getCourseServiceStatus().equals("OVER")) {
+                        if (!TextUtils.isEmpty(mYjCourseModel.getCourseStatus()) && mYjCourseModel.getCourseStatus().equals("SELLING")) {
+                            if (mYjCourseModel.getCoursePayWay().equals("XNB")) {
+                                if (Integer.parseInt(YJGlobal.getYjUser().getCoin()) >= mYjCourseModel.getPayCoin()) {
+                                    startActivity(createIntent(YJBuyCourseActivity.class, createTransmitData(YJBuyCourseActivity.COURSE_MODEL, mYjCourseModel).set(YJBuyCourseActivity.VISIBLE_FLAG, true)));
+                                } else {
+                                    startActivity(createIntent(YJRechargeWhaleMoney.class, createTransmitData(YJRechargeWhaleMoney.COURSE_MODEL, mYjCourseModel).set(YJRechargeWhaleMoney.VISIBLE_FLAG, true)));
+                                }
+                            } else if (mYjCourseModel.getCoursePayWay().equals("RMB")) {
+                                startActivity(createIntent(YJBuyCourseActivity.class, createTransmitData(YJBuyCourseActivity.COURSE_MODEL, mYjCourseModel).set(YJBuyCourseActivity.VISIBLE_FLAG, true)));
+                            }
+                        }
+                    } else {
+                        if (mYjCourseModel.getIsBuy().equals("Yes") || mYjCourseModel.getCoursePayWay().equals("FREE")) {
+                            if (playerController != null) {
+                                if (playerController.getIsPlayerController().isPlayCompleted()) {
+                                    playerController.getIsPlayerController().resetPlay();
+                                    mImg_play_start_de.setVisibility(View.GONE);
+                                    mRe_play_start_de.setVisibility(View.GONE);
+                                    img_play_bg.setVisibility(View.GONE);
+                                } else {
+                                    if (playBoard != null) {
+                                        iSplayer = playBoard.getPlayer();
+                                        if (iSplayer == null) {
+                                            showToast("暂无视频");
+                                            return;
+                                        } else {
+                                            isPlayFlag = true;
+                                            long duration = Long.parseLong(mYjCourseModel.getLastStudyTime());
+                                            Log.d(TAG, "duration=" + duration);
+                                            Log.d(TAG, "iSplayer.getDuration()=" + iSplayer.getDuration());
+                                            // if (duration *1000 < iSplayer.getDuration()) {
+                                            iSplayer.seekTo(duration * 1000);
+                                            //    }
+                                            iSplayer.start();
+                                            YJUserStudyData.catalogBeginStudy(mYjCourseModel, playPosition, true);
+                                            isFirst = false;
+                                            mImg_play_start_de.setVisibility(View.GONE);
+                                            mRe_play_start_de.setVisibility(View.GONE);
+                                            img_play_bg.setVisibility(View.GONE);
+                                        }
+                                    } else {
+                                        showToast("暂无视频");
+                                        return;
+                                    }
+                                }
+                            }
+                        } else {
+                            int i = 0;
+                            String num = mYjCourseModel.getLastNumber();
+                            if (Integer.parseInt(num) == 0) {
+                                i = Integer.parseInt(num);
+                            } else {
+                                i = Integer.parseInt(num) - 1;
+                            }
+                            if (mYjCourseModel.getCourseCatalogList().get(select).getIsTry().equals("Yes")) {
+                                if (isTry) {
+                                    if (playBoard != null) {
+                                        iSplayer = playBoard.getPlayer();
+
+                                        if (iSplayer == null) {
+                                            showToast("暂无视频");
+                                            return;
+                                        } else {
+                                            iSplayer.start();
+                                            isPlayFlag = true;
+                                            long duration = Long.parseLong(mYjCourseModel.getLastStudyTime());
+                                            Log.d(TAG, "duration=" + duration);
+                                            Log.d(TAG, "iSplayer.getDuration()=" + iSplayer.getDuration());
+                                            //  if (duration < iSplayer.getDuration()) {
+                                            iSplayer.seekTo(duration * 1000);
+                                            //  }
+
+                                            Log.d(TAG, "iSplayer.getDuration()=" + iSplayer.getDuration());
+                                            YJUserStudyData.catalogBeginStudy(mYjCourseModel, playPosition, true);
+                                            mImg_play_start_de.setVisibility(View.GONE);
+                                            mRe_play_start_de.setVisibility(View.GONE);
+                                            img_play_bg.setVisibility(View.GONE);
+                                            isFirst = false;
+                                            // pause();
+                                        }
+                                    } else {
+                                        showToast("暂无视频");
+                                        return;
+                                    }
+                                } else {
+                                    //试听结束后操作
+                                    if (mYjCourseModel.getCoursePayWay().equals("XNB")) {
+                                        if (Integer.parseInt(YJGlobal.getYjUser().getCoin()) >= mYjCourseModel.getPayCoin()) {
+                                            startActivity(createIntent(YJBuyCourseActivity.class, createTransmitData(YJBuyCourseActivity.COURSE_MODEL, mYjCourseModel).set(YJBuyCourseActivity.VISIBLE_FLAG, true)));
+                                        } else {
+                                            startActivity(createIntent(YJRechargeWhaleMoney.class, createTransmitData(YJRechargeWhaleMoney.COURSE_MODEL, mYjCourseModel).set(YJRechargeWhaleMoney.VISIBLE_FLAG, true)));
+                                        }
+                                    } else if (mYjCourseModel.getCoursePayWay().equals("RMB")) {
+                                        startActivity(createIntent(YJBuyCourseActivity.class, createTransmitData(YJBuyCourseActivity.COURSE_MODEL, mYjCourseModel).set(YJBuyCourseActivity.VISIBLE_FLAG, true)));
+                                    }
+                                }
+
+                            } else {
+                                if (mYjCourseModel.getCoursePayWay().equals("XNB")) {
+                                    if (Integer.parseInt(YJGlobal.getYjUser().getCoin()) >= mYjCourseModel.getPayCoin()) {
+                                        startActivity(createIntent(YJBuyCourseActivity.class, createTransmitData(YJBuyCourseActivity.COURSE_MODEL, mYjCourseModel).set(YJBuyCourseActivity.VISIBLE_FLAG, true)));
+                                    } else {
+                                        startActivity(createIntent(YJRechargeWhaleMoney.class, createTransmitData(YJRechargeWhaleMoney.COURSE_MODEL, mYjCourseModel).set(YJRechargeWhaleMoney.VISIBLE_FLAG, true)));
+                                    }
+                                } else if (mYjCourseModel.getCoursePayWay().equals("RMB")) {
+                                    startActivity(createIntent(YJBuyCourseActivity.class, createTransmitData(YJBuyCourseActivity.COURSE_MODEL, mYjCourseModel).set(YJBuyCourseActivity.VISIBLE_FLAG, true)));
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    if (!TextUtils.isEmpty(mYjCourseModel.getCourseServiceStatus()) && mYjCourseModel.getCourseServiceStatus().equals("OVER")) {
+                        if (!TextUtils.isEmpty(mYjCourseModel.getCourseStatus()) && mYjCourseModel.getCourseStatus().equals("SELLING")) {
+                            if (mYjCourseModel.getCoursePayWay().equals("XNB")) {
+                                if (Integer.parseInt(YJGlobal.getYjUser().getCoin()) >= mYjCourseModel.getPayCoin()) {
+                                    startActivity(createIntent(YJBuyCourseActivity.class, createTransmitData(YJBuyCourseActivity.COURSE_MODEL, mYjCourseModel).set(YJBuyCourseActivity.VISIBLE_FLAG, true)));
+                                } else {
+                                    startActivity(createIntent(YJRechargeWhaleMoney.class, createTransmitData(YJRechargeWhaleMoney.COURSE_MODEL, mYjCourseModel).set(YJRechargeWhaleMoney.VISIBLE_FLAG, true)));
+                                }
+                            } else if (mYjCourseModel.getCoursePayWay().equals("RMB")) {
+                                startActivity(createIntent(YJBuyCourseActivity.class, createTransmitData(YJBuyCourseActivity.COURSE_MODEL, mYjCourseModel).set(YJBuyCourseActivity.VISIBLE_FLAG, true)));
+                            }
+                        }
+                    } else {
+                        if (mYjCourseModel.getCoursePayWay().equals("FREE") || mYjCourseModel.getIsBuy().equals("Yes")) {
+                            mOnPause = false;
+                            if (!isYJCustomLiveActivityDestroy){
+                                showToast("请稍后进入直播间");
+                                return;
+                            }
+                            if (mYjCourseModel.getCourseCatalogList().get(select).getLiveStatus().equals("ing")) {
+                                if (!isFirstPlay) {
+                                    YJUserStudyData.catalogEndStudyNoP(mYjCourseModel, mplayPosition);
+                                }
+                                if (isYJCustomLiveActivityDestroy){
+                                    getTakenLive(select,false,1);
+                                }else {
+                                    showToast("请稍后进入直播间");
+                                }
+                            }
+                            if (mYjCourseModel.getCourseCatalogList().get(select).getLiveStatus().equals("over")) {
+                                if (!isFirstPlay) {
+                                    YJUserStudyData.catalogEndStudyNoP(mYjCourseModel, mplayPosition);
+                                }
+
+                                if ("Yes".equals(mYjCourseModel.getCourseCatalogList().get(select).getIsReplay())) {
+                                    getTakenBack(select);
+                                }
+                                if ("No".equals(mYjCourseModel.getCourseCatalogList().get(select).getIsReplay())) {
+//                                showDialog(new YJIsReplayDialog());
+                                    getTakenLive(select, true, 2);//true 代表是否弹出预约页面， 1代表弹直播未开始，2代表弹出直播已结束
+                                }
+                            }
+                            if (mYjCourseModel.getCourseCatalogList().get(select).getLiveStatus().equals("no")) {
+//                                showToast("直播未开始");
+                                getTakenLive(select,true,1);
+                            }
+                        } else {
+                            if (mYjCourseModel.getCoursePayWay().equals("XNB")) {
+                                if (Integer.parseInt(YJGlobal.getYjUser().getCoin()) >= mYjCourseModel.getPayCoin()) {
+                                    startActivity(createIntent(YJBuyCourseActivity.class, createTransmitData(YJBuyCourseActivity.COURSE_MODEL, mYjCourseModel).set(YJBuyCourseActivity.VISIBLE_FLAG, true)));
+                                } else {
+                                    startActivity(createIntent(YJRechargeWhaleMoney.class, createTransmitData(YJRechargeWhaleMoney.COURSE_MODEL, mYjCourseModel).set(YJRechargeWhaleMoney.VISIBLE_FLAG, true)));
+                                }
+                            } else if (mYjCourseModel.getCoursePayWay().equals("RMB")) {
+                                startActivity(createIntent(YJBuyCourseActivity.class, createTransmitData(YJBuyCourseActivity.COURSE_MODEL, mYjCourseModel).set(YJBuyCourseActivity.VISIBLE_FLAG, true)));
+                            }
+                        }
+                    }
+                }
+
+            } else {
+                //  YJLoginDialog dialog = new YJLoginDialog();
+                //  showDialog(dialog);
+                startActivity(YJLoginDialog.class);
+            }
+        }
+    }
+
+    public int select = 0;
+
+    public class MyAdapter extends BaseAdapter {
+
+
+        @Override
+        public int getCount() {
+            if (mYjCourseModel != null) {
+                return mYjCourseModel.getCourseCatalogList().size();
+            } else {
+                return 0;
+            }
+        }
+
+        @Override
+        public Object getItem(int position) {
+            if (mYjCourseModel != null) {
+                return mYjCourseModel.getCourseCatalogList().size();
+            } else {
+                return 0;
+            }
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(final int position, View convertView, ViewGroup parent) {
+            final ViewHolder holder;
+
+            if (convertView == null) {
+                convertView = LayoutInflater.from(getContext()).inflate(R.layout.course_details_item, null);
+                holder = new ViewHolder();
+                holder.mTxt_num = (TextView) convertView.findViewById(R.id.txt_num);
+                holder.txt_learn = (TextView) convertView.findViewById(R.id.txt_learn);
+                holder.mTxt_title = (TextView) convertView.findViewById(R.id.txt_title);
+                holder.mTtxt_time = (TextView) convertView.findViewById(R.id.txt_time);
+                holder.mView_line = (View) convertView.findViewById(R.id.view_line);
+                holder.img_triangle = (ImageView) convertView.findViewById(R.id.img_triangle);
+
+
+                holder.mRe_item = (RelativeLayout) convertView.findViewById(R.id.re_item);
+                holder.re_lay_one = (RelativeLayout) convertView.findViewById(R.id.re_lay_one);
+                holder.re_lay_two = (RelativeLayout) convertView.findViewById(R.id.re_lay_two);
+
+                holder.txt_status_live = (TextView) convertView.findViewById(R.id.txt_status_live);
+                holder.txt_title_two = (TextView) convertView.findViewById(R.id.txt_title_two);
+                holder.txt_time_dowm = (TextView) convertView.findViewById(R.id.txt_time_dowm);
+                holder.txt_status = (TextView) convertView.findViewById(R.id.txt_status);
+                holder.txt_num_two = (TextView) convertView.findViewById(R.id.txt_num_two);
+                holder.txt_time_two = (TextView) convertView.findViewById(R.id.txt_time_two);
+                holder.img_triangle_two = (ImageView) convertView.findViewById(R.id.img_triangle_two);
+                holder.mView_line_two = (View) convertView.findViewById(R.id.view_line_two);
+
+                convertView.setTag(holder);
+            } else {
+                holder = (ViewHolder) convertView.getTag();
+            }
+
+            if (position == 0) {
+                holder.mView_line.setVisibility(View.INVISIBLE);
+                holder.mView_line_two.setVisibility(View.INVISIBLE);
+            } else {
+                holder.mView_line.setVisibility(View.VISIBLE);
+                holder.mView_line_two.setVisibility(View.VISIBLE);
+            }
+            if (mYjCourseModel != null) {
+                if (select == position) {
+                    holder.img_triangle.setImageResource(R.mipmap.button_play_se);
+                    holder.mTxt_num.setTextColor(getResources().getColor(R.color.blue_title));
+                    holder.mTxt_title.setTextColor(getResources().getColor(R.color.blue_title));
+                    holder.mTtxt_time.setTextColor(getResources().getColor(R.color.blue_title));
+
+
+                    holder.img_triangle_two.setImageResource(R.mipmap.button_play_se);
+                    holder.txt_num_two.setTextColor(getResources().getColor(R.color.blue_title));
+                    holder.txt_title_two.setTextColor(getResources().getColor(R.color.blue_title));
+                } else {
+                    holder.img_triangle.setImageResource(R.mipmap.button_play_de);
+                    holder.mTxt_num.setTextColor(getResources().getColor(R.color.black));
+                    holder.mTxt_title.setTextColor(getResources().getColor(R.color.black));
+                    holder.mTtxt_time.setTextColor(getResources().getColor(R.color.black));
+
+                    holder.img_triangle_two.setImageResource(R.mipmap.button_play_de);
+                    holder.txt_num_two.setTextColor(getResources().getColor(R.color.black));
+                    holder.txt_title_two.setTextColor(getResources().getColor(R.color.black));
+                }
+                if (mFlag) {
+                    if (playPosition == position) {
+                        holder.img_triangle.setImageResource(R.mipmap.button_play_se);
+                        holder.mTxt_num.setTextColor(getResources().getColor(R.color.blue_title));
+                        holder.mTxt_title.setTextColor(getResources().getColor(R.color.blue_title));
+                        holder.mTtxt_time.setTextColor(getResources().getColor(R.color.blue_title));
+
+                        holder.img_triangle_two.setImageResource(R.mipmap.button_play_se);
+                        holder.txt_num_two.setTextColor(getResources().getColor(R.color.blue_title));
+                        holder.txt_title_two.setTextColor(getResources().getColor(R.color.blue_title));
+                    }
+                    /*if (mYjCourseModel.getLastNumber().equals("0") && position == 0) {
+                        if (mYjCourseModel.getCourseCatalogList().get(0).getCourseVideoStatus().equals("Normal") && !TextUtils.isEmpty(mYjCourseModel.getCourseCatalogList().get(0).getUu()) && !TextUtils.isEmpty(mYjCourseModel.getCourseCatalogList().get(0).getCode())) {
+                            holder.img_triangle.setImageResource(R.mipmap.button_play_se);
+                            holder.mTxt_num.setTextColor(getResources().getColor(R.color.blue_title));
+                            holder.mTxt_title.setTextColor(getResources().getColor(R.color.blue_title));
+                            holder.mTtxt_time.setTextColor(getResources().getColor(R.color.blue_title));
+
+                            holder.img_triangle_two.setImageResource(R.mipmap.button_play_se);
+                            holder.txt_num_two.setTextColor(getResources().getColor(R.color.blue_title));
+                            holder.txt_title_two.setTextColor(getResources().getColor(R.color.blue_title));
+                        }else {
+                            for (int j= 0;j<= mYjCourseModel.getCourseCatalogList().size();j++){
+                                if (mYjCourseModel.getCourseCatalogList().get(j).getCourseVideoStatus().equals("Normal") && !TextUtils.isEmpty(mYjCourseModel.getCourseCatalogList().get(j).getUu()) && !TextUtils.isEmpty(mYjCourseModel.getCourseCatalogList().get(j).getCode()) ){
+                                    holder.img_triangle.setImageResource(R.mipmap.button_play_se);
+                                    holder.mTxt_num.setTextColor(getResources().getColor(R.color.blue_title));
+                                    holder.mTxt_title.setTextColor(getResources().getColor(R.color.blue_title));
+                                    holder.mTtxt_time.setTextColor(getResources().getColor(R.color.blue_title));
+
+                                    holder.img_triangle_two.setImageResource(R.mipmap.button_play_se);
+                                    holder.txt_num_two.setTextColor(getResources().getColor(R.color.blue_title));
+                                    holder.txt_title_two.setTextColor(getResources().getColor(R.color.blue_title));
+                                    break;
+                                }
+                            }
+                        }
+                    } else if (mYjCourseModel.getLastNumber().equals(position + 1 + "")) {
+                        if (mYjCourseModel.getCourseCatalogList().get(position).getCourseVideoStatus().equals("Normal") && !TextUtils.isEmpty(mYjCourseModel.getCourseCatalogList().get(position).getUu().trim()) && !TextUtils.isEmpty(mYjCourseModel.getCourseCatalogList().get(position).getCode().trim())) {
+                            holder.img_triangle.setImageResource(R.mipmap.button_play_se);
+                            holder.mTxt_num.setTextColor(getResources().getColor(R.color.blue_title));
+                            holder.mTxt_title.setTextColor(getResources().getColor(R.color.blue_title));
+                            holder.mTtxt_time.setTextColor(getResources().getColor(R.color.blue_title));
+
+                            holder.img_triangle_two.setImageResource(R.mipmap.button_play_se);
+                            holder.txt_num_two.setTextColor(getResources().getColor(R.color.blue_title));
+                            holder.txt_title_two.setTextColor(getResources().getColor(R.color.blue_title));
+                        }else {
+                            for (int j= 0;j<= mYjCourseModel.getCourseCatalogList().size();j++){
+                                if (mYjCourseModel.getCourseCatalogList().get(j).getCourseVideoStatus().equals("Normal") && !TextUtils.isEmpty(mYjCourseModel.getCourseCatalogList().get(j).getUu()) && !TextUtils.isEmpty(mYjCourseModel.getCourseCatalogList().get(j).getCode()) ){
+                                    holder.img_triangle.setImageResource(R.mipmap.button_play_se);
+                                    holder.mTxt_num.setTextColor(getResources().getColor(R.color.blue_title));
+                                    holder.mTxt_title.setTextColor(getResources().getColor(R.color.blue_title));
+                                    holder.mTtxt_time.setTextColor(getResources().getColor(R.color.blue_title));
+
+                                    holder.img_triangle_two.setImageResource(R.mipmap.button_play_se);
+                                    holder.txt_num_two.setTextColor(getResources().getColor(R.color.blue_title));
+                                    holder.txt_title_two.setTextColor(getResources().getColor(R.color.blue_title));
+                                    break;
+                                }
+                            }
+                        }
+                    }*/
+                    mFlag = false;
+                }
+
+                if (mYjCourseModel.getCourseCatalogList().get(position).getCourseVideoShape().equals("DVR")) {
+                    if (mYjCourseModel.getCourseCatalogList().get(position).getCourseVideoStatus().equals("Normal")) {
+                        holder.re_lay_one.setVisibility(View.VISIBLE);
+                        holder.re_lay_two.setVisibility(View.GONE);
+                        holder.mTxt_num.setText(position + 1 + "");
+                        holder.txt_num_two.setText(position + 1 + "");
+
+                        holder.mTxt_title.setText(mYjCourseModel.getCourseCatalogList().get(position).getName());
+                        if (mYjCourseModel.getCourseCatalogList().get(position).getIsTry().equals("Yes")) {
+
+                            if (mYjCourseModel.getCoursePayWay().equals("FREE")) {
+                                if (!TextUtils.isEmpty(mYjCourseModel.getCourseCatalogList().get(position).getDuration())) {
+                                    Log.d(TAG, "getDuration=" + mYjCourseModel.getCourseCatalogList().get(position).getDuration());
+                                    holder.mTtxt_time.setText(TimeUtil.displayDuration(mYjCourseModel.getCourseCatalogList().get(position).getDuration()).replace(":", "'") + "\"");
+                                } else {
+                                    holder.mTtxt_time.setVisibility(View.GONE);
+                                }
+                            } else {
+                                if (mIsLogin) {
+                                    if (mYjCourseModel.getIsBuy().equals("Yes")) {
+                                        if (!TextUtils.isEmpty(mYjCourseModel.getCourseCatalogList().get(position).getDuration())) {
+                                            Log.d(TAG, "getDuration=" + mYjCourseModel.getCourseCatalogList().get(position).getDuration());
+                                            holder.mTtxt_time.setText(TimeUtil.displayDuration(mYjCourseModel.getCourseCatalogList().get(position).getDuration()).replace(":", "'") + "\"");
+                                        } else {
+                                            holder.mTtxt_time.setVisibility(View.GONE);
+                                        }
+                                    } else {
+                                        holder.mTtxt_time.setText("可试听");
+                                    }
+                                } else {
+                                    holder.mTtxt_time.setText("可试听");
+                                }
+                            }
+                        } else {
+                            if (!TextUtils.isEmpty(mYjCourseModel.getCourseCatalogList().get(position).getDuration())) {
+                                Log.d(TAG, "getDuration=" + mYjCourseModel.getCourseCatalogList().get(position).getDuration());
+                                holder.mTtxt_time.setText(TimeUtil.displayDuration(mYjCourseModel.getCourseCatalogList().get(position).getDuration()).replace(":", "'") + "\"");
+                            } else {
+                                holder.mTtxt_time.setVisibility(View.GONE);
+                            }
+                        }
+                    } else {
+                        holder.re_lay_one.setVisibility(View.GONE);
+                        holder.re_lay_two.setVisibility(View.VISIBLE);
+                        holder.txt_status.setVisibility(View.GONE);
+                        holder.txt_status_live.setVisibility(View.GONE);
+                        holder.txt_num_two.setText(position + 1 + "");
+                        holder.mTxt_num.setText(position + 1 + "");
+
+                        holder.txt_title_two.setText(mYjCourseModel.getCourseCatalogList().get(position).getName());
+                        holder.txt_time_dowm.setTextColor(getResources().getColor(R.color.gray_text));
+                        holder.txt_num_two.setTextColor(getResources().getColor(R.color.gray_text));
+                        holder.txt_title_two.setTextColor(getResources().getColor(R.color.gray_text));
+
+                        holder.img_triangle_two.setImageResource(R.mipmap.button_play_de);
+                        holder.txt_time_two.setVisibility(View.VISIBLE);
+                        holder.txt_time_two.setTextColor(getResources().getColor(R.color.gray_text));
+                        if (!TextUtils.isEmpty(mYjCourseModel.getCourseCatalogList().get(position).getDuration())) {
+                            holder.txt_time_two.setText(TimeUtil.displayDuration(mYjCourseModel.getCourseCatalogList().get(position).getDuration()).replace(":", "'") + "\"");
+                        } else {
+                            holder.txt_time_two.setVisibility(View.GONE);
+                        }
+
+                        if (!TextUtils.isEmpty(mYjCourseModel.getCourseCatalogList().get(position).getPlanDate()) && !TextUtils.isEmpty(mYjCourseModel.getCourseCatalogList().get(position).getPlanDate())) {
+                            String month = TimeUtil.getMonth(Long.parseLong(mYjCourseModel.getCourseCatalogList().get(position).getPlanDate()));
+                            String day = TimeUtil.getDay(Long.parseLong(mYjCourseModel.getCourseCatalogList().get(position).getPlanDate()));
+                            holder.txt_time_dowm.setText("预计开课时间: " + month + "月" + day + "日");
+                        }
+
+                    }
+                } else {
+                    holder.re_lay_one.setVisibility(View.GONE);
+                    holder.re_lay_two.setVisibility(View.VISIBLE);
+                    holder.txt_time_two.setVisibility(View.GONE);
+                    holder.txt_num_two.setText(position + 1 + "");
+                    holder.mTxt_num.setText(position + 1 + "");
+                    holder.txt_title_two.setText(mYjCourseModel.getCourseCatalogList().get(position).getName());
+                    if (!TextUtils.isEmpty(mYjCourseModel.getCourseCatalogList().get(position).getLiveStatus())) {
+
+                        if (mYjCourseModel.getCourseCatalogList().get(position).getLiveStatus().equals("ing")) {
+                            holder.txt_status.setText(R.string.live_ing_title);
+                            holder.txt_time_dowm.setTextColor(getResources().getColor(R.color.yellow_text));
+                            holder.txt_status.setTextColor(getResources().getColor(R.color.yellow_text));
+                        } else if (mYjCourseModel.getCourseCatalogList().get(position).getLiveStatus().equals("over")) {
+                            holder.txt_time_dowm.setTextColor(getResources().getColor(R.color.gray_text));
+                            if ("Yes".equals(mYjCourseModel.getCourseCatalogList().get(position).getIsReplay())) {
+                                holder.txt_status.setText(R.string.live_look_back_title);
+                                holder.txt_status.setTextColor(getResources().getColor(R.color.blue_title));
+                            }
+                            if ("No".equals(mYjCourseModel.getCourseCatalogList().get(position).getIsReplay())) {
+                                holder.txt_status.setText(R.string.live_back_ready_title);
+                                holder.txt_status.setTextColor(getResources().getColor(R.color.gray_text));
+                            }
+
+                        } else if (mYjCourseModel.getCourseCatalogList().get(position).getLiveStatus().equals("no")) {
+                            holder.txt_time_dowm.setTextColor(getResources().getColor(R.color.gray_text));
+                            holder.txt_status.setText(R.string.live_no_start_title);
+                            holder.txt_status.setTextColor(getResources().getColor(R.color.gray_text));
+                        }
+                    } else {
+                        holder.txt_time_dowm.setTextColor(getResources().getColor(R.color.gray_text));
+                        holder.txt_status.setText(R.string.live_no_start_title);
+                        holder.txt_status.setTextColor(getResources().getColor(R.color.gray_text));
+                    }
+
+                    if (!TextUtils.isEmpty(mYjCourseModel.getCourseCatalogList().get(position).getPlanDate()) && !TextUtils.isEmpty(mYjCourseModel.getCourseCatalogList().get(position).getPlanEndDate())) {
+                        String planDate = TimeUtil.getYearTime(Long.parseLong(mYjCourseModel.getCourseCatalogList().get(position).getPlanDate()));
+                        String planEndDate =TextUtils.isEmpty(mYjCourseModel.getCourseCatalogList().get(position).getPlanEndDate())?"": TimeUtil.getSecondMInTime(Long.parseLong(mYjCourseModel.getCourseCatalogList().get(position).getPlanEndDate()));
+                        holder.txt_time_dowm.setText((("3".equals(StringUtils.getDateDetail(planDate)) ? TimeUtil.getMonthTime(Long.parseLong(mYjCourseModel.getCourseCatalogList().get(position).getPlanDate())) : StringUtils.getDateDetail(planDate)) + " " + TimeUtil.getSecondMInTime(Long.parseLong(mYjCourseModel.getCourseCatalogList().get(position).getPlanDate()))) + "-" + planEndDate);
+                    } else {
+                        holder.txt_time_dowm.setVisibility(View.GONE);
+                    }
+                }
+            }
+            return convertView;
+        }
+
+        private class ViewHolder {
+            private TextView mTxt_num;
+            private TextView txt_learn;
+            private TextView mTxt_title;
+            private TextView mTtxt_time;
+            private View mView_line;
+            private View mView_line_two;
+            private ImageView img_triangle;
+
+
+            private RelativeLayout mRe_item;
+            private RelativeLayout re_lay_one;
+            private RelativeLayout re_lay_two;
+
+            private TextView txt_status_live;
+            private TextView txt_title_two;
+            private TextView txt_time_dowm;
+            private TextView txt_status;
+            private TextView txt_time_two;
+            private TextView txt_num_two;
+            private ImageView img_triangle_two;
+        }
+
+    }
+
+
+    public static boolean isScreenOriatationPortrait(Context context) {
+        return context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
+    }
+
+    private long mExitTime;
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == Constants.REQUEST_QQ_SHARE) {
+            if (resultCode == Constants.ACTIVITY_OK) {
+                Tencent.handleResultData(data, qqShareListener);
+            }
+        }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+
+            switch (getRequestedOrientation()) {
+                case ActivityInfo.SCREEN_ORIENTATION_PORTRAIT:
+                    finish();
+                    break;
+                case ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE:
+
+                    //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                    // iLetvPlayerController.getIsPlayerController().setScreenResolution(ISplayerController.SCREEN_ORIENTATION_USER_PORTRAIT);
+                    playerController.getIsPlayerController().setScreenResolution(ISplayerController.SCREEN_ORIENTATION_USER_PORTRAIT);
+
+                    break;
+                default:
+                    break;
+            }
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    //重新获取课程详情页
+    private void getCourseCatalog(final int position) {
+        Map<String, Object> objectMap = new HashMap<>();
+        try {
+            objectMap.put("courseId", mYjCourseModel.getCourseId());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        YJStudentReqManager.getServerData(YJReqURLProtocol.GET_COURSE_CATALOG, objectMap, mIsLogin, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                Log.d(TAG, "失败=" + s);
+                showToast(getString(R.string.no_net_work));
+            }
+
+            @Override
+            public void onSuccess(int i, Header[] headers, String s) {
+                try {
+                    Log.d(TAG, "成功s=" + s);
+                    JSONObject json = null;
+                    json = new JSONObject(s);
+
+                    switch (json.getInt("code")) {
+                        case 200:
+                            JSONObject jsonObject = new JSONObject(json.getString("data"));
+                            YJCourseModel yjCourseModel = JSON.parseObject(jsonObject.getString("course"), YJCourseModel.class);
+                            Log.d(TAG, "yjCourseModel=" + yjCourseModel.toString());
+                            mYjCourseModel = yjCourseModel;
+                            initData(2);
+                            if (position == 1) {
+                                if (mStatus == 0) {
+                                    if (mYjCourseModel.getIsBuy().equals("Yes")) {
+                                        return;
+                                    }
+                                    if (mYjCourseModel.getIsBuy().equals("No")) {
+                                        if (mYjCourseModel.getCoursePayWay().equals("XNB")) {
+                                            if (Integer.parseInt(YJGlobal.getYjUser().getCoin()) >= mYjCourseModel.getPayCoin()) {
+                                                startActivity(createIntent(YJBuyCourseActivity.class, createTransmitData(YJBuyCourseActivity.COURSE_MODEL, mYjCourseModel).set(YJBuyCourseActivity.VISIBLE_FLAG, true)));
+                                            } else {
+                                                startActivity(createIntent(YJRechargeWhaleMoney.class, createTransmitData(YJRechargeWhaleMoney.COURSE_MODEL, mYjCourseModel).set(YJRechargeWhaleMoney.VISIBLE_FLAG, true)));
+                                            }
+                                        } else if (mYjCourseModel.getCoursePayWay().equals("RMB")) {
+                                            startActivity(createIntent(YJBuyCourseActivity.class, createTransmitData(YJBuyCourseActivity.COURSE_MODEL, mYjCourseModel).set(YJBuyCourseActivity.VISIBLE_FLAG, true)));
+                                        }
+                                    }
+                                } else if (mStatus == 1) {
+                                }
+                            }
+                            break;
+                        case 300:
+                            break;
+                        case 400:
+                            break;
+                        case 401:
+                            break;
+                        case 402:
+                            break;
+                        case 500:
+                            break;
+                        case 600:
+                            startActivity(createIntent(YJLoginActivity.class, createTransmitData(YJLoginActivity.LOGIN_OUT, 1).set(YJLoginActivity.MY_LOGIN_OUT, true)));
+                            finishAll();
+                            break;
+                        default:
+                            break;
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+
+    public abstract void getTakenLive(int position,boolean isShowDialog,int isLiveType);
+
+    public abstract void getTakenBack(int position);
+
+    public abstract void catalogBeginStudy(int mPosition, String type);
+
+    public abstract void catalogEndStudy(int mPosition, long time);
+
+
+    public abstract void getTeacherList(String gradeId, String subjectId);
+
+
+    private static final boolean USE_PLAYER_PROXY = true;
+    boolean isPanoVideo;
+    //////////////////////////////////////
+//////////////////////////////////////
+    private Context mContext = getContext();
+    private String path = "";
+    private Bundle mBundle;
+    //////////////////////////////////////
+    private boolean isContinue = true;
+    private boolean isComplete = true;
+
+    private int skinBuildType;
+    private UIPlayContext uicontext;
+    //////////////////////////////////////
+    private V4PlaySkin skin;
+    private int playMode;
+    private long lastPosition;
+    private ISplayer player;
+    //////////////////////////////////////
+    private PlayContext playContext;
+    private ILeVideoView videoView;
+    private ILetvPlayerController playerController;
+
+    public class LetvsSimplePlayBoard {
+
+        /**
+         * 处理播放器的回调事件
+         */
+        private OnPlayStateListener playStateListener = new OnPlayStateListener() {
+            @Override
+            public void videoState(int state, Bundle bundle) {
+                handleADState(state, bundle);// 处理广告类事件
+                handleVideoInfoState(state, bundle);// 处理视频信息事件
+                handlePlayState(state, bundle);// 处理播放器类事件
+                handleLiveState(state, bundle);// 处理直播类事件
+
+            }
+        };
+
+        // surfaceView生命周期
+        private SurfaceHolder.Callback surfaceCallback = new SurfaceHolder.Callback() {
+            @Override
+            public void surfaceDestroyed(SurfaceHolder holder) {
+                KLog.d();
+                stopAndRelease();
+                KLog.d("ok");
+            }
+
+            @Override
+            public void surfaceCreated(final SurfaceHolder holder) {
+                if (!isPanoVideo) {
+                    KLog.d();
+                   /* if (onPause){
+                        createOnePlayer(holder.getSurface());
+                    }*/
+                    createOnePlayer(holder.getSurface());
+                    Log.d(TAG, "surfaceCreated");
+                    KLog.d("ok");
+                }
+            }
+
+            @Override
+            public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+                if (player != null) {
+                    PlayerParamsHelper.setViewSizeChange(player, width, height);
+                }
+            }
+        };
+
+        public void onResume() {
+            resume();
+        }
+
+        public void onPause() {
+            pause();
+        }
+
+        public void onDestroy() {
+            destroy();
+        }
+
+        // ////////////////////////////////////////////////////////////////////////////////////////////
+        // ////////////////////////////////////////////////////////////////////////////////////////////
+        // ////////////////////////////////////////////////////////////////////////////////////////////
+
+        public void onConfigurationChanged(Configuration newConfig) {
+            if (videoView != null) {
+                videoView.setVideoLayout(-1, 0);
+            }
+        }
+
+        /**
+         * 初始化下载模块
+         */
+        private void initDownload() {
+            final String uuid = mBundle.getString(PlayProxy.PLAY_UUID);
+            final String vuid = mBundle.getString(PlayProxy.PLAY_VUID);
+            final DownloadCenter downloadCenter = DownloadCenter.getInstances(mContext);
+            if (downloadCenter != null && downloadCenter.isDownloadCompleted(vuid)) {
+                path = downloadCenter.getDownloadFilePath(vuid);
+            }
+            skin.setOnDownloadClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    downloadCenter.allowShowMsg(false);
+                    downloadCenter.setDownloadRateText(playContext.getDefinationIdByType(uicontext.getCurrentRateType()));
+                    downloadCenter.downloadVideo("", uuid, vuid);
+                }
+            });
+        }
+
+        public void init(Bundle m, V4PlaySkin s) {
+            mBundle = m;
+            skin = s;
+            playMode = mBundle.getInt(PlayProxy.PLAY_MODE, -1);
+            switch (playMode) {
+                case EventPlayProxy.PLAYER_VOD:
+                    skinBuildType = V4PlaySkin.SKIN_TYPE_A;
+                    break;
+                case EventPlayProxy.PLAYER_LIVE:
+                    skinBuildType = V4PlaySkin.SKIN_TYPE_B;
+                    break;
+                case EventPlayProxy.PLAYER_ACTION_LIVE:
+                    skinBuildType = V4PlaySkin.SKIN_TYPE_C;
+                    break;
+                default:
+                    break;
+            }
+
+            isPanoVideo = mBundle.getBoolean(PlayProxy.BUNDLE_KEY_ISPANOVIDEO);
+            if (isPanoVideo) {
+//            initPanoVideoView();
+            } else {
+                initVideoView();
+            }
+            initPlayContext();
+            initPlayerSkin();
+            if (playMode == EventPlayProxy.PLAYER_VOD) {
+                //记录上次播放位置
+                //  PlayerAssistant.loadLastPosition(playContext, mBundle.getString(PlayProxy.PLAY_UUID), mBundle.getString(PlayProxy.PLAY_VUID));
+                initDownload();
+            }
+        }
+
+        private void initPlayContext() {
+
+            playContext = new PlayContext(mContext);
+            playContext.setVideoContainer(skin);
+            playContext.setUsePlayerProxy(USE_PLAYER_PROXY);
+            playContext.setVideoContentView(videoView.getMysef());
+            playerController = new LetvPlayerControllerImp();
+            playerController.setPlayContext(playContext);
+
+
+        }
+
+        private void resume() {
+            if (skin != null) {
+                skin.onResume();
+            }
+            if (player != null && playContext.getErrorCode() == -1) {
+                player.start();
+            }
+        }
+
+        private void pause() {
+            if (isContinue && skinBuildType == V4PlaySkin.SKIN_TYPE_A && player != null && (int) player.getCurrentPosition() > 0) {
+                PlayerAssistant.saveLastPosition(mContext, mBundle.getString(PlayProxy.PLAY_UUID), mBundle.getString(PlayProxy.PLAY_VUID), (int) (player.getCurrentPosition()),
+                        playContext.getCurrentDefinationType());
+            }
+            if (skin != null) {
+                skin.onPause();
+            }
+            if (player != null) {
+                player.pause();
+            }
+        }
+
+        private void destroy() {
+            if (skin != null) {
+                skin.onDestroy();
+            }
+            if (playContext != null) {
+                playContext.destory();
+            }
+        }
+
+        /**
+         * 初始化播放器皮肤
+         */
+        private void initPlayerSkin() {
+
+            if (playMode == EventPlayProxy.PLAYER_ACTION_LIVE) {// 活动直播
+                PlayerSkinFactory.initActionLivePlaySkin(skin, V4PlaySkin.SKIN_TYPE_C, mBundle.getString(PlayProxy.PLAY_ACTIONID), new IActionCallback() {
+                    @Override
+                    public void switchMultLive(String liveId) {
+                        LeLog.d(TAG, "switchMultLive : " + liveId);
+                        ((LetvPlayer) player).switchMultLive(liveId);
+                    }
+
+                    @Override
+                    public ISplayer createPlayerCallback(SurfaceHolder holder, String path, OnPlayStateListener playStateListener) {
+                        return PlayerAssistant.createActionLivePlayer(mContext, holder, path, playStateListener);
+                    }
+                }, isPanoVideo);
+            } else {
+                PlayerSkinFactory.initPlaySkin(skin, skinBuildType, isPanoVideo);
+            }
+            /**
+             * 获取皮肤的上下文
+             */
+            uicontext = skin.getUIPlayContext();
+
+        }
+
+        private void initVideoView() {
+            videoView = new ReSurfaceView(mContext);
+            videoView.getHolder().addCallback(surfaceCallback);
+            videoView.setVideoContainer(null);
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            params.addRule(RelativeLayout.CENTER_IN_PARENT);
+            skin.addView(videoView.getMysef(), params);
+        }
+
+        /**
+         * 停止播放，并且记录最后播放时间
+         */
+        private void stopAndRelease() {
+            if (player != null) {
+                KLog.d();
+                if (player != null) {
+                    lastPosition = player.getCurrentPosition();
+                    if (mIsLogin) {
+                        Log.d(TAG, "lastPosition=" + lastPosition);
+                        if (mOnPause) {
+                            YJUserStudyData.catalogEndStudy(mYjCourseModel, playPosition, lastPosition);
+                        }
+
+                    }
+                }
+                if (player != null) {
+                    player.stop();
+                }
+                if (player != null) {
+                    player.reset();
+                }
+                if (player != null) {
+                    player.release();
+                }
+                if (player != null) {
+                    player = null;
+                }
+                KLog.d("release ok!");
+            }
+        }
+
+        // ////////////////////////////////////////////////////////////////////////////////////////////
+        // ////////////////////////////////////////////////////////////////////////////////////////////
+        // ////////////////////////////////////////////////////////////////////////////////////////////
+
+        /**
+         * 创建一个新的播放器
+         *
+         * @param surface
+         */
+        private void createOnePlayer(Surface surface) {
+            player = PlayerFactory.createOnePlayer(playContext, mBundle, playStateListener, surface);
+            if (!TextUtils.isEmpty(path)) {
+                playContext.setUsePlayerProxy(false);
+            }
+            player.setDataSource(path);
+            if (lastPosition > 0 && mBundle.getInt(PlayProxy.PLAY_MODE) == EventPlayProxy.PLAYER_VOD) {
+                player.seekTo(lastPosition);
+            }
+            player.prepareAsync();
+            /**
+             * 皮肤关联播放器
+             */
+            playerController.setPlayer(player);
+            skin.registerController(playerController);
+        }
+
+        /**
+         * 处理直播相关信息
+         *
+         * @param state
+         * @param bundle
+         */
+        private void handleLiveState(int state, Bundle bundle) {
+            switch (state) {
+                case EventPlayProxy.PROXY_WATING_SELECT_ACTION_LIVE_PLAY:
+                    /**
+                     * 活动直播
+                     */
+                    PlayContext playContextAction = (PlayContext) player.getPlayContext();
+                    ActionInfo actionInfo = playContextAction.getActionInfo();
+                    if (actionInfo != null) {
+                        // 皮肤层设置活动信息
+                        uicontext.setActionInfo(actionInfo);
+                        /**
+                         * 如果当前活动直播是多个直播窗口， 选择一路可用的活动直播
+                         */
+                        LiveInfo liveInfo = actionInfo.getFirstCanPlayLiveInfo();
+                        if (liveInfo != null) {
+                            playContextAction.setLiveId(liveInfo.getLiveId());
+                        }
+                        // 活动直播中如果包含多个live信息 播放途中调用 LetvPlayer 中
+                        // switchMultLive（liveId）切换播放
+                    }
+                    break;
+                case EventPlayProxy.PROXY_SET_ACTION_LIVE_CURRENT_LIVE_ID:
+                    // 当前播放的活动直播的liveID
+                    uicontext.setMultCurrentLiveId(bundle.getString("liveId"));
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        /**
+         * 处理视频信息
+         *
+         * @param state
+         * @param bundle
+         */
+        private void handleVideoInfoState(int state, Bundle bundle) {
+            switch (state) {
+                case EventPlayProxy.PROXY_WAITING_SELECT_DEFNITION_PLAY:
+                    /**
+                     * 皮肤获取码率
+                     */
+                    PlayContext playContext = (PlayContext) player.getPlayContext();
+                    if (playContext != null) {
+                        uicontext.setRateTypeItems(playContext.getDefinationsMap());
+                    }
+
+                    /**
+                     * 获取码率
+                     */
+                    Map<Integer, String> definationsMap = playContext.getDefinationsMap();
+                    if (definationsMap != null) {
+                        Iterator<Map.Entry<Integer, String>> it = definationsMap.entrySet().iterator();
+                        while (it.hasNext()) {
+                            Map.Entry<Integer, String> next = it.next();
+                            next.getKey();
+                            next.getValue();
+                        }
+                    }
+
+
+                    break;
+                case EventPlayProxy.PROXY_VIDEO_INFO_REFRESH:
+                    if (uicontext == null || player == null || player.getPlayContext() == null) {
+                        return;
+                    }
+                    uicontext.setVideoTitle(((PlayContext) player.getPlayContext()).getVideoTitle());
+//                    uicontext.setVideoTitle(mYjCourseModel.getCourseCatalogList().get(mLastPosition).getName());
+                    uicontext.setDownloadable(((PlayContext) player.getPlayContext()).isCanbeDownload());
+                    break;
+            }
+        }
+
+        /**
+         * 处理广告事件
+         *
+         * @param state
+         * @param bundle
+         */
+        private void handleADState(int state, Bundle bundle) {
+            switch (state) {
+                case EventPlayProxy.PLAYER_PROXY_AD_START:
+                    uicontext.setIsPlayingAd(true);// 广告播放时间
+                    break;
+                case EventPlayProxy.PLAYER_PROXY_AD_END:
+                    uicontext.setIsPlayingAd(false);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        /**
+         * 处理播放器事件
+         *
+         * @param state
+         * @param bundle
+         */
+        private void handlePlayState(int state, Bundle bundle) {
+            switch (state) {
+                case ISplayer.MEDIA_EVENT_PREPARE_COMPLETE:
+                    // TODO 获取当前播放的码率
+                    uicontext.setCurrentRateType(playContext.getCurrentDefinationType());
+                    if (uicontext.isClickPauseByUser() && player != null) {
+                        player.setVolume(0, 0);
+                    }
+                    if (player != null) {
+                        if (isPlayFlag) {
+                            if (mOnPause) {
+                                player.start();
+                                Log.d(TAG, "mOnPause=true");
+                            } else {
+                                Log.d(TAG, "mOnPause=false");
+                                player.pause();
+                                player.reset();
+
+                                mOnPause = true;
+                            }
+                        } else {
+
+                        }
+                    }
+                    Log.d("1111111111111", "第" + mPosition + "条开始播放了");
+                    break;
+                case ISplayer.MEDIA_EVENT_FIRST_RENDER:
+                    if (uicontext.isClickPauseByUser() && player != null) {
+                        player.pause();
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                player.setVolume(1, 1);
+                            }
+                        }, 300);
+                    }
+                    Log.d("1111111111111", "MEDIA_EVENT_FIRST_RENDER");
+                    break;
+                case ISplayer.MEDIA_EVENT_VIDEO_SIZE:
+                    if (videoView != null && player != null) {
+                        videoView.onVideoSizeChange(player.getVideoWidth(), player.getVideoHeight());
+                    }
+                    break;
+
+                case ISplayer.MEDIA_EVENT_PLAY_COMPLETE:
+                    if (uicontext.isClickPauseByUser() && player != null) {
+                        player.getDuration();
+                    }
+
+                    if (mIsLogin) {
+                        Log.d(TAG, "lastPosition=" + lastPosition);
+                        YJUserStudyData.catalogEndStudy(mYjCourseModel, playPosition, 0);
+                        isComplete = false;
+                    }
+                    //  catalogEndStudy(mPosition, player.getDuration());
+
+                    if (!mYjCourseModel.getCoursePayWay().equals("FREE") && mYjCourseModel.getCourseCatalogList().get(playPosition).getIsTry().equals("Yes") && mYjCourseModel.getIsBuy().equals("No")) {
+                        showToast("试听已结束，请购买课程");
+                    }
+                    Log.d("1111111111111", "MEDIA_EVENT_PLAY_COMPLETE");
+                    /**
+                     * 检查活动直播状态
+                     */
+                    PlayerAssistant.checkActionLiveStatus(player, new LiveStatusCallback() {
+                        @Override
+                        public void onSuccess(LiveStatus liveStatus) {
+                            LeLog.dPrint("123", liveStatus.toString());
+                        }
+
+                        @Override
+                        public void onFail(VolleyError error) {
+                            LeLog.ePrint("123", "getActiveLiveStatus error ", error);
+                        }
+                    });
+                    break;
+            }
+        }
+
+        // //////////////////////////////////////////////////////////////////////////////////////////////////
+        // //////////////////////////////////////////////////////////////////////////////////////////////////
+        // //////////////////////////////////////////////////////////////////////////////////////////////////
+
+        public ISplayer getPlayer() {
+            return player;
+        }
+
+    }
+
+}

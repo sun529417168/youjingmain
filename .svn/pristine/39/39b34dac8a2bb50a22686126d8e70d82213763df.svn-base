@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+        <include
+            android:id="@+id/title"
+            layout="@layout/title_blue_bg" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="124dp">
+
+            <ImageView
+                android:layout_width="68dp"
+                android:layout_height="68dp"
+                android:layout_centerInParent="true"
+                android:src="@mipmap/activate_smile" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/obtain_money"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:textColor="#ff7f00"
+                android:textSize="21sp" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/txt_regist_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:lineSpacingExtra="3dp"
+            android:paddingLeft="8dp"
+            android:gravity="center"
+            android:paddingRight="8dp"
+            android:visibility="visible"
+            android:text="注册成功！鲸币可以在我的钱包中查看，使用鲸币可以购买课程和礼物。"
+            android:textColor="#969696"
+            android:textSize="14sp" />
+
+
+        <Button
+            android:id="@+id/btn_activate_success"
+            android:layout_width="match_parent"
+            android:layout_height="47dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="23dp"
+            android:background="@mipmap/login_login_bg"
+            android:text="个人中心"
+            android:textColor="@color/white"
+            android:textSize="17sp" />
+
+
+    </LinearLayout>
+
+
+</RelativeLayout>
